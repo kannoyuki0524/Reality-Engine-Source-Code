@@ -235,15 +235,6 @@ class MobileControlSelectState extends MusicBeatSubstate
 			return;
 		}
 
-		if (controls.UI_UP_P) changeStyle(-1);
-		if (controls.UI_DOWN_P) changeStyle(1);
-
-		if (controls.ACCEPT && styleList[curStyle] != 'custom button')
-		{
-			onSave();
-			return;
-		}
-
 		if (FlxG.mouse.justPressed)
 		{
 			for (text in styleTexts)
