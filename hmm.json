@@ -68,13 +68,6 @@
       "url": "https://github.com/ArkoseLabsOfficial/mobile-controls"
     },
     {
-      "name": "extension-androidtools",
-      "type": "git",
-      "dir": null,
-      "ref": null,
-      "url": "https://github.com/MaybeMaru/extension-androidtools"
-    },
-    {
       "name": "hscript-iris-improved",
       "type": "git",
       "dir": null,
