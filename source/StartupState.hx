@@ -38,6 +38,7 @@ import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
 import haxe.io.Path;
+import mobile.MobileControls;
 
 using StringTools;
 class StartupState extends MusicBeatState
