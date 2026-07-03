@@ -1,6 +1,6 @@
 package;
 
-import flixel.test.FlxText;
+import flixel.text.FlxText;
 import flixel.FlxSprite;
 
 class ErrorState extends MusicBeatState
