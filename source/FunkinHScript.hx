@@ -7,6 +7,10 @@ import llua.LuaL;
 import llua.State;
 import llua.Convert;
 #end
+#if mobile
+import mobile.MobileControls;
+import mobile.objects.FunkinHitbox;
+#end
 
 import flixel.graphics.frames.FlxAtlasFrames;
 import lime.app.Application;
@@ -228,7 +232,12 @@ class FunkinHScript extends FunkinScript
 		set('mustHitSection', false);
 		set('altAnim', false);
 		set('gfSection', false);
-
+		#if mobile
+			set('mobile', true);
+			set('FunkinHitbox', mobile.objects.FunkinHitbox);
+		#else
+			set('mobile', false);
+		#end
 		for (i in 0...4) {
 			set('defaultPlayerStrumX' + i, 0);
 			set('defaultPlayerStrumY' + i, 0);
@@ -270,6 +279,7 @@ class FunkinHScript extends FunkinScript
         }
         }trace('hscript file loaded succesfully:' + path);
 
+		
 	}
 	
 	function setVideoVars() {
