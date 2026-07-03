@@ -23,6 +23,7 @@ class ClientPrefs {
 	public static var violence:Bool = true;
 	public static var cacheOnGPU:Bool = true;
 	public static var discordClient:Bool = true;
+	public static var autoCopy:Bool = true;
 	public static var camZooms:Bool = true;
 	public static var hideHud:Bool = false;
 	public static var noteOffset:Int = 0;
@@ -222,6 +223,7 @@ class ClientPrefs {
 		FlxG.save.data.curMobileControl = curMobileControl;
 		FlxG.save.data.mobilePad = mobilePad;
 		FlxG.save.data.wideScreen = wideScreen;
+		FlxG.save.data.autoCopy = FlxG.save.data.autoCopy;
 		FlxG.save.flush();
 
 		var save:FlxSave = new FlxSave();
@@ -237,6 +239,9 @@ class ClientPrefs {
 		if(FlxG.save.data == null) return;
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
+		}
+		if(FlxG.save.data.autoCopy != null) {
+			autoCopy = FlxG.save.data.autoCopy;
 		}
 		if(FlxG.save.data.extraParams != null) {
 			var savedMap:Map<String, Dynamic> = FlxG.save.data.extraParams;

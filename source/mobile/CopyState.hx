@@ -48,10 +48,17 @@ class CopyState extends MusicBeatState
 
 	override function create()
 	{
+		var forcedCopy:Bool = false;
+		if(FlxG.save.data.forcedCopied != null) {
+			forcedCopy = ClientPrefs.autoCopy;
+		}else{
+			FlxG.save.data.forcedCopied = true;
+			forcedCopy = true;
+		}
 		locatedFiles = [];
 		maxLoopTimes = 0;
 		checkExistingFiles();
-		if (maxLoopTimes > 0)
+		if (maxLoopTimes > 0 && forcedCopy)
 		{
 			shouldCopy = true;
 			MobileLog.info('CopyState: $maxLoopTimes files need to be copied');
@@ -81,7 +88,7 @@ class CopyState extends MusicBeatState
 		}
 		else
 		{
-			MusicBeatState.switchState(new TitleState());
+			MusicBeatState.switchState(new StartupState());
 		}
 		super.create();
 	}
