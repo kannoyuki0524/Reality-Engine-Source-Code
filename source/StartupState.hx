@@ -54,12 +54,32 @@ class StartupState extends MusicBeatState
 		#end
 		WeekData.loadTheFirstEnabledMod();
 
+		FlxG.save.bind('funkin', CoolUtil.getSavePath());
+		ClientPrefs.loadPrefs();
+		Highscore.load();
+		FlxG.fixedTimestep = false;		
+        if (FlxG.save.data.weekCompleted != null)
+			StoryMenuState.weekCompleted = FlxG.save.data.weekCompleted;
+
+		if(FlxG.save.data != null && FlxG.save.data.fullscreen)
+			FlxG.fullscreen = FlxG.save.data.fullscreen;
+
+
 		FlxG.game.focusLostFramerate = 60;
 		FlxG.sound.muteKeys = TitleState.muteKeys;
 		FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
 		FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
 		FlxG.keys.preventDefaultKeys = [TAB];
             
+		#if mobile
+			MobileConfig.init('MobileControls', CoolUtil.getSavePath(), 'assets/mobile/',
+				[
+					['MobilePad/DPadModes', ButtonModes.DPAD],
+					['MobilePad/ActionModes', ButtonModes.ACTION],
+					['Hitbox/HitboxModes', ButtonModes.HITBOX]
+				]
+			);
+		#end
 			#if FREEPLAY
 			MusicBeatState.switchState(new FreeplayState());
 			#elseif CHARTING

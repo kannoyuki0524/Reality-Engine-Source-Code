@@ -135,7 +135,7 @@ class Main extends Sprite
 		#if android
 		FlxG.android.preventDefaultKeys = [BACK];
 		#end
-		
+
 		Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
 			
 			if (e.keyCode == flixel.input.keyboard.FlxKey.F5)

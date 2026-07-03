@@ -98,36 +98,15 @@ class TitleState extends MusicBeatState
 		Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
 
-		#if LUA_ALLOWED
-		Paths.pushGlobalMods();
-		#end
-		// Just to load a mod on start up if ya got one. For mods that change the menu music and bg
-		WeekData.loadTheFirstEnabledMod();
 
-		FlxG.fixedTimestep = false;
-		FlxG.game.focusLostFramerate = 60;
-		FlxG.keys.preventDefaultKeys = [TAB];
-		
-		FlxG.sound.muteKeys = TitleState.muteKeys;
-		FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
-		FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
-		
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
 		// DEBUG BULLSHIT
 		swagShader = new ColorSwap();
 		super.create();
 
-		FlxG.save.bind('funkin', CoolUtil.getSavePath());
-		ClientPrefs.loadPrefs();
 
-		Highscore.load();
 
-		if (FlxG.save.data.weekCompleted != null)
-			StoryMenuState.weekCompleted = FlxG.save.data.weekCompleted;
-
-		if(FlxG.save.data != null && FlxG.save.data.fullscreen)
-			FlxG.fullscreen = FlxG.save.data.fullscreen;
 
 		#if CHECK_FOR_UPDATES
 		if(ClientPrefs.checkForUpdates && !closedState) {
@@ -198,15 +177,7 @@ class TitleState extends MusicBeatState
 			}
 			persistentUpdate = true;
 			persistentDraw = true;
-			#if mobile
-			MobileConfig.init('MobileControls', CoolUtil.getSavePath(), 'assets/mobile/',
-				[
-					['MobilePad/DPadModes', ButtonModes.DPAD],
-					['MobilePad/ActionModes', ButtonModes.ACTION],
-					['Hitbox/HitboxModes', ButtonModes.HITBOX]
-				]
-			);
-			#end
+			
 		}
 
 		FlxG.mouse.visible = false;
