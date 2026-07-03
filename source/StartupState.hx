@@ -39,6 +39,7 @@ import lime.app.Application;
 import openfl.Assets;
 import haxe.io.Path;
 import mobile.MobileControls;
+import mobile.MobileConfig;
 
 using StringTools;
 class StartupState extends MusicBeatState
