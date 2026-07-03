@@ -1,5 +1,8 @@
 package;
 
+import flixel.test.FlxText;
+import flixel.FlxSprite;
+
 class ErrorState extends MusicBeatState
 {
 	public var acceptCallback:Void->Void;
