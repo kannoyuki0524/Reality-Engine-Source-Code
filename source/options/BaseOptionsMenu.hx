@@ -24,7 +24,6 @@ import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
-import mobile.MobileControls;
 
 using StringTools;
 
@@ -124,13 +123,6 @@ class BaseOptionsMenu extends MusicBeatSubstate
 
 		changeSelection();
 		reloadCheckboxes();
-
-		#if mobile
-		mobileManager = new MobileControls(this);
-		mobileManager.addMobilePad('FULL', 'A_B_C');
-		mobileManager.addMobilePadCamera();
-		#end
-
 	}
 
 	public function addOption(option:Option) {
@@ -173,7 +165,6 @@ class BaseOptionsMenu extends MusicBeatSubstate
 					curOption.setValue((curOption.getValue() == true) ? false : true);
 					curOption.change();
 					reloadCheckboxes();
-					nextAccept = 5;
 				}
 			} else {
 				if(controls.UI_LEFT || controls.UI_RIGHT) {
@@ -247,7 +238,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 				}
 			}
 
-			if(controls.RESET #if mobile || mobileButtonJustPressed('C') #end)
+			if(controls.RESET)
 			{
 				for (i in 0...optionsArray.length)
 				{

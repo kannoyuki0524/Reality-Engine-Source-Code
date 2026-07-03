@@ -9,7 +9,6 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import mobile.MobileControls;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -38,13 +37,6 @@ class GameOverSubstate extends MusicBeatSubstate
 	override function create()
 	{
 		instance = this;
-
-		#if mobile
-		mobileManager = new MobileControls(this);
-		mobileManager.addMobilePad('NONE', 'A_B');
-		mobileManager.addMobilePadCamera();
-		#end
-
 		PlayState.instance.callOnScripts('onGameOverStart', []);
 
 		super.create();

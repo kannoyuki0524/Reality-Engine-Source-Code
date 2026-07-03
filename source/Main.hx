@@ -13,33 +13,31 @@ import openfl.events.Event;
 import openfl.display.StageScaleMode;
 
 //crash handler stuff
-import backend.CrashHandler;
-import mobile.MobileLog;
-import crowplexus.iris.Iris;
-#if mobile
-import mobile.backend.StorageUtil;
-#if android
-import android.content.Context as AndroidContext;
-#end
-#end
-
-#if sys
+#if CRASH_HANDLER
+import lime.app.Application;
+import openfl.events.UncaughtErrorEvent;
+import haxe.CallStack;
+import haxe.io.Path;
+import Discord.DiscordClient;
 import sys.FileSystem;
 import sys.io.File;
+import sys.io.Process;
 #end
-
+import crowplexus.iris.Iris;
 using StringTools;
 
 class Main extends Sprite
 {
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var initialState:Class<FlxState> = TitleState; // The FlxState the game starts with.
+	var initialState:Class<FlxState> = StartupState; // The FlxState the game starts with.
 	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
 	var framerate:Int = 60; // How many frames per second the game should run at.
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
 	var startFullscreen:Bool = false; // Whether to start the game in fullscreen on desktop targets
 	public static var fpsVar:FPS;
+
+	// You can pretty much ignore everything from here on - your code should go in your states.
 
 	public static function main():Void
 	{
@@ -49,21 +47,6 @@ class Main extends Sprite
 	public function new()
 	{
 		super();
-		#if mobile
-		#if android
-		StorageUtil.initExternalStorageDirectory(); //do not make this jobs everytime
-		// Do NOT call requestPermissions() here on startup - it can cause the
-		// process to hang on emulators/devices that don't handle the permission
-		// dialog correctly. Permissions are requested later from MainMenuState.
-		StorageUtil.chmod(2777, AndroidContext.getExternalFilesDir() + '/mods');
-		StorageUtil.chmod(2777, AndroidContext.getExternalFilesDir() + '/replays');
-		StorageUtil.chmod(2777, AndroidContext.getExternalFilesDir() + '/core'); //allow ability to change core files of engine (saveData)
-		StorageUtil.copySpesificFileFromAssets('mobile/storageModes.txt', StorageUtil.getCustomStoragePath());
-		MobileLog.info('Main.new: storage directory = ${StorageUtil.getExternalStorageDirectory()}');
-		#end
-		Sys.setCwd(StorageUtil.getExternalStorageDirectory());
-		#end
-		backend.CrashHandler.init();
 
 		if (stage != null)
 		{
@@ -106,17 +89,10 @@ class Main extends Sprite
 		Controls.instance = new Controls();
 		FlxG.signals.postUpdate.add(handleDebugDisplayKeys);
 		ClientPrefs.loadDefaultKeys();
-
-		// On mobile, route the initial state through CopyState so any bundled
-		// assets that live in the APK (mods/, etc.) get copied to the device's
-		// external storage on first launch. This mirrors DaffyToons' setup:
-		// CopyState.create() is the one that actually checks what's missing.
-		var startingState:Class<FlxState> = initialState;
-		#if mobile
-		MobileLog.info('Main.setupGame: getGameRoot = ${FunkinFileSystem.getGameRoot()}');
-		startingState = mobile.CopyState;
-		#end
-		addChild(new FlxGame(gameWidth, gameHeight, startingState, #if (flixel < "5.0.0") zoom, #end framerate, framerate, skipSplash, startFullscreen));
+		var game = new FlxGame(gameWidth, gameHeight, initialState, #if (flixel < "5.0.0") zoom, #end framerate, framerate, skipSplash, startFullscreen);
+		@:privateAccess
+		game._customSoundTray = FunkinSoundTray;
+		addChild(game);
 		#if !mobile
 		//fpsVar = new FPS(10, 3, 0xFFFFFF);
 		//addChild(fpsVar);
@@ -131,11 +107,10 @@ class Main extends Sprite
 		FlxG.autoPause = false;
 		FlxG.mouse.visible = false;
 		#end
-
-		#if android
-		FlxG.android.preventDefaultKeys = [BACK];
-		#end
 		
+		#if CRASH_HANDLER
+		Lib.current.loaderInfo.uncaughtErrorEvents.addEventListener(UncaughtErrorEvent.UNCAUGHT_ERROR, onCrash);
+		#end
 		Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
 			
 			if (e.keyCode == flixel.input.keyboard.FlxKey.F5)
@@ -160,7 +135,7 @@ class Main extends Sprite
 	
 						Iris.destroyAll();
 						crowplexus.hscript.Interp.staticVariables.clear();
-						FlxG.game._requestedState = new TitleState();
+						FlxG.game._requestedState = new StartupState();
 
 						// Reload EVERYTHING
 						Paths.clearUnusedMemory();
@@ -188,6 +163,47 @@ class Main extends Sprite
 
 	}
 
+	// Code was entirely made by sqirra-rng for their fnf engine named "Izzy Engine", big props to them!!!
+	// very cool person for real they don't get enough credit for their work
+	#if CRASH_HANDLER
+	function onCrash(e:UncaughtErrorEvent):Void
+	{
+		var errMsg:String = "";
+		var path:String;
+		var callStack:Array<StackItem> = CallStack.exceptionStack(true);
+		var dateNow:String = Date.now().toString();
+
+		dateNow = dateNow.replace(" ", "_");
+		dateNow = dateNow.replace(":", "'");
+
+		path = "./crash/" + "PsychEngine_" + dateNow + ".txt";
+
+		for (stackItem in callStack)
+		{
+			switch (stackItem)
+			{
+				case FilePos(s, file, line, column):
+					errMsg += file + " (line " + line + ")\n";
+				default:
+					Sys.println(stackItem);
+			}
+		}
+
+		errMsg += "\nUncaught Error: " + e.error + "\nPlease report this error to the GitHub page: https://github.com/ShadowMario/FNF-PsychEngine\n\n> Crash Handler written by: sqirra-rng";
+
+		if (!FileSystem.exists("./crash/"))
+			FileSystem.createDirectory("./crash/");
+
+		File.saveContent(path, errMsg + "\n");
+
+		Sys.println(errMsg);
+		Sys.println("Crash dump saved in " + Path.normalize(path));
+
+		Application.current.window.alert(errMsg, "Error!");
+		DiscordClient.shutdown();
+		Sys.exit(1);
+	}
+	#end
 	public static var ignoreDisplayCheck:Bool = false;
 	function handleDebugDisplayKeys():Void
 	{

@@ -14,12 +14,12 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 	public var direction:Float = 90;//plan on doing scroll directions soon -bb
 	public var downScroll:Bool = false;//plan on doing scroll directions soon -bb
 	public var sustainReduce:Bool = true;
-
+	
 	public var player:Int;
 	public var texture(default, set):String = null;
 	public var posX(default, set):Float = 0;
 	public var defX(default, set):Float = 0;
-
+	
 	public var applyColor:Bool = false;
 	public var applyOffset:Bool = false;
 	public var modchartOffsetX:Float = 0;

@@ -12,16 +12,16 @@ class ClientPrefs {
 	public static var downScroll:Bool = false;
 	public static var middleScroll:Bool = false;
 	public static var opponentStrums:Bool = true;
-	public static var showFPS:Bool = true;
+	public static var showFPS:Bool = true; //unused,stay here just for unCRASH SCRIPTS
 	public static var flashing:Bool = true;
 	public static var globalAntialiasing:Bool = true;
 	public static var noteSplashes:Bool = true;
 	public static var lowQuality:Bool = false;
-	public static var shaders:Bool = false; // disabled on all targets; GLES drivers on emulators/devices fail to compile openfl's fragment shader
+	public static var shaders:Bool = true;
 	public static var framerate:Int = 60;
 	public static var cursing:Bool = true;
 	public static var violence:Bool = true;
-	public static var cacheOnGPU:Bool = true;
+	public static var cacheOnGPU:Bool = true; //From Stilic
 	public static var discordClient:Bool = true;
 	public static var camZooms:Bool = true;
 	public static var hideHud:Bool = false;
@@ -40,7 +40,16 @@ class ClientPrefs {
 	public static var fpsBGOpacity:Float = 0.5;
 	public static var gameplaySettings:Map<String, Dynamic> = [
 		'scrollspeed' => 1.0,
-		'scrolltype' => 'multiplicative',
+		'scrolltype' => 'multiplicative', 
+		// anyone reading this, amod is multiplicative speed mod, cmod is constant speed mod, and xmod is bpm based speed mod.
+		// an amod example would be chartSpeed * multiplier
+		// cmod would just be constantSpeed = chartSpeed
+		// and xmod basically works by basing the speed on the bpm.
+		// iirc (beatsPerSecond * (conductorToNoteDifference / 1000)) * noteSize (110 or something like that depending on it, prolly just use note.height)
+		// bps is calculated by bpm / 60
+		// oh yeah and you'd have to actually convert the difference to seconds which I already do, because this is based on beats and stuff. but it should work
+		// just fine. but I wont implement it because I don't know how you handle sustains and other stuff like that.
+		// oh yeah when you calculate the bps divide it by the songSpeed or rate because it wont scroll correctly when speeds exist.
 		'songspeed' => 1.0,
 		'healthgain' => 1.0,
 		'healthloss' => 1.0,
@@ -58,24 +67,9 @@ class ClientPrefs {
 	public static var badWindow:Int = 135;
 	public static var safeFrames:Float = 10;
 
-	public static var mobilePadAlpha:Float = #if mobile 0.6 #else 0 #end;
-	public static var hitboxAlpha:Float = #if mobile 0.7 #else 0 #end;
-	public static var hitboxMode:String = 'Normal';
-	public static var hitboxType:String = 'No Gradient';
-	public static var hitboxLocation:String = 'Bottom';
-	public static var hitboxHint:Bool = false;
-
-	public static var curMobileControl:String = 'classic';
-	public static var mobileControlList:Array<String> = ['classic', 'classic-right', 'hitbox', 'custom button'];
-	public static var mobilePad:Map<String, Array<Float>> = [
-		"UP" => [105, 372],
-		"LEFT" => [0, 477],
-		"RIGHT" => [207, 477],
-		"DOWN" => [105, 585]
-	];
-	public static var wideScreen:Bool = false;
-
+	//Every key has two binds, add your key bind down here and then add your control on options/ControlsSubState.hx and Controls.hx
 	public static var keyBinds:Map<String, Array<FlxKey>> = [
+		//Key Bind, Name for ControlsSubState
 		'note_left'		=> [A, LEFT],
 		'note_down'		=> [S, DOWN],
 		'note_up'		=> [W, UP],
@@ -116,29 +110,11 @@ class ClientPrefs {
 		'reset'			=> [BACK]
 	];
 
-	public static var mobileBinds:Map<String, Array<String>> = [
-		'note_left'		=> ['LEFT', 'NOTE_LEFT'],
-		'note_down'		=> ['DOWN', 'NOTE_DOWN'],
-		'note_up'		=> ['UP', 'NOTE_UP'],
-		'note_right'	=> ['RIGHT', 'NOTE_RIGHT'],
-
-		'ui_left'		=> ['LEFT'],
-		'ui_down'		=> ['DOWN'],
-		'ui_up'			=> ['UP'],
-		'ui_right'		=> ['RIGHT'],
-
-		'accept'		=> ['A'],
-		'back'			=> ['B'],
-		'pause'			=> ['P'],
-		'reset'			=> ['NONE']
-	];
-
 	public static var defaultKeys:Map<String, Array<FlxKey>> = null;
 	public static var defaultButtons:Map<String, Array<FlxGamepadInputID>> = null;
-	public static var defaultMobileBinds:Map<String, Array<String>> = null;
 
 
-	public static function resetKeys(controller:Null<Bool> = null)
+	public static function resetKeys(controller:Null<Bool> = null) //Null = both, False = Keyboard, True = Controller
 	{
 		if(controller != true)
 			for (key in keyBinds.keys())
@@ -149,27 +125,20 @@ class ClientPrefs {
 			for (button in gamepadBinds.keys())
 				if(defaultButtons.exists(button))
 					gamepadBinds.set(button, defaultButtons.get(button).copy());
-		
-		for (mobileKey in mobileBinds.keys())
-			if(defaultMobileBinds.exists(mobileKey))
-				mobileBinds.set(mobileKey, defaultMobileBinds.get(mobileKey).copy());
 	}
 
 	public static function clearInvalidKeys(key:String)
 	{
 		var keyBind:Array<FlxKey> = keyBinds.get(key);
 		var gamepadBind:Array<FlxGamepadInputID> = gamepadBinds.get(key);
-		var mobileBind:Array<String> = mobileBinds.get(key);
 		while(keyBind != null && keyBind.contains(NONE)) keyBind.remove(NONE);
 		while(gamepadBind != null && gamepadBind.contains(NONE)) gamepadBind.remove(NONE);
-		while(mobileBind != null && mobileBind.contains('NONE')) mobileBind.remove('NONE');
 	}
 
 	public static function loadDefaultKeys()
 	{
 		defaultKeys = keyBinds.copy();
 		defaultButtons = gamepadBinds.copy();
-		defaultMobileBinds = mobileBinds.copy();
 	}
 
 
@@ -186,6 +155,8 @@ class ClientPrefs {
 		FlxG.save.data.shaders = shaders;
 		FlxG.save.data.framerate = framerate;
 		FlxG.save.data.cacheOnGPU = cacheOnGPU;
+		//FlxG.save.data.cursing = cursing;
+		//FlxG.save.data.violence = violence;
 		FlxG.save.data.camZooms = camZooms;
 		FlxG.save.data.noteOffset = noteOffset;
 		FlxG.save.data.hideHud = hideHud;
@@ -213,28 +184,17 @@ class ClientPrefs {
 		FlxG.save.data.checkForUpdates = checkForUpdates;
 		FlxG.save.data.comboStacking = comboStacking;
 		FlxG.save.data.extraParams = extraParams;
-		FlxG.save.data.mobilePadAlpha = mobilePadAlpha;
-		FlxG.save.data.hitboxAlpha = hitboxAlpha;
-		FlxG.save.data.hitboxMode = hitboxMode;
-		FlxG.save.data.hitboxType = hitboxType;
-		FlxG.save.data.hitboxLocation = hitboxLocation;
-		FlxG.save.data.hitboxHint = hitboxHint;
-		FlxG.save.data.curMobileControl = curMobileControl;
-		FlxG.save.data.mobilePad = mobilePad;
-		FlxG.save.data.wideScreen = wideScreen;
 		FlxG.save.flush();
 
 		var save:FlxSave = new FlxSave();
-		save.bind('controls_v2', CoolUtil.getSavePath());
+		save.bind('controls_v2', 'itssammuffin'); //Placing this in a separate save so that it can be manually deleted without removing your Score and stuff
 		save.data.keyboard = keyBinds;
 		save.data.gamepad = gamepadBinds;
-		save.data.mobile = mobileBinds;
 		save.flush();
 		FlxG.log.add("Settings saved!");
 	}
 
 	public static function loadPrefs() {
-		if(FlxG.save.data == null) return;
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
 		}
@@ -264,6 +224,9 @@ class ClientPrefs {
 		}
 		if(FlxG.save.data.showFPS != null) {
 			showFPS = FlxG.save.data.showFPS;
+			/*if(Main.fpsVar != null) {
+				Main.fpsVar.visible = showFPS;
+			}*/
 		}
 		if(FlxG.save.data.flashing != null) {
 			flashing = FlxG.save.data.flashing;
@@ -293,6 +256,12 @@ class ClientPrefs {
 				FlxG.updateFramerate = framerate;
 			}
 		}
+		/*if(FlxG.save.data.cursing != null) {
+			cursing = FlxG.save.data.cursing;
+		}
+		if(FlxG.save.data.violence != null) {
+			violence = FlxG.save.data.violence;
+		}*/
 		if(FlxG.save.data.camZooms != null) {
 			camZooms = FlxG.save.data.camZooms;
 		}
@@ -357,6 +326,7 @@ class ClientPrefs {
 			}
 		}
 		
+		// flixel automatically saves your volume!
 		if(FlxG.save.data.volume != null)
 		{
 			FlxG.sound.volume = FlxG.save.data.volume;
@@ -372,36 +342,8 @@ class ClientPrefs {
 		if (FlxG.save.data.comboStacking != null)
 			comboStacking = FlxG.save.data.comboStacking;
 
-		if(FlxG.save.data.mobilePadAlpha != null) {
-			mobilePadAlpha = FlxG.save.data.mobilePadAlpha;
-		}
-		if(FlxG.save.data.hitboxAlpha != null) {
-			hitboxAlpha = FlxG.save.data.hitboxAlpha;
-		}
-		if(FlxG.save.data.hitboxMode != null) {
-			hitboxMode = FlxG.save.data.hitboxMode;
-		}
-		if(FlxG.save.data.hitboxType != null) {
-			hitboxType = FlxG.save.data.hitboxType;
-		}
-		if(FlxG.save.data.hitboxLocation != null) {
-			hitboxLocation = FlxG.save.data.hitboxLocation;
-		}
-		if(FlxG.save.data.hitboxHint != null) {
-			hitboxHint = FlxG.save.data.hitboxHint;
-		}
-		if(FlxG.save.data.curMobileControl != null) {
-			curMobileControl = FlxG.save.data.curMobileControl;
-		}
-		if(FlxG.save.data.mobilePad != null) {
-			mobilePad = FlxG.save.data.mobilePad;
-		}
-		if(FlxG.save.data.wideScreen != null) {
-			wideScreen = FlxG.save.data.wideScreen;
-		}
-
 		var save:FlxSave = new FlxSave();
-		save.bind('controls_v2', CoolUtil.getSavePath());
+		save.bind('controls_v2', 'itssammuffin');
 		
 		if(save != null) {
 			if (save.data.customControls != null){
@@ -421,17 +363,11 @@ class ClientPrefs {
 				for (control => keys in loadedControls)
 					if(gamepadBinds.exists(control)) gamepadBinds.set(control, keys);
 			}
-			if(save.data.mobile != null)
-			{
-				var loadedControls:Map<String, Array<String>> = save.data.mobile;
-				for (control => keys in loadedControls)
-					if(mobileBinds.exists(control)) mobileBinds.set(control, keys);
-			}
 		}
 	}
 
 	inline public static function getGameplaySetting(name:String, defaultValue:Dynamic):Dynamic {
-		return (gameplaySettings.exists(name) ? gameplaySettings.get(name) : defaultValue);
+		return /*PlayState.isStoryMode ? defaultValue : */ (gameplaySettings.exists(name) ? gameplaySettings.get(name) : defaultValue);
 	}
 
 	public static function reloadControls() {

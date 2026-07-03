@@ -54,7 +54,7 @@ class CreditsState extends MusicBeatState
 
 		#if MODS_ALLOWED
 		var path:String = 'modsList.txt';
-		if(FunkinFileSystem.exists(path))
+		if(FileSystem.exists(path))
 		{
 			var leMods:Array<String> = CoolUtil.coolTextFile(path);
 			for (i in 0...leMods.length)
@@ -158,10 +158,6 @@ class CreditsState extends MusicBeatState
 		bg.color = getCurrentBGColor();
 		intendedColor = bg.color;
 		changeSelection();
-		#if mobile
-		mobileControls.addMobilePad('UP_DOWN', 'A_B');
-		mobileControls.addMobilePadCamera(true);
-		#end
 		super.create();
 	}
 

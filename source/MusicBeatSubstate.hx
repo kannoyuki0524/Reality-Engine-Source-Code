@@ -7,11 +7,6 @@ import flixel.FlxSubState;
 import flixel.FlxBasic;
 import flixel.FlxSprite;
 import flixel.util.FlxSort;
-#if mobile
-import mobile.MobileControls;
-import mobile.objects.FunkinHitbox;
-#end
-
 @:autoBuild(funkin.macro.ScriptingMacro.addScriptingCallbacks([
 	"create",
 	"update",
@@ -24,11 +19,10 @@ import mobile.objects.FunkinHitbox;
 ], "substates"))
 class MusicBeatSubstate extends FlxUISubState
 {
-	public static var instance:MusicBeatSubstate;
-
 	public var canBeScripted(get, default):Bool = true;
 	@:noCompletion function get_canBeScripted() return canBeScripted;
 
+	//// To be defined by the scripting macro
 	@:noCompletion public var _extensionScript:FunkinHScript;
 
 	@:noCompletion public function _getScriptDefaultVars() 
@@ -37,32 +31,11 @@ class MusicBeatSubstate extends FlxUISubState
 	@:noCompletion public function _startExtensionScript(folder:String, scriptName:String) 
 		return;
 
+
 	public function new()
 	{
-		instance = this;
 		super();
 	}
-
-	#if mobile
-	public var mobileManager:MobileControls;
-
-	public inline function mobileButtonJustPressed(buttons:Dynamic):Bool
-	{
-		return mobileManager?.mobilePad?.justPressed(buttons);
-	}
-	public inline function mobileButtonPressed(buttons:Dynamic):Bool
-	{
-		return mobileManager?.mobilePad?.pressed(buttons);
-	}
-	public inline function mobileButtonJustReleased(buttons:Dynamic):Bool
-	{
-		return mobileManager?.mobilePad?.justReleased(buttons);
-	}
-	public inline function mobileButtonReleased(buttons:Dynamic):Bool
-	{
-		return mobileManager?.mobilePad?.released(buttons);
-	}
-	#end
 
 	private var curSection:Int = 0;
 	private var stepsToDo:Int = 0;
@@ -78,37 +51,18 @@ class MusicBeatSubstate extends FlxUISubState
 	private var controls(get, never):Controls;
 
 	inline function get_controls():Controls
-	{
-		var ctrl:Controls = Controls.instance;
-		ctrl.isInSubstate = true;
-		#if mobile
-		if(mobileManager != null)
-		{
-			ctrl.requestedHitbox = mobileManager.hitbox;
-			ctrl.requestedMobilePad = mobileManager.mobilePad;
-			ctrl.requestedInstance = this;
-		}
-		#end
-		return ctrl;
-	}
-
-	override function destroy()
-	{
-		#if mobile
-		if (mobileManager != null) mobileManager.destroy();
-		#end
-		instance = null;
-		super.destroy();
-	}
+		return Controls.instance;
 
 	override function update(elapsed:Float)
 	{
+		//everyStep();
 		var oldStep:Int = curStep;
 
 		updateStep();
 
 		super.update(elapsed);
 	}
+
 	
 	public function updateStep(){
 		var oldStep:Int = curStep;
@@ -130,6 +84,7 @@ class MusicBeatSubstate extends FlxUISubState
 			}
 		}
 	}
+	
 	
 	private function updateSection():Void
 	{
@@ -192,12 +147,12 @@ class MusicBeatSubstate extends FlxUISubState
 
 	public function beatHit():Void
 	{
-
+		//do literally nothing dumbass
 	}
 
 	public function sectionHit():Void
 	{
-
+		//trace('Section: ' + curSection + ', Beat: ' + curBeat + ', Step: ' + curStep);
 	}
 
 	function getBeatsOnSection()

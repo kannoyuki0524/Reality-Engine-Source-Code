@@ -161,11 +161,7 @@ class DialogueCharacterEditorState extends MusicBeatState
 		addEditorBox();
 		FlxG.mouse.visible = true;
 		updateCharTypeBox();
-
-		#if mobile
-		mobileControls.addMobilePad('DIALOGUE_PORTRAIT', 'DIALOGUE_PORTRAIT');
-		mobileControls.addMobilePadCamera(true);
-		#end
+		
 		super.create();
 	}
 

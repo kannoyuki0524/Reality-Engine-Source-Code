@@ -69,14 +69,6 @@ class ResetScoreSubState extends MusicBeatSubstate
 		noText.x += 200;
 		add(noText);
 		updateOptions();
-
-		#if mobile
-		var state:MusicBeatState = MusicBeatState.getState();
-		if (state != null && state.mobileControls != null) {
-			state.mobileControls.addMobilePad('LEFT_RIGHT', 'A_B');
-			state.mobileControls.addMobilePadCamera(true);
-		}
-		#end
 	}
 
 	override function update(elapsed:Float)
