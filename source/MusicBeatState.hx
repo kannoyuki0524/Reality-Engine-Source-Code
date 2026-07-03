@@ -17,6 +17,11 @@ import openfl.ui.MouseCursor;
 import openfl.ui.Mouse;
 import flixel.FlxBasic;
 import funkin.scripts.*;
+#if mobile
+import mobile.MobileControls;
+import mobile.objects.FunkinHitbox;
+#end
+
 @:autoBuild(funkin.macro.ScriptingMacro.addScriptingCallbacks([
 	"create",
 	"update",
@@ -33,7 +38,6 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 	public var canBeScripted(get, default):Bool = false;
 	@:noCompletion function get_canBeScripted() return canBeScripted;
 
-	//// To be defined by the scripting macro
 	@:noCompletion public var _extensionScript:FunkinHScript;
 
 	@:noCompletion public function _getScriptDefaultVars() 
@@ -41,8 +45,6 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 	
 	@:noCompletion public function _startExtensionScript(folder:String, scriptName:String) 
 		return;
-
-	////
 
 	private var curSection:Int = 0;
 	private var stepsToDo:Int = 0;
@@ -54,16 +56,53 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 	private var curDecBeat:Float = 0;
 	private var controls(get, never):Controls;
 
+	#if mobile
+	public var mobileControls:MobileControls;
+
+	public inline function mobileButtonJustPressed(buttons:Dynamic):Bool
+	{
+		return mobileControls?.mobilePad?.justPressed(buttons);
+	}
+	public inline function mobileButtonPressed(buttons:Dynamic):Bool
+	{
+		return mobileControls?.mobilePad?.pressed(buttons);
+	}
+	public inline function mobileButtonJustReleased(buttons:Dynamic):Bool
+	{
+		return mobileControls?.mobilePad?.justReleased(buttons);
+	}
+	public inline function mobileButtonReleased(buttons:Dynamic):Bool
+	{
+		return mobileControls?.mobilePad?.released(buttons);
+	}
+	#end
+
 	public static var camBeat:FlxCamera;
 	inline function get_controls():Controls
-		return Controls.instance;
+	{
+		var ctrl:Controls = Controls.instance;
+		#if mobile
+		if(mobileControls != null)
+		{
+			ctrl.requestedHitbox = mobileControls.hitbox;
+			ctrl.requestedMobilePad = mobileControls.mobilePad;
+			ctrl.requestedInstance = this;
+		}
+		#end
+		return ctrl;
+	}
 
 	override public function destroy(){
 		if (_extensionScript != null)
 		_extensionScript.destroy();
+		#if mobile
+		if(mobileControls != null)
+			mobileControls.destroy();
+		#end
 		super.destroy();
 	}
 	override function create() {
+		try {
 		camBeat = FlxG.camera;
 		var skip:Bool = FlxTransitionableState.skipNextTransOut;
 		super.create();
@@ -72,14 +111,22 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 			openSubState(new CustomFadeTransition(0.7, true));
 		}
 		FlxTransitionableState.skipNextTransOut = false;
+		} catch(e:Dynamic) {
+			#if mobile
+			CoolUtil.showPopUp('MusicBeatState.create error: ' + Std.string(e), 'Error');
+			#end
+			trace('MusicBeatState.create error: $e');
+		}
 	}
 	public function new(canBeScript:Bool = true){
 		canBeScripted = canBeScript;
+		#if mobile
+		if(mobileControls == null) mobileControls = new MobileControls(this);
+		#end
 		super();
 	}
 	override function update(elapsed:Float)
 	{
-		//everyStep();
 		updateStep();
 
 		if(FlxG.save.data != null) FlxG.save.data.fullscreen = FlxG.fullscreen;
@@ -159,8 +206,7 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 	}
 
 	public static function switchState(nextState:FlxState) {
-
-		// Custom made Trans in
+		try {
 		var leState:MusicBeatState = getState();
 		if (nextState is MusicBeatState)
 			{
@@ -177,17 +223,21 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 				CustomFadeTransition.finishCallback = function() {
 					FlxG.resetState();
 				};
-				//trace('resetted');
 			} else {
 				CustomFadeTransition.finishCallback = function() {
 					FlxG.switchState(nextState);
 				};
-				//trace('changed state');
 			}
 			return;
 		}
 		FlxTransitionableState.skipNextTransIn = false;
 		FlxG.switchState(nextState);
+		} catch(e:Dynamic) {
+			#if mobile
+			CoolUtil.showPopUp('switchState error: ' + Std.string(e), 'Error');
+			#end
+			trace('switchState error: $e');
+		}
 	}
 
 	public static function resetState() {
@@ -228,12 +278,12 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 
 	public function beatHit():Void
 	{
-		//trace('Beat: ' + curBeat);
+
 	}
 
 	public function sectionHit():Void
 	{
-		//trace('Section: ' + curSection + ', Beat: ' + curBeat + ', Step: ' + curStep);
+
 	}
 
 	override public function onFocus():Void

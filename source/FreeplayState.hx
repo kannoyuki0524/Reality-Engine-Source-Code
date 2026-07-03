@@ -150,8 +150,13 @@ class FreeplayState extends MusicBeatState
 		add(textBG);
 
 		#if PRELOAD_ALL
+		#if mobile
+		var leText:String = "Press Y to listen to the Song / Press C to open the Gameplay Changers Menu / Press Z to Reset your Score and Accuracy.";
+		var size:Int = 16;
+		#else
 		var leText:String = "Press SPACE to listen to the Song / Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy.";
 		var size:Int = 16;
+		#end
 		#else
 		var leText:String = "Press CTRL to open the Gameplay Changers Menu / Press RESET to Reset your Score and Accuracy.";
 		var size:Int = 18;
@@ -160,12 +165,19 @@ class FreeplayState extends MusicBeatState
 		text.setFormat(Paths.font("vcr.ttf"), size, FlxColor.WHITE, RIGHT);
 		text.scrollFactor.set();
 		add(text);
+		#if mobile
+		mobileControls.addMobilePad('LEFT_FULL', 'A_B_C_X_Y_Z');
+		mobileControls.addMobilePadCamera(true);
+		#end
 		super.create();
 	}
 
 	override function closeSubState() {
 		changeSelection(0, false);
 		persistentUpdate = true;
+		mobileControls.removeMobilePad();
+		mobileControls.addMobilePad('LEFT_FULL', 'A_B_C_X_Y_Z');
+		mobileControls.addMobilePadCamera(true);
 		super.closeSubState();
 	}
 
@@ -213,8 +225,8 @@ class FreeplayState extends MusicBeatState
 		var upP = controls.UI_UP_P;
 		var downP = controls.UI_DOWN_P;
 		var accepted = controls.ACCEPT;
-		var space = FlxG.keys.justPressed.SPACE;
-		var ctrl = FlxG.keys.justPressed.CONTROL;
+		var space = FlxG.keys.justPressed.SPACE || mobileButtonJustPressed('Y');
+		var ctrl = FlxG.keys.justPressed.CONTROL || mobileButtonJustPressed('C');
 
 		var shiftMult:Int = 1;
 		if(FlxG.keys.pressed.SHIFT) shiftMult = 3;
@@ -243,6 +255,12 @@ class FreeplayState extends MusicBeatState
 					changeSelection((checkNewHold - checkLastHold) * (controls.UI_UP ? -shiftMult : shiftMult));
 					changeDiff();
 				}
+			}
+
+			if(mobileButtonJustPressed('X'))
+			{
+				curSelected = 0;
+				changeSelection();
 			}
 
 			if(FlxG.mouse.wheel != 0)
@@ -323,7 +341,7 @@ class FreeplayState extends MusicBeatState
 					
 			destroyFreeplayVocals();
 		}
-		else if(controls.RESET)
+		else if(controls.RESET || mobileButtonJustPressed('Z'))
 		{
 			persistentUpdate = false;
 			openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));

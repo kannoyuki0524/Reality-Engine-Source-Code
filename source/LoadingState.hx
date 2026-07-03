@@ -279,6 +279,11 @@ class LoadingState extends MusicBeatState
 		progressText.setFormat(Paths.font('vcr.ttf'), 20, FlxColor.WHITE, 'right', FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		progressText.y = progressBar.y - progressText.height;
 		add(progressText);
+
+		#if mobile
+		mobileControls.addMobilePad('NONE', 'A_B');
+		mobileControls.addMobilePadCamera(true);
+		#end
 		super.create();
 		new FlxTimer().start(0.6,function(tmr:FlxTimer){
 			precacheAssets();

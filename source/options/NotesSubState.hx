@@ -89,6 +89,12 @@ class NotesSubState extends MusicBeatSubstate
 		add(hsbText);
 
 		changeSelection();
+
+		#if mobile
+		mobileManager = new mobile.MobileControls(this);
+		mobileManager.addMobilePad('FULL', 'A_B_C');
+		mobileManager.addMobilePadCamera();
+		#end
 	}
 
 	var changingNote:Bool = false;
@@ -152,6 +158,7 @@ class NotesSubState extends MusicBeatSubstate
 				FlxG.sound.play(Paths.sound('scrollMenu'));
 				changingNote = true;
 				holdTime = 0;
+				nextAccept = 5; // Reset to prevent continuous triggering
 				for (i in 0...grpNumbers.length) {
 					var item = grpNumbers.members[i];
 					item.alpha = 0;
@@ -171,13 +178,14 @@ class NotesSubState extends MusicBeatSubstate
 			}
 		}
 
-		if (controls.BACK || (changingNote && controls.ACCEPT)) {
+		if (controls.BACK || (changingNote && controls.ACCEPT && nextAccept <= 0)) {
 			if(!changingNote) {
 				close();
 			} else {
 				changeSelection();
 			}
 			changingNote = false;
+			nextAccept = 5; // Reset to prevent continuous triggering
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 		}
 

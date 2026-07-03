@@ -90,7 +90,7 @@ class ModsMenuState extends MusicBeatState
 		visibleWhenNoMods.push(noModsTxt);
 
 		var path:String = 'modsList.txt';
-		if(FileSystem.exists(path))
+		if (FunkinFileSystem.exists("modsList.txt"))
 		{
 			var leMods:Array<String> = CoolUtil.coolTextFile(path);
 			for (i in 0...leMods.length)
@@ -106,15 +106,12 @@ class ModsMenuState extends MusicBeatState
 			}
 		}
 
-		// FIND MOD FOLDERS
-		var boolshit = true;
-		if (FileSystem.exists("modsList.txt")){
-			for (folder in Paths.getModDirectories())
+		// FIND MOD FOLDERS (always scan, in case the user added new mods)
+		for (folder in Paths.getModDirectories())
+		{
+			if(!Paths.ignoreModFolders.contains(folder))
 			{
-				if(!Paths.ignoreModFolders.contains(folder))
-				{
-					addToModsList([folder, true]); //i like it false by default. -bb //Well, i like it True! -Shadow
-				}
+				addToModsList([folder, true]); //i like it false by default. -bb //Well, i like it True! -Shadow
 			}
 		}
 		saveTxt();
@@ -374,6 +371,10 @@ class ModsMenuState extends MusicBeatState
 		changeSelection();
 		updatePosition();
 		FlxG.sound.play(Paths.sound('scrollMenu'));
+		#if mobile
+		mobileControls.addMobilePad('UP_DOWN', 'B');
+		mobileControls.addMobilePadCamera(true);
+		#end
 
 		FlxG.mouse.visible = true;
 
@@ -458,7 +459,7 @@ class ModsMenuState extends MusicBeatState
 		}
 
 		var path:String = 'modsList.txt';
-		File.saveContent(path, fileStr);
+		File.saveContent(FunkinFileSystem.getAbsolutePath(path), fileStr);
 		Paths.pushGlobalMods();
 	}
 

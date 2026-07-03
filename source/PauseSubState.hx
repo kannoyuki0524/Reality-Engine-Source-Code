@@ -13,6 +13,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.FlxCamera;
 import flixel.util.FlxStringUtil;
+import mobile.MobileControls;
 
 class PauseSubState extends MusicBeatSubstate
 {
@@ -33,6 +34,7 @@ class PauseSubState extends MusicBeatSubstate
 	public static var songName:String = '';
 	public function new(x:Float, y:Float)
 	{
+
 		super();
 		if(CoolUtil.difficulties.length < 2) menuItemsOG.remove('Change Difficulty'); //No need to change difficulty if there is only one!
 
@@ -131,6 +133,13 @@ class PauseSubState extends MusicBeatSubstate
 
 		regenMenu();
 		cameras = [PlayState.instance.camPauseHUD];
+
+		#if mobile
+		mobileManager = new MobileControls(this);
+		mobileManager.addMobilePad('UP_DOWN', 'A_B');
+		mobileManager.addMobilePadCamera();
+		#end
+
 	}
 
 	var holdTime:Float = 0;

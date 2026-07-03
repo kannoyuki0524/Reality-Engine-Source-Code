@@ -399,6 +399,10 @@ class ChartingState extends MusicBeatState
 		zoomTxt.scrollFactor.set();
 		add(zoomTxt);
 		updateGrid();
+		#if mobile
+		mobileControls.addMobilePad('CHART_EDITOR', 'CHART_EDITOR');
+		mobileControls.addMobilePadCamera(true);
+		#end
 		super.create();
 	}
 	var stepperStrums:FlxUINumericStepper;

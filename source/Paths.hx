@@ -255,10 +255,11 @@ class Paths
 	{
 		var path:String = getPath(key, TEXT, ignoreMods);
 		#if sys
-		return (FileSystem.exists(path)) ? File.getContent(path) : null;
-		#else
-		return (OpenFlAssets.exists(path, TEXT)) ? Assets.getText(path) : null;
+		if (FileSystem.exists(path)) {
+			return File.getContent(path);
+		}
 		#end
+		return (OpenFlAssets.exists(path, TEXT)) ? Assets.getText(path) : null;
 	}
 
 	inline static public function font(key:String)
@@ -565,7 +566,11 @@ class Paths
 		// trace(gottenPath);
 		if(!currentTrackedSounds.exists(gottenPath))
 		#if MODS_ALLOWED
+			#if mobile
+			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(getPath('$path/$key.$SOUND_EXT', SOUND, library)));
+			#else
 			currentTrackedSounds.set(gottenPath, Sound.fromFile('./' + gottenPath));
+			#end
 		#else
 		{
 			var folder:String = '';
@@ -627,7 +632,7 @@ class Paths
 
 	#if MODS_ALLOWED
 	inline static public function mods(key:String = '') {
-		return 'mods/' + key;
+		return FunkinFileSystem.getAbsolutePath('mods/') + key;
 	}
 
 	inline static public function modsFont(key:String) {
@@ -661,14 +666,14 @@ class Paths
 	static public function modFolders(key:String) {
 		if(currentModDirectory != null && currentModDirectory.length > 0) {
 			var fileToCheck:String = mods(currentModDirectory + '/' + key);
-			if(FileSystem.exists(fileToCheck)) {
+			if(FunkinFileSystem.exists(fileToCheck)) {
 				return fileToCheck;
 			}
 		}
 
 		for(mod in getGlobalMods()){
 			var fileToCheck:String = mods(mod + '/' + key);
-			if(FileSystem.exists(fileToCheck))
+			if(FunkinFileSystem.exists(fileToCheck))
 				return fileToCheck;
 
 		}
@@ -684,7 +689,7 @@ class Paths
 	{
 		globalMods = [];
 		var path:String = 'modsList.txt';
-		if(FileSystem.exists(path))
+		if(FunkinFileSystem.exists(path))
 		{
 			var list:Array<String> = CoolUtil.coolTextFile(path);
 			for (i in list)
@@ -715,8 +720,8 @@ class Paths
 	static public function getModDirectories():Array<String> {
 		var list:Array<String> = [];
 		var modsFolder:String = mods();
-		if(FileSystem.exists(modsFolder)) {
-			for (folder in FileSystem.readDirectory(modsFolder)) {
+		if(FunkinFileSystem.exists(modsFolder)) {
+			for (folder in sys.FileSystem.readDirectory(modsFolder)) {
 				var path = haxe.io.Path.join([modsFolder, folder]);
 				if (sys.FileSystem.isDirectory(path) && !ignoreModFolders.contains(folder) && !list.contains(folder)) {
 					list.push(folder);

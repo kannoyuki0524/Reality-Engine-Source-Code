@@ -2,13 +2,13 @@
 <project>
 	<!-- _________________________ Application Settings _________________________ -->
 
-	<app title="Friday Night Funkin'" file="Funkin" packageName="me.reality.engine" package="me.reality.engine" main="Main" version="0.2.8" company="Ayumeki"/>
+	<app title="Friday Night Funkin'" file="RealityEngine" packageName="me.reality.engine" package="me.reality.engine" main="Main" version="0.2.8" company="Ayumeki"/>
 
 	<!--Switch Export with Unique ApplicationID and Icon-->
 	<set name="APP_ID" value="0x0100f6c013bbc000" />
 
 	<!-- NOTE TO SELF: DISABLE THIS IF ISSUES ARE FOUND -->
-	<haxedef name="LINC_LUA_RELATIVE_DYNAMIC_LIB"/> <!-- stable luas PUT AFTER FIRST LINE WITH APP NAME AND ETC -->
+	<haxedef name="LINC_LUA_RELATIVE_DYNAMIC_LIB" unless="mobile"/> <!-- stable luas, disable on mobile for static linking -->
 
 	<!--The flixel preloader is not accurate in Chrome. You can use it regularly if you embed the swf into a html file
 		or you can set the actual size of your file manually at "FlxPreloaderBase-onUpdate-bytesTotal"-->
@@ -30,7 +30,7 @@
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
 
 	<!--Mobile-specific-->
-	<window if="mobile" orientation="landscape" fullscreen="true" resizable="false"/>
+	<window if="mobile" orientation="landscape" fullscreen="true" resizable="false" allow-shaders="true" require-shaders="true" allow-high-dpi="true" />
 
 	<!--Switch-specific-->
 	<window if="switch" orientation="landscape" fullscreen="true" resizable="true" />
@@ -46,7 +46,7 @@
 	
 	<!-- PSYCH ENGINE CUSTOMIZATION -->
 	<define name="MULTITHREADED_LOADING"/>
-	<define name="DISCORD_ALLOWED"/>
+	<define name="DISCORD_ALLOWED" unless="mobile"/>
 	<define name="MODCHART_ALLOWED"/>
 	<define name="MODS_ALLOWED"/>
 	<define name="LUA_ALLOWED"/>
@@ -100,8 +100,8 @@
 	<assets path="assets/songs"         library="songs"         exclude="*.mp3" unless="web"/>
 	<assets path="assets/shared"        library="shared"        exclude="*.ogg" if="web"/>
 	<assets path="assets/shared"        library="shared"        exclude="*.mp3" unless="web"/>
-	<assets path="assets/embed"         library="embed" 				exclude="*.ogg" if="web" embed="true"/>
-	<assets path="assets/embed"         library="embed" 				exclude="*.mp3" unless="web" embed="true"/>
+	<assets path="assets/embed"         library="embed" 				exclude="*.ogg" if="web" embed="false"/>
+	<assets path="assets/embed"         library="embed" 				exclude="*.mp3" unless="web" embed="false"/>
 
 	<section if="MODS_ALLOWED">
 		<assets path='example_mods' rename='mods' embed='false'/>
@@ -112,7 +112,7 @@
 		THEN UHHH I USED THE NAME OF THE FONT WITH SETFORMAT() ON THE TEXT!!!
 		NOT USING A DIRECT THING TO THE ASSET!!!
 	-->
-	<assets path="assets/fonts" embed='true'/>
+	<assets path="assets/fonts"/>
 	<!-- _______________________________ Libraries ______________________________ -->
 	
 	<section if="MODCHART_ALLOWED">
@@ -135,7 +135,7 @@
 
 	<haxelib name="hscript"/>
 	<haxelib name="hscript-iris-improved" unless="irisOut"/>
-	<haxelib name="legacy_luajit" if="LUA_ALLOWED"/>
+	<haxelib name="linc_luajit" if="LUA_ALLOWED"/>
 	<define name="hscriptPos" />
 
 	<haxelib name="funkin.vis"/>
@@ -145,6 +145,13 @@
 		<haxelib name="hxvlc" if="desktop || mobile || VIDEOS_ALLOWED"/>
 	</section>
 
+	<haxelib name="mobile-controls" if="mobile"/>
+	<haxedef name="mobile_controls_file_support" if="mobile"/>
+
+	<!-- Android Specific -->
+	<java path="source/mobile/android/" if="android"/>
+	<haxedef name="DISABLE_AUDIO_FOCUS" if="android"/>
+	<set name="ANDROID_ARCH" value="arm64-v8a" if="android"/>
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 
@@ -189,7 +196,11 @@
 	<!--Used for Izzy Engine's crash handler-->
 	<haxedef name="HXCPP_CHECK_POINTER" if="CRASH_HANDLER" />
 	<haxedef name="HXCPP_STACK_LINE" if="CRASH_HANDLER" />
-
+	<haxedef name="HXCPP_CHECK_POINTER" if="mobile" />
+	<haxedef name="HXCPP_STACK_LINE" if="mobile" />
+	
+	<!--HXCPP Safety for mobile - stack trace for debugging-->
+	<haxedef name="HXCPP_STACK_TRACE" if="mobile" />
 	
 	<!-- _________________________________ Custom _______________________________ -->
 

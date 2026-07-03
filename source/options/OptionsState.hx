@@ -29,7 +29,11 @@ using StringTools;
 
 class OptionsState extends MusicBeatState
 {
+	#if mobile
+	var options:Array<String> = ['Note Colors', 'Controls', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay', 'Mobile Controls'];
+	#else
 	var options:Array<String> = ['Note Colors', 'Controls', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay'];
+	#end
 	private var grpOptions:FlxTypedGroup<Alphabet>;
 	private static var curSelected:Int = 0;
 	public static var menuBG:FlxSprite;
@@ -48,11 +52,15 @@ class OptionsState extends MusicBeatState
 				openSubState(new options.GameplaySettingsSubState());
 			case 'Adjust Delay and Combo':
 				LoadingState.loadAndSwitchState(new options.NoteOffsetState());
+			case 'Mobile Controls':
+				openSubState(new mobile.options.MobileControlSelectState());
 		}
 	}
 
 	var selectorLeft:Alphabet;
 	var selectorRight:Alphabet;
+
+	var nextAccept:Int = 15;
 
 	override function create() {
 		#if desktop
@@ -86,10 +94,17 @@ class OptionsState extends MusicBeatState
 		changeSelection();
 		ClientPrefs.saveSettings();
 
+		#if mobile
+		mobileControls.addMobilePad('UP_DOWN', 'A_B');
+		mobileControls.addMobilePadCamera(true);
+		#end
 		super.create();
 	}
 
 	override function closeSubState() {
+		mobileControls.addMobilePad('UP_DOWN', 'A_B');
+		mobileControls.addMobilePadCamera(true);
+		nextAccept = 5;
 		super.closeSubState();
 		ClientPrefs.saveSettings();
 	}
@@ -112,6 +127,7 @@ class OptionsState extends MusicBeatState
 		if (controls.ACCEPT) {
 			openSelectedSubstate(options[curSelected]);
 		}
+
 	}
 	
 	function changeSelection(change:Int = 0) {

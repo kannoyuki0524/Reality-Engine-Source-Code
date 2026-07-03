@@ -175,6 +175,13 @@ class EditorPlayState extends MusicBeatSubstate
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyPress);
 			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onKeyRelease);
 		}
+		#if mobile
+		var state:MusicBeatState = MusicBeatState.getState();
+		if (state != null && state.mobileControls != null) {
+			state.mobileControls.addHitbox();
+			state.mobileControls.addHitboxCamera();
+		}
+		#end
 		super.create();
 	}
 

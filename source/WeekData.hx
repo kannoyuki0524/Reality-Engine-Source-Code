@@ -95,7 +95,7 @@ class WeekData {
 		weeksLoaded.clear();
 		#if MODS_ALLOWED
 		var disabledMods:Array<String> = [];
-		var modsListPath:String = 'modsList.txt';
+		var modsListPath:String = #if android mobile.backend.StorageUtil.getStorageDirectory() + #elseif mobile Sys.getCwd() + #end 'modsList.txt';
 		var directories:Array<String> = [Paths.mods(), Paths.getPreloadPath()];
 		var originalLength:Int = directories.length;
 		if(FileSystem.exists(modsListPath))
@@ -213,8 +213,8 @@ class WeekData {
 	private static function getWeekFile(path:String):WeekFile {
 		var rawJson:String = null;
 		#if MODS_ALLOWED
-		if(FileSystem.exists(path)) {
-			rawJson = File.getContent(path);
+		if(FunkinFileSystem.exists(path)) {
+			rawJson = FunkinFileSystem.getContent(path);
 		}
 		#else
 		if(OpenFlAssets.exists(path)) {
@@ -252,9 +252,9 @@ class WeekData {
 		Paths.currentModDirectory = '';
 		
 		#if MODS_ALLOWED
-		if (FileSystem.exists("modsList.txt"))
+		if (FunkinFileSystem.exists("modsList.txt"))
 		{
-			var list:Array<String> = CoolUtil.listFromString(File.getContent("modsList.txt"));
+			var list:Array<String> = CoolUtil.listFromString(FunkinFileSystem.getContent("modsList.txt"));
 			var foundTheTop = false;
 			for (i in list)
 			{

@@ -59,6 +59,11 @@ class StoryMenuState extends MusicBeatState
 		if(curWeek >= WeekData.weeksList.length) curWeek = 0;
 		persistentUpdate = persistentDraw = true;
 
+		#if mobile
+		mobileControls.addMobilePad('FULL', 'A_B_C');
+		mobileControls.addMobilePadCamera(true);
+		#end
+
 		scoreText = new FlxText(10, 10, 0, "SCORE: 49324858", 36);
 		scoreText.setFormat("VCR OSD Mono", 32);
 

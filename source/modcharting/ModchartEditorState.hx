@@ -446,6 +446,10 @@ class ModchartEditorState extends MusicBeatState
 
         add(debugText);
 
+        #if mobile
+        mobileControls.addMobilePad('FULL', 'A_B_C');
+        mobileControls.addMobilePadCamera(true);
+        #end
         super.create(); //do here because tooltips be dumb
         _ui.load(null);
         setupEditorUI();

@@ -193,15 +193,13 @@ class ColorSwapShader extends FlxShader
 		uniform vec3 g;
 		uniform vec3 b;
 		uniform float mult;
-		uniform bool usePixel = false;
+		uniform bool usePixel;
 		uniform vec3 uTime;
 		uniform float daAlpha;
 		uniform float flash;
 		uniform vec4 flashColor;
 		uniform vec2 uBlocksize;
-		const float offset = 1.0 / 128.0;
-		vec2 fragCoord = openfl_TextureCoordv*openfl_TextureSize;
-		vec2 iResolution = openfl_TextureSize;
+
 		vec3 normalizeColor(vec3 color)
 		{
 			return vec3(
@@ -247,7 +245,7 @@ class ColorSwapShader extends FlxShader
 
 			color = vec4(color.rgb / color.a, color.a);
 
-			mat4 colorMultiplier = mat4(0);
+			mat4 colorMultiplier = mat4(1.0);
 			colorMultiplier[0][0] = openfl_ColorMultiplierv.x;
 			colorMultiplier[1][1] = openfl_ColorMultiplierv.y;
 			colorMultiplier[2][2] = openfl_ColorMultiplierv.z;
@@ -272,9 +270,9 @@ class ColorSwapShader extends FlxShader
 			vec4 newColor = color;
 			newColor.rgb = min(color.r * r + color.g * g + color.b * b, vec3(1.0));
 			newColor.a = color.a;
-			
+
 			color = mix(color, newColor, mult);
-			
+
 			if(color.a > 0.0) {
 				return vec4(color.rgb, color.a);
 			}
@@ -283,7 +281,9 @@ class ColorSwapShader extends FlxShader
 
 		void main()
 		{
-			vec2 uv = fragCoord/iResolution.xy;
+			vec2 fragCoord = openfl_TextureCoordv * openfl_TextureSize;
+			vec2 iResolution = openfl_TextureSize;
+			vec2 uv = fragCoord / iResolution.xy;
 			vec2 blocks = uv / uBlocksize;
 			vec4 color = flixel_texture2DCustom(bitmap, openfl_TextureCoordv);
 			if (usePixel)
@@ -291,7 +291,7 @@ class ColorSwapShader extends FlxShader
 			vec4 swagColor = vec4(
 				rgb2hsv(
 					vec3(color[0], color[1], color[2])
-				), 
+				),
 				color[3]
 			);
 
@@ -301,7 +301,7 @@ class ColorSwapShader extends FlxShader
 			swagColor[1] = swagColor[1] * (1.0 + uTime[1]);
 			// val
 			swagColor[2] = swagColor[2] * (1.0 + uTime[2]);
-			
+
 			if(swagColor[1] < 0.0)
 			{
 				swagColor[1] = 0.0;

@@ -1,0 +1,127 @@
+{
+  "dependencies": [
+    {
+      "name": "lime",
+      "type": "git",
+      "url": "https://github.com/AlafandyPorting/lime-0.6.3"
+    },
+    {
+      "name": "openfl",
+      "type": "haxelib",
+      "version": "9.5.0"
+    },
+    {
+      "name": "flixel",
+      "type": "haxelib",
+      "version": "5.5.0"
+    },
+    {
+      "name": "flixel-addons",
+      "type": "haxelib",
+      "version": "3.2.3"
+    },
+    {
+      "name": "flixel-tools",
+      "type": "haxelib",
+      "version": "1.5.1"
+    },
+    {
+      "name": "flixel-ui",
+      "type": "haxelib",
+      "version": "2.4.0"
+    },
+    {
+      "name": "flxgif",
+      "type": "haxelib",
+      "version": "1.0.3"
+    },
+    {
+      "name": "funkin-modchart",
+      "type": "haxelib",
+      "version": "1.2.3"
+    },
+    {
+      "name": "hscript",
+      "type": "haxelib",
+      "version": "2.5.0"
+    },
+    {
+      "name": "tjson",
+      "type": "haxelib",
+      "version": null
+    },
+    {
+      "name": "hxvlc",
+      "type": "haxelib",
+      "version": "2.0.1"
+    },
+    {
+      "name": "hxdiscord_rpc",
+      "type": "haxelib",
+      "version": "1.2.4"
+    },
+    {
+      "name": "mobile-controls",
+      "type": "git",
+      "dir": null,
+      "ref": null,
+      "url": "https://github.com/ArkoseLabsOfficial/mobile-controls"
+    },
+    {
+      "name": "extension-androidtools",
+      "type": "git",
+      "dir": null,
+      "ref": null,
+      "url": "https://github.com/MaybeMaru/extension-androidtools"
+    },
+    {
+      "name": "hscript-iris-improved",
+      "type": "git",
+      "dir": null,
+      "ref": null,
+      "url": "https://github.com/kangeluwu/hscript-iris-improved"
+    },
+    {
+      "name": "flixel-animate",
+      "type": "git",
+      "dir": null,
+      "ref": "4fb307acac9379966dfa0b7619b37036fcd39b32",
+      "url": "https://github.com/MaybeMaru/flixel-animate"
+    },
+    {
+      "name": "hxcpp",
+      "type": "git",
+      "dir": null,
+      "ref": null,
+      "url": "https://github.com/kangeluwu/hxcpp-parseIntFixed"
+    },
+    {
+      "name": "linc_luajit",
+      "type": "git",
+      "dir": null,
+      "ref": null,
+      "url": "https://github.com/superpowers04/linc_luajit/"
+    },
+    {
+      "name": "flxanimate",
+      "type": "git",
+      "dir": null,
+      "ref": "768740a56b26aa0c072720e0d1236b94afe68e3e",
+      "url": "https://github.com/Dot-Stuff/flxanimate"
+    },
+    {
+      "name": "funkin.vis",
+      "type": "git",
+      "dir": null,
+      "ref": "1966f8fbbbc509ed90d4b520f3c49c084fc92fd6",
+      "url": "https://github.com/FunkinCrew/funkVis"
+    },
+    {
+      "name": "grig.audio",
+      "type": "git",
+      "dir": "src",
+      "ref": "8567c4dad34cfeaf2ff23fe12c3796f5db80685e",
+      "url": "https://github.com/FunkinCrew/grig.audio"
+    }
+  ]
+}

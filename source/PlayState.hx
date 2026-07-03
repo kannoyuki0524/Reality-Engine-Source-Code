@@ -82,6 +82,10 @@ import sys.io.File;
 #else import vlc.MP4Handler as FlxVideo; #end
 #end
 
+#if mobile
+import mobile.MobileControls;
+#end
+
 using StringTools;
 typedef StrumLine = FlxTypedGroup<StrumNote>;
 class PlayState extends MusicBeatState
@@ -1552,6 +1556,11 @@ class PlayState extends MusicBeatState
 
 		super.create();
 
+		#if mobile
+		// Setup mobile controls based on user preference
+		setupMobileControlsForGameplay();
+		#end
+
 		cacheCountdown();
 		cachePopUpScore();
 		for (key => type in precacheList)
@@ -3011,7 +3020,9 @@ class PlayState extends MusicBeatState
 			
 			paused = false;
 			callOnScripts('onResume', []);
+			#if VIDEOS_ALLOWED
 			FlxVideo.resumeAll();
+			#end
 			#if desktop
 			if (startTimer != null && startTimer.finished)
 			{
@@ -3247,7 +3258,9 @@ class PlayState extends MusicBeatState
 			var ret:Dynamic = callOnScripts('onPause', [], false);
 			if(ret != Globals.Function_Stop) {
 				openPauseMenu();
+				#if VIDEOS_ALLOWED
 				FlxVideo.pauseAll();
+				#end
 			}
 		}
 
@@ -4328,6 +4341,71 @@ class PlayState extends MusicBeatState
 	public var showCombo:Bool = false;
 	public var showComboNum:Bool = true;
 	public var showRating:Bool = true;
+
+	#if mobile
+	private function setupMobilePadForGameplay():Void
+	{
+		if (mobileControls.mobilePad == null) return;
+
+		var idMap:Map<String, String> = [
+			'buttonLeft' => 'NOTE_LEFT',
+			'buttonDown' => 'NOTE_DOWN',
+			'buttonUp' => 'NOTE_UP',
+			'buttonRight' => 'NOTE_RIGHT'
+		];
+
+		for (btn in mobileControls.mobilePad.buttons[0])
+		{
+			var newId = idMap.get(btn.name);
+			if (newId != null && btn.IDs != null && btn.IDs.length > 0)
+				btn.IDs[0] = newId;
+		}
+		mobileControls.mobilePad.updateTrackedButtons();
+	}
+
+	private function setupMobileControlsForGameplay()
+	{
+		var controlStyle:String = ClientPrefs.curMobileControl;
+		var isReplayOrCpu:Bool = cpuControlled;
+
+		// Remove any existing controls
+		if (mobileControls.mobilePad != null) mobileControls.removeMobilePad();
+		if (mobileControls.hitbox != null) mobileControls.removeHitbox();
+
+		switch (controlStyle)
+		{
+			case 'hitbox':
+				mobileControls.addHitbox(ClientPrefs.hitboxMode);
+				mobileControls.addHitboxCamera();
+
+			case 'custom button':
+				mobileControls.addMobilePad(isReplayOrCpu ? 'LEFT_RIGHT' : 'FULL', 'NONE');
+				mobileControls.addMobilePadCamera();
+				setupMobilePadForGameplay();
+				for (name => pos in ClientPrefs.mobilePad)
+				{
+					var btn = mobileControls.mobilePad.getButton('button' + name.charAt(0).toUpperCase() + name.substring(1).toLowerCase());
+					if (btn != null)
+					{
+						btn.x = pos[0];
+						btn.y = pos[1];
+					}
+				}
+
+			case 'classic-right':
+				mobileControls.addMobilePad(isReplayOrCpu ? 'LEFT_RIGHT' : 'FULL', 'NONE');
+				mobileControls.addMobilePadCamera();
+				setupMobilePadForGameplay();
+				for (btn in mobileControls.mobilePad.buttons[0])
+					btn.x = FlxG.width - 312 + btn.x;
+
+			default: // classic
+				mobileControls.addMobilePad(isReplayOrCpu ? 'LEFT_RIGHT' : 'FULL', 'NONE');
+				mobileControls.addMobilePadCamera();
+				setupMobilePadForGameplay();
+		}
+	}
+	#end
 
 	private function cachePopUpScore()
 	{

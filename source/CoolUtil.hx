@@ -14,6 +14,7 @@ import sys.FileSystem;
 import openfl.utils.Assets;
 #end
 import flixel.util.FlxSort;
+import flixel.util.FlxSave;
 import flixel.FlxBasic;
 using StringTools;
 
@@ -80,7 +81,8 @@ class CoolUtil
 	{
 		var daList:Array<String> = [];
 		#if sys
-		if(FileSystem.exists(path)) daList = File.getContent(path).trim().split('\n');
+		var content:Null<String> = FunkinFileSystem.getContent(path);
+		if(content != null) daList = content.trim().split('\n');
 		#else
 		if(Assets.exists(path)) daList = Assets.getText(path).trim().split('\n');
 		#end
@@ -155,5 +157,21 @@ class CoolUtil
 		#else
 		FlxG.openURL(site);
 		#end
+	}
+
+	public static function showPopUp(message:String, title:String):Void
+	{
+		#if mobile
+		lime.app.Application.current.window.alert(message, title);
+		#else
+		FlxG.stage.window.alert(message, title);
+		#end
+	}
+
+	inline public static function getSavePath(folder:String = 'Ayumeki'):String {
+		@:privateAccess
+		return #if (flixel < "5.0.0") folder #else FlxG.stage.application.meta.get('company')
+			+ '/'
+			+ FlxSave.validate(FlxG.stage.application.meta.get('file')) #end;
 	}
 }

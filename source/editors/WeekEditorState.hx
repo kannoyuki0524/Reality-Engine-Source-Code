@@ -115,6 +115,10 @@ class WeekEditorState extends MusicBeatState
 
 		FlxG.mouse.visible = true;
 
+		#if mobile
+		mobileControls.addMobilePad('FULL', 'A_B');
+		mobileControls.addMobilePadCamera(true);
+		#end
 		super.create();
 	}
 

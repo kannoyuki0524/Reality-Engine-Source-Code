@@ -9,7 +9,7 @@ class NoteSplash extends FlxSprite
 	public var colorSwap:ColorSwap = null;
 	private var idleAnim:String;
 	private var textureLoaded:String = null;
-	
+
 	public var modchartOffsetX:Float = 0;
 	public var modchartOffsetY:Float = 0;
 	public var applyColor:Bool = false;
@@ -20,7 +20,7 @@ class NoteSplash extends FlxSprite
 		if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) skin = PlayState.SONG.splashSkin;
 
 		loadAnims(skin);
-		
+
 		colorSwap = new ColorSwap();
 		shader = colorSwap.shader;
 

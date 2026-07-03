@@ -4,6 +4,11 @@ package;
 import Discord.DiscordClient;
 import sys.thread.Thread;
 #end
+#if mobile
+import mobile.MobileConfig;
+import mobile.MobileConfig.ButtonModes;
+import mobile.MobileLog;
+#end
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -37,6 +42,8 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
+import StoryMenuState;
+import Highscore;
 
 using StringTools;
 typedef TitleData =
@@ -96,12 +103,31 @@ class TitleState extends MusicBeatState
 		#end
 		// Just to load a mod on start up if ya got one. For mods that change the menu music and bg
 		WeekData.loadTheFirstEnabledMod();
+
+		FlxG.fixedTimestep = false;
+		FlxG.game.focusLostFramerate = 60;
+		FlxG.keys.preventDefaultKeys = [TAB];
+		
+		FlxG.sound.muteKeys = TitleState.muteKeys;
+		FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;
+		FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
 		
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
 		// DEBUG BULLSHIT
 		swagShader = new ColorSwap();
 		super.create();
+
+		FlxG.save.bind('funkin', CoolUtil.getSavePath());
+		ClientPrefs.loadPrefs();
+
+		Highscore.load();
+
+		if (FlxG.save.data.weekCompleted != null)
+			StoryMenuState.weekCompleted = FlxG.save.data.weekCompleted;
+
+		if(FlxG.save.data != null && FlxG.save.data.fullscreen)
+			FlxG.fullscreen = FlxG.save.data.fullscreen;
 
 		#if CHECK_FOR_UPDATES
 		if(ClientPrefs.checkForUpdates && !closedState) {
@@ -128,13 +154,26 @@ class TitleState extends MusicBeatState
 		#end
 
 
-
 		// IGNORE THIS!!!
-		titleJSON = Json.parse(Paths.getTextFromFile('images/gfDanceTitle.json'));
+		try {
+			titleJSON = Json.parse(Paths.getTextFromFile('images/gfDanceTitle.json'));
+		} catch(e:Dynamic) {
+			trace('Failed to parse title JSON: $e');
+			titleJSON = {
+				titlex: 0,
+				titley: 0,
+				startx: 0,
+				starty: 0,
+				gfx: 0,
+				gfy: 0,
+				backgroundSprite: 'menuBG',
+				bpm: 102
+			};
+		}
 
 		#if TITLE_SCREEN_EASTER_EGG
-		if (FlxG.save.data.psychDevsEasterEgg == null) FlxG.save.data.psychDevsEasterEgg = ''; //Crash prevention
-		switch(FlxG.save.data.psychDevsEasterEgg.toUpperCase())
+		if (FlxG.save.data != null && FlxG.save.data.psychDevsEasterEgg == null) FlxG.save.data.psychDevsEasterEgg = ''; //Crash prevention
+		if (FlxG.save.data != null) switch(FlxG.save.data.psychDevsEasterEgg.toUpperCase())
 		{
 			case 'SHADOW':
 				titleJSON.gfx += 210;
@@ -153,12 +192,24 @@ class TitleState extends MusicBeatState
 
 		if(!initialized)
 		{
+			if(FlxG.save.data != null && FlxG.save.data.fullscreen)
+			{
+				FlxG.fullscreen = FlxG.save.data.fullscreen;
+			}
 			persistentUpdate = true;
 			persistentDraw = true;
+			#if mobile
+			MobileConfig.init('MobileControls', CoolUtil.getSavePath(), 'assets/mobile/',
+				[
+					['MobilePad/DPadModes', ButtonModes.DPAD],
+					['MobilePad/ActionModes', ButtonModes.ACTION],
+					['Hitbox/HitboxModes', ButtonModes.HITBOX]
+				]
+			);
+			#end
 		}
 
 		FlxG.mouse.visible = false;
-		
 
 		if (initialized)
 			startIntro();
@@ -169,8 +220,6 @@ class TitleState extends MusicBeatState
 				startIntro();
 			});
 		}
-		
-
 	}
 
 	var logoBl:FlxSprite;
@@ -181,31 +230,15 @@ class TitleState extends MusicBeatState
 
 	function startIntro()
 	{
+		try {
 		if (!initialized)
 		{
-			/*var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
-			diamond.persist = true;
-			diamond.destroyOnNoUse = false;
-
-			FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
-				new FlxRect(-300, -300, FlxG.width * 1.8, FlxG.height * 1.8));
-			FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
-				{asset: diamond, width: 32, height: 32}, new FlxRect(-300, -300, FlxG.width * 1.8, FlxG.height * 1.8));
-
-			transIn = FlxTransitionableState.defaultTransIn;
-			transOut = FlxTransitionableState.defaultTransOut;*/
-
-			// HAD TO MODIFY SOME BACKEND SHIT
-			// IF THIS PR IS HERE IF ITS ACCEPTED UR GOOD TO GO
-			// https://github.com/HaxeFlixel/flixel-addons/pull/348
-
-			// var music:FlxSound = new FlxSound();
-			// music.loadStream(Paths.music('freakyMenu'));
-			// FlxG.sound.list.add(music);
-			// music.play();
-
 			if(FlxG.sound.music == null) {
-				FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+				try {
+					FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+				} catch(e:Dynamic) {
+					trace('Failed to play title music: $e');
+				}
 			}
 		}
 
@@ -215,7 +248,12 @@ class TitleState extends MusicBeatState
 		var bg:FlxSprite = new FlxSprite();
 
 		if (titleJSON.backgroundSprite != null && titleJSON.backgroundSprite.length > 0 && titleJSON.backgroundSprite != "none"){
-			bg.loadGraphic(Paths.image(titleJSON.backgroundSprite));
+			try {
+				bg.loadGraphic(Paths.image(titleJSON.backgroundSprite));
+			} catch(e:Dynamic) {
+				trace('Failed to load title BG: $e');
+				bg.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
+			}
 		}else{
 			bg.makeGraphic(FlxG.width, FlxG.height, FlxColor.BLACK);
 		}
@@ -356,22 +394,36 @@ class TitleState extends MusicBeatState
 		else
 			initialized = true;
 
+		// TitleState intentionally shows no mobile controls.
+
 		// credGroup.add(credTextShit);
+		} catch(e:Dynamic) {
+			#if mobile
+			CoolUtil.showPopUp('startIntro error: ' + Std.string(e), 'Error');
+			MobileLog.error('startIntro error: ' + Std.string(e));
+			#end
+			trace('startIntro error: $e');
+		}
 	}
 
 	function getIntroTextShit():Array<Array<String>>
 	{
-		var fullText:String = Assets.getText(Paths.txt('introText'));
+		try {
+			var fullText:String = Assets.getText(Paths.txt('introText'));
 
-		var firstArray:Array<String> = fullText.split('\n');
-		var swagGoodArray:Array<Array<String>> = [];
+			var firstArray:Array<String> = fullText.split('\n');
+			var swagGoodArray:Array<Array<String>> = [];
 
-		for (i in firstArray)
-		{
-			swagGoodArray.push(i.split('--'));
+			for (i in firstArray)
+			{
+				swagGoodArray.push(i.split('--'));
+			}
+
+			return swagGoodArray;
+		} catch(e:Dynamic) {
+			trace('Failed to load introText: $e');
+			return [['Friday Night Funkin\'', 'Press Enter to Begin']];
 		}
-
-		return swagGoodArray;
 	}
 
 	var transitioning:Bool = false;
