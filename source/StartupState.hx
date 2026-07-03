@@ -38,9 +38,11 @@ import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
 import haxe.io.Path;
-import mobile.MobileControls;
+#if mobile
 import mobile.MobileConfig;
-
+import mobile.MobileConfig.ButtonModes;
+import mobile.MobileLog;
+#end
 using StringTools;
 class StartupState extends MusicBeatState
 {
