@@ -69,14 +69,20 @@ class FlxPointer
 	 * @param   camera  If unspecified, `FlxG.camera` is used, instead
 	 * @param   result  An existing point to store the results, if unspecified, one is created
 	 */
-	public function getWorldPosition(?camera:FlxCamera, ?result:FlxPoint):FlxPoint
+        public function getWorldPosition(?Camera:FlxCamera, ?point:FlxPoint):FlxPoint
 	{
-		if (camera == null)
-			camera = FlxG.camera;
-		
-		result = getViewPosition(camera, result);
-		result.add(camera.scroll);
-		return result;
+		if (Camera == null)
+		{
+			Camera = FlxG.camera;
+		}
+		if (point == null)
+		{
+			point = FlxPoint.get();
+		}
+		getViewPosition(Camera, _cachedPoint);
+		point.x = _cachedPoint.x + Camera.scroll.x;
+		point.y = _cachedPoint.y + Camera.scroll.y;
+		return point;
 	}
 	
 	/**
