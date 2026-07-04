@@ -17,6 +17,8 @@ import backend.CrashHandler;
 import mobile.MobileLog;
 import crowplexus.iris.Iris;
 #if mobile
+
+import mobile.backend.MobileScaleMode;
 import mobile.backend.StorageUtil;
 #if android
 import android.content.Context as AndroidContext;
@@ -125,6 +127,8 @@ class Main extends Sprite
 		//if(fpsVar != null) {
 		//	fpsVar.visible = ClientPrefs.showFPS;
 		//}
+		#elseif mobile
+		FlxG.scaleMode = new MobileScaleMode();
 		#end
 
 		#if html5
