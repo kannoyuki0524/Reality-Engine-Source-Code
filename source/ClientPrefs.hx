@@ -405,9 +405,7 @@ class ClientPrefs {
 		}
 
 		var save:FlxSave = new FlxSave();
-		trace([save,CoolUtil.getSavePath()]);
 		save.bind('controls_v2', CoolUtil.getSavePath());
-		trace(save);
 		if(save != null) {
 			if (save.data.customControls != null){
 			if(save.data.keyboard == null) save.data.keyboard = save.data.customControls;
