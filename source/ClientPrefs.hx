@@ -17,7 +17,7 @@ class ClientPrefs {
 	public static var globalAntialiasing:Bool = true;
 	public static var noteSplashes:Bool = true;
 	public static var lowQuality:Bool = false;
-	public static var shaders:Bool = false; // disabled on all targets; GLES drivers on emulators/devices fail to compile openfl's fragment shader
+	public static var shaders:Bool = true; 
 	public static var framerate:Int = 60;
 	public static var cursing:Bool = true;
 	public static var violence:Bool = true;
