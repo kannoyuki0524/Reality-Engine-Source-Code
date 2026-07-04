@@ -53,7 +53,11 @@ class OptionsState extends MusicBeatState
 			case 'Adjust Delay and Combo':
 				LoadingState.loadAndSwitchState(new options.NoteOffsetState());
 			case 'Mobile Controls':
+				#if mobile
 				openSubState(new mobile.options.MobileControlSelectState());
+				#else
+				trace('Mobile Controls is only available on mobile platforms, DO YOU SURE YOU ARE ON MOBILE MY MAN?????!?!?');
+				#end
 		}
 	}
 
@@ -102,8 +106,10 @@ class OptionsState extends MusicBeatState
 	}
 
 	override function closeSubState() {
+		#if mobile
 		mobileControls.addMobilePad('UP_DOWN', 'A_B');
 		mobileControls.addMobilePadCamera(true);
+		#end
 		nextAccept = 5;
 		super.closeSubState();
 		ClientPrefs.saveSettings();

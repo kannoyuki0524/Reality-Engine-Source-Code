@@ -24,8 +24,9 @@ import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
+#if mobile
 import mobile.MobileControls;
-
+#end
 using StringTools;
 
 class BaseOptionsMenu extends MusicBeatSubstate

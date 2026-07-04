@@ -145,8 +145,8 @@
 		<haxelib name="hxvlc" if="desktop || mobile || VIDEOS_ALLOWED"/>
 	</section>
 
-	<haxelib name="mobile-controls"/>
-	<haxedef name="mobile_controls_file_support"/>
+	<haxelib name="mobile-controls" if="mobile"/>
+	<haxedef name="mobile_controls_file_support" if="mobile"/>
 
 	<!-- Android Specific -->
 	<java path="source/mobile/android/" if="android"/>

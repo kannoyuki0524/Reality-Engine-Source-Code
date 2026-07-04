@@ -1,3 +1,4 @@
+#if mobile
 package mobile.options;
 
 import flixel.FlxG;
@@ -347,3 +348,4 @@ class MobileControlSelectState extends MusicBeatSubstate
 		super.destroy();
 	}
 }
+#end

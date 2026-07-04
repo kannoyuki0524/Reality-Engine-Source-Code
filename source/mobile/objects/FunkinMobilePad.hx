@@ -1,5 +1,6 @@
-package mobile.objects;
 
+#if mobile
+package mobile.objects;
 import mobile.MobilePad;
 import flixel.graphics.frames.FlxTileFrames;
 import flixel.graphics.FlxGraphic;
@@ -47,3 +48,4 @@ class FunkinMobilePad extends MobilePad
 		super(DPad, Action);
 	}
 }
+#end

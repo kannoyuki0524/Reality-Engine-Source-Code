@@ -3456,14 +3456,14 @@ class FunkinLua extends FunkinScript {
 	}
 }
 
-class ModchartSprite extends FlxSprite
+class ModchartSprite extends FunkinSprite
 {
 	public var wasAdded:Bool = false;
 	public var applyColor:Bool = false;
 	public var applyOffset:Bool = false;
 	public var modchartOffsetX:Float = 0;
 	public var modchartOffsetY:Float = 0;
-	public var animOffsets:Map<String, Array<Float>> = new Map<String, Array<Float>>();
+	//public var animOffsets:Map<String, Array<Float>> = new Map<String, Array<Float>>();
 	//public var isInFront:Bool = false;
 	public var noteData:Int = 0;
 	public var player:Int = 0;

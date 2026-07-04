@@ -186,9 +186,11 @@ class FreeplayState extends MusicBeatState
 	override function closeSubState() {
 		changeSelection(0, false);
 		persistentUpdate = true;
+		#if mobile
 		mobileControls.removeMobilePad();
 		mobileControls.addMobilePad('LEFT_FULL', 'A_B_C_X_Y_Z');
 		mobileControls.addMobilePadCamera(true);
+		#end
 		super.closeSubState();
 	}
 
@@ -236,8 +238,8 @@ class FreeplayState extends MusicBeatState
 		var upP = controls.UI_UP_P;
 		var downP = controls.UI_DOWN_P;
 		var accepted = controls.ACCEPT;
-		var space = FlxG.keys.justPressed.SPACE || mobileButtonJustPressed('Y');
-		var ctrl = FlxG.keys.justPressed.CONTROL || mobileButtonJustPressed('C');
+		var space = FlxG.keys.justPressed.SPACE #if mobile || mobileButtonJustPressed('Y') #end; 
+		var ctrl = FlxG.keys.justPressed.CONTROL #if mobile || mobileButtonJustPressed('C') #end;
 
 		var shiftMult:Int = 1;
 		if(FlxG.keys.pressed.SHIFT) shiftMult = 3;
@@ -267,12 +269,14 @@ class FreeplayState extends MusicBeatState
 					changeDiff();
 				}
 			}
-
+			
+			#if mobile
 			if(mobileButtonJustPressed('X'))
 			{
 				curSelected = 0;
 				changeSelection();
 			}
+			#end
 
 			if(FlxG.mouse.wheel != 0)
 			{
@@ -352,7 +356,7 @@ class FreeplayState extends MusicBeatState
 					
 			destroyFreeplayVocals();
 		}
-		else if(controls.RESET || mobileButtonJustPressed('Z'))
+		else if(controls.RESET #if mobile || mobileButtonJustPressed('Z') #end)
 		{
 			persistentUpdate = false;
 			openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));

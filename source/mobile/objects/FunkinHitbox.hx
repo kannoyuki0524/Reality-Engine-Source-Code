@@ -1,3 +1,5 @@
+
+#if mobile
 package mobile.objects;
 
 import mobile.Hitbox;
@@ -221,3 +223,4 @@ class FunkinHitbox extends Hitbox
 		return hint;
 	}
 }
+#end
