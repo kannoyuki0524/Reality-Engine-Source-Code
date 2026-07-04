@@ -223,7 +223,7 @@ class ClientPrefs {
 		FlxG.save.data.curMobileControl = curMobileControl;
 		FlxG.save.data.mobilePad = mobilePad;
 		FlxG.save.data.wideScreen = wideScreen;
-		FlxG.save.data.autoCopy = FlxG.save.data.autoCopy;
+		FlxG.save.data.autoCopy = autoCopy;
 		FlxG.save.flush();
 
 		var save:FlxSave = new FlxSave();
@@ -236,7 +236,6 @@ class ClientPrefs {
 	}
 
 	public static function loadPrefs() {
-		if(FlxG.save.data == null) return;
 		if(FlxG.save.data.downScroll != null) {
 			downScroll = FlxG.save.data.downScroll;
 		}
@@ -406,8 +405,9 @@ class ClientPrefs {
 		}
 
 		var save:FlxSave = new FlxSave();
+		trace([save,CoolUtil.getSavePath()]);
 		save.bind('controls_v2', CoolUtil.getSavePath());
-		
+		trace(save);
 		if(save != null) {
 			if (save.data.customControls != null){
 			if(save.data.keyboard == null) save.data.keyboard = save.data.customControls;

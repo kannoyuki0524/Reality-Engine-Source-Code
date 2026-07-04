@@ -52,15 +52,15 @@ class StartupState extends MusicBeatState
         try {
         Paths.clearStoredMemory();
 		Paths.clearUnusedMemory();
-        getMenuImages();
 		#if LUA_ALLOWED
 		Paths.pushGlobalMods();
 		#end
 		WeekData.loadTheFirstEnabledMod();
 
-		FlxG.save.bind('funkin', CoolUtil.getSavePath());
+		FlxG.save.bind('RealityEngine', CoolUtil.getSavePath());
 		ClientPrefs.loadPrefs();
 		Highscore.load();
+        getMenuImages();
 		FlxG.fixedTimestep = false;		
         if (FlxG.save.data.weekCompleted != null)
 			StoryMenuState.weekCompleted = FlxG.save.data.weekCompleted;
@@ -115,16 +115,35 @@ class StartupState extends MusicBeatState
         StartupState.menuImages = [];
         StartupState.playStateExcludes = [];
         try {
-            for (asset in Assets.list().filter(a -> a.startsWith('assets/images/loadingscreen/') && a.endsWith('.png')))
-            {
-                var file = Path.withoutDirectory(asset);
-                var key = file.substr(0, file.length - 4);
-                menuImages.push('loadingscreen/' + key);
-                Paths.excludeAsset(asset);
-                Paths.image('loadingscreen/' + key);
-                if (file.startsWith('S_'))
-                    playStateExcludes.push('loadingscreen/' + key);
+			//hardcoded images
+			var fuckerFolders = ['assets/' #if MODS_ALLOWED , 'mods/' #end];
+			for (folder in fuckerFolders){
+				for (asset in Assets.list().filter(a -> a.startsWith(folder + 'images/loadingscreen/') && a.endsWith('.png')))
+				{
+					var file = Path.withoutDirectory(asset);
+					var key = file.substr(0, file.length - 4);
+					menuImages.push('loadingscreen/' + key);
+					Paths.excludeAsset(asset);
+					Paths.image('loadingscreen/' + key);
+					if (file.startsWith('S_'))
+						playStateExcludes.push('loadingscreen/' + key);
+				} 
+				
             }
+			//softloaded images
+			for (folder in Paths.getFolders('images/loadingscreen')){
+				if (Paths.exists(folder) && Paths.isDirectory(folder)){
+					for (file in FileSystem.readDirectory(folder)) {
+						if (StringTools.endsWith(file,'.png')){
+							menuImages.push('loadingscreen/' + file.substr(0, file.length - 4));
+							Paths.excludeAsset(folder + file);
+							Paths.image('loadingscreen/' + file.substr(0, file.length - 4));
+							if (file.startsWith('S_'))
+								playStateExcludes.push('loadingscreen/' + file.substr(0, file.length - 4));
+						}
+					}
+				}
+			}
         } catch(e:Dynamic) {
             trace('getMenuImages error: $e');
         }
