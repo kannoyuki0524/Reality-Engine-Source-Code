@@ -1,3 +1,4 @@
+#if mobile
 package mobile;
 
 import flixel.FlxCamera;
@@ -124,3 +125,4 @@ class MobileControls implements IFlxDestroyable
 		removeHitbox();
 	}
 }
+#end
