@@ -1,5 +1,10 @@
 package;
 
+import flixel.text.FlxText;
+import flixel.FlxSprite;
+import flixel.FlxG;
+import flixel.util.FlxColor;
+
 class ErrorState extends MusicBeatState
 {
 	public var acceptCallback:Void->Void;
