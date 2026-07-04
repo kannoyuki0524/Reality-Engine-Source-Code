@@ -1628,14 +1628,14 @@ class PlayState extends MusicBeatState
 				var found:Bool = false;
 				if(FileSystem.exists(frag))
 				{
-					frag = File.getContent(frag);
+					frag = Paths.getContent(frag);
 					found = true;
 				}
 				else frag = null;
 
 				if (FileSystem.exists(vert))
 				{
-					vert = File.getContent(vert);
+					vert = Paths.getContent(vert);
 					found = true;
 				}
 				else vert = null;
