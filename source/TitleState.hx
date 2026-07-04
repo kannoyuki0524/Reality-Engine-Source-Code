@@ -9,6 +9,7 @@ import mobile.MobileConfig;
 import mobile.MobileConfig.ButtonModes;
 import mobile.MobileLog;
 #end
+import utils.TouchUtil;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -409,17 +410,9 @@ class TitleState extends MusicBeatState
 			Conductor.songPosition = FlxG.sound.music.time;
 		// FlxG.watch.addQuick('amp', FlxG.sound.music.amplitude);
 
-		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || controls.ACCEPT;
+		var pressedEnter:Bool = FlxG.keys.justPressed.ENTER || controls.ACCEPT || TouchUtil.justPressed;
 
-		#if mobile
-		for (touch in FlxG.touches.list)
-		{
-			if (touch.justPressed)
-			{
-				pressedEnter = true;
-			}
-		}
-		#end
+
 
 		var gamepad:FlxGamepad = FlxG.gamepads.lastActive;
 

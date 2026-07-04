@@ -24,7 +24,6 @@ import mobile.backend.StorageUtil;
 import android.content.Context as AndroidContext;
 #end
 #end
-
 #if sys
 import sys.FileSystem;
 import sys.io.File;
