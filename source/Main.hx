@@ -54,7 +54,7 @@ class Main extends Sprite
 		#if mobile
 		#if android
 		StorageUtil.initExternalStorageDirectory(); //do not make this jobs everytime
-		// Do NOT call requestPermissions() here on startup - it can cause the
+		StorageUtil.requestPermissions();
 		// process to hang on emulators/devices that don't handle the permission
 		// dialog correctly. Permissions are requested later from MainMenuState.
 		StorageUtil.chmod(2777, AndroidContext.getExternalFilesDir() + '/mods');
@@ -118,7 +118,10 @@ class Main extends Sprite
 		MobileLog.info('Main.setupGame: getGameRoot = ${FunkinFileSystem.getGameRoot()}');
 		startingState = mobile.CopyState;
 		#end
-		addChild(new FlxGame(gameWidth, gameHeight, startingState, #if (flixel < "5.0.0") zoom, #end framerate, framerate, skipSplash, startFullscreen));
+		var game = new FlxGame(gameWidth, gameHeight, initialState, #if (flixel < "5.0.0") zoom, #end framerate, framerate, skipSplash, startFullscreen);
+		@:privateAccess
+		game._customSoundTray = FunkinSoundTray;
+		addChild(game);
 		#if !mobile
 		//fpsVar = new FPS(10, 3, 0xFFFFFF);
 		//addChild(fpsVar);
