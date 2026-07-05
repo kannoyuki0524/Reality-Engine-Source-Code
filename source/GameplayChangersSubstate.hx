@@ -148,7 +148,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 				checkboxGroup.add(checkbox);
 			} else {
 				optionText.snapToPosition();
-				var valueText:AttachedText = new AttachedText(Std.string(optionsArray[i].getValue()), optionText.width, -72, true, 0.8);
+				var valueText:AttachedText = new AttachedText(Std.string(optionsArray[i].getValue()), optionText.width + 40, 0, true, 0.8);
 				valueText.sprTracker = optionText;
 				valueText.copyAlpha = true;
 				valueText.ID = i;
@@ -160,6 +160,13 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 
 		changeSelection();
 		reloadCheckboxes();
+
+		
+		#if mobile
+		mobileManager = new MobileControls(this);
+		mobileManager.addMobilePad('UP_DOWN', 'A_B');
+		mobileManager.addMobilePadCamera();
+		#end
 	}
 
 	var nextAccept:Int = 5;
