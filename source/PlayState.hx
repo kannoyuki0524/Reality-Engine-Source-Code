@@ -979,6 +979,7 @@ class PlayState extends MusicBeatState
 			var fileData = new FunkinLua(luaFile);
 			luaArray.push(fileData);
 			funkyScripts.push(fileData);
+			trace('LOADED FROM LUA: ' + luaFile);
 		}
 		#end
 		var doPushHx:Bool = false;
@@ -992,6 +993,7 @@ class PlayState extends MusicBeatState
 				doPushHx = true;
 			}
 		}
+		trace('LOADED FROM HX: ' + hxFile);
 
 		if(doPushHx){
 			var fileData = new FunkinHScript(curStage,hxFile,true);
@@ -1446,6 +1448,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 			}
+			trace('Created ' + luaArray.length + ' LUA scripts and ' + hscriptArray.length + ' HX scripts');
 		}
 		
 
@@ -1473,7 +1476,8 @@ class PlayState extends MusicBeatState
 							startCountdown();
 						}
 					});
-					FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
+					var thunder = Paths.soundRandom('thunder_', 1, 2);
+					if (thunder != null) FlxG.sound.play(thunder);
 					if(gf != null) gf.playAnim('scared', true);
 					boyfriend.playAnim('scared', true);
 
@@ -1490,7 +1494,8 @@ class PlayState extends MusicBeatState
 							remove(blackScreen);
 						}
 					});
-					FlxG.sound.play(Paths.sound('Lights_Turn_On'));
+					var sound = Paths.sound('Lights_Turn_On');
+					if (sound != null) FlxG.sound.play(sound);
 					snapCamFollowToPos(400, -2050);
 					FlxG.camera.focusOn(camFollow);
 					FlxG.camera.zoom = 1.5;
@@ -1508,7 +1513,10 @@ class PlayState extends MusicBeatState
 						});
 					});
 				case 'senpai' | 'roses' | 'thorns':
-					if(daSong == 'roses') FlxG.sound.play(Paths.sound('ANGRY'));
+					if(daSong == 'roses') {
+						var sound = Paths.sound('ANGRY');
+						if (sound != null) FlxG.sound.play(sound);
+					}
 					schoolIntro(doof);
 
 				case 'ugh' | 'guns' | 'stress':
@@ -1557,7 +1565,7 @@ class PlayState extends MusicBeatState
 		super.create();
 
 		#if mobile
-		// Setup mobile controls based on user preference
+
 		setupMobileControlsForGameplay();
 		#end
 
@@ -1604,6 +1612,7 @@ class PlayState extends MusicBeatState
 
 	public function initLuaShader(name:String, ?glslVersion:Int = 120)
 	{
+
 		if(!ClientPrefs.shaders) return false;
 
 		if(runtimeShaders.exists(name))
@@ -1942,7 +1951,8 @@ class PlayState extends MusicBeatState
 							else
 							{
 								senpaiEvil.animation.play('idle');
-								FlxG.sound.play(Paths.sound('Senpai_Dies'), 1, false, null, true, function()
+								var sound = Paths.sound('Senpai_Dies');
+								if (sound != null) FlxG.sound.play(sound, 1, false, null, true, function()
 								{
 									remove(senpaiEvil);
 									remove(red);
@@ -2055,7 +2065,8 @@ class PlayState extends MusicBeatState
 				{
 					boyfriend.playAnim('singUP', true);
 					boyfriend.specialAnim = true;
-					FlxG.sound.play(Paths.sound('bfBeep'));
+					var sound = Paths.sound('bfBeep');
+					if (sound != null) FlxG.sound.play(sound);
 				});
 
 				// Move camera to Tankman
@@ -2066,7 +2077,8 @@ class PlayState extends MusicBeatState
 
 					// We should just kill you but... what the hell, it's been a boring day... let's see what you've got!
 					tankman.animation.play('killYou', true);
-					FlxG.sound.play(Paths.sound('killYou'));
+					var sound = Paths.sound('killYou');
+					if (sound != null) FlxG.sound.play(sound);
 				});
 
 			case 'guns':
@@ -2284,11 +2296,11 @@ class PlayState extends MusicBeatState
 		
 		for (asset in introAlts)
 			Paths.image(asset);
-		
-		Paths.sound('intro3' + introSoundsSuffix);
-		Paths.sound('intro2' + introSoundsSuffix);
-		Paths.sound('intro1' + introSoundsSuffix);
-		Paths.sound('introGo' + introSoundsSuffix);
+
+			Paths.sound('intro3' + introSoundsSuffix);
+			Paths.sound('intro2' + introSoundsSuffix);
+			Paths.sound('intro1' + introSoundsSuffix);
+			Paths.sound('introGo' + introSoundsSuffix);
 	}
 	public var strumGenerated:Bool = false;
 	public function startCountdown():Void
@@ -2380,7 +2392,8 @@ class PlayState extends MusicBeatState
 				switch (swagCounter)
 				{
 					case 0:
-						FlxG.sound.play(Paths.sound('intro3' + introSoundsSuffix), 0.6);
+						var introSound = Paths.sound('intro3' + introSoundsSuffix);
+						if (introSound != null) FlxG.sound.play(introSound, 0.6);
 					case 1:
 						countdownReady = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
 						countdownReady.cameras = [camHUD];
@@ -2401,7 +2414,8 @@ class PlayState extends MusicBeatState
 								countdownReady.destroy();
 							}
 						});
-						FlxG.sound.play(Paths.sound('intro2' + introSoundsSuffix), 0.6);
+						var introSound = Paths.sound('intro2' + introSoundsSuffix);
+						if (introSound != null) FlxG.sound.play(introSound, 0.6);
 					case 2:
 						countdownSet = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
 						countdownSet.cameras = [camHUD];
@@ -2421,7 +2435,8 @@ class PlayState extends MusicBeatState
 								countdownSet.destroy();
 							}
 						});
-						FlxG.sound.play(Paths.sound('intro1' + introSoundsSuffix), 0.6);
+						var introSound = Paths.sound('intro1' + introSoundsSuffix);
+						if (introSound != null) FlxG.sound.play(introSound, 0.6);
 					case 3:
 						countdownGo = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
 						countdownGo.cameras = [camHUD];
@@ -2443,7 +2458,8 @@ class PlayState extends MusicBeatState
 								countdownGo.destroy();
 							}
 						});
-						FlxG.sound.play(Paths.sound('introGo' + introSoundsSuffix), 0.6);
+						var introSound = Paths.sound('introGo' + introSoundsSuffix);
+						if (introSound != null) FlxG.sound.play(introSound, 0.6);
 					case 4:
 				}
 
@@ -2898,7 +2914,8 @@ class PlayState extends MusicBeatState
 				insert(members.indexOf(blammedLightsBlack) + 1, phillyWindowEvent);
 
 
-				phillyGlowGradient = new PhillyGlow.PhillyGlowGradient(-400, 225); //This shit was refusing to properly load FlxGradient so fuck it
+				phillyGlowGradient = new PhillyGlow.PhillyGlowGradient(-400, 225); 
+				//This shit was refusing to properly load FlxGradient so fuck it
 				phillyGlowGradient.visible = false;
 				insert(members.indexOf(blammedLightsBlack) + 1, phillyGlowGradient);
 				if(!ClientPrefs.flashing) phillyGlowGradient.intendedAlpha = 0.7;
@@ -3158,7 +3175,10 @@ class PlayState extends MusicBeatState
 								if(dancers[i].x < FlxG.width * 1.5 && limoLight.x > (370 * i) + 170) {
 									switch(i) {
 										case 0 | 3:
-											if(i == 0) FlxG.sound.play(Paths.sound('dancerdeath'), 0.5);
+											if(i == 0) {
+												var sound = Paths.sound('dancerdeath');
+												if (sound != null) FlxG.sound.play(sound, 0.5);
+											}
 
 											var diffStr:String = i == 3 ? ' 2 ' : ' ';
 											var particle:BGSprite = new BGSprite('gore/noooooo', dancers[i].x + 200, dancers[i].y, 0.4, 0.4, ['hench leg spin' + diffStr + 'PINK'], false);
@@ -4259,7 +4279,8 @@ class PlayState extends MusicBeatState
 						add(blackShit);
 						camHUD.visible = false;
 
-						FlxG.sound.play(Paths.sound('Lights_Shut_off'));
+						var sound = Paths.sound('Lights_Shut_off');
+						if (sound != null) FlxG.sound.play(sound);
 					}
 					
 					PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0], difficulty, PlayState.storyPlaylist[0]);
@@ -4343,9 +4364,9 @@ class PlayState extends MusicBeatState
 	public var showRating:Bool = true;
 
 	#if mobile
-	private function setupMobilePadForGameplay():Void
+	public function setupMobilePadForGameplay():Void
 	{
-		if (mobileControls.mobilePad == null) return;
+		if (mobileManager?.mobilePad == null) return;
 
 		var idMap:Map<String, String> = [
 			'buttonLeft' => 'NOTE_LEFT',
@@ -4354,13 +4375,14 @@ class PlayState extends MusicBeatState
 			'buttonRight' => 'NOTE_RIGHT'
 		];
 
-		for (btn in mobileControls.mobilePad.buttons[0])
+		for (btn in mobileManager.mobilePad.buttons[0])
 		{
 			var newId = idMap.get(btn.name);
 			if (newId != null && btn.IDs != null && btn.IDs.length > 0)
 				btn.IDs[0] = newId;
 		}
-		mobileControls.mobilePad.updateTrackedButtons();
+
+		mobileManager.mobilePad.updateTrackedButtons();
 	}
 
 	private function setupMobileControlsForGameplay()
@@ -4848,8 +4870,10 @@ class PlayState extends MusicBeatState
 			vocals.volume = 0;
 			doDeathCheck(true);
 		}
-		if(ClientPrefs.ghostTapping)
-			FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.1, 0.2));
+		if(ClientPrefs.ghostTapping) {
+			var missSound = Paths.soundRandom('missnote', 1, 3);
+			if (missSound != null) FlxG.sound.play(missSound, FlxG.random.float(0.1, 0.2));
+		}
 		//For testing purposes
 		//trace(daNote.missHealth);
 		songMisses++;
@@ -5031,7 +5055,8 @@ class PlayState extends MusicBeatState
 
 			if (ClientPrefs.hitsoundVolume > 0 && !note.hitsoundDisabled)
 			{
-				FlxG.sound.play(Paths.sound('hitsound'), ClientPrefs.hitsoundVolume);
+				var sound = Paths.sound('hitsound');
+				if (sound != null) FlxG.sound.play(sound, ClientPrefs.hitsoundVolume);
 			}
 
 			if(note.hitCausesMiss) {
@@ -5189,7 +5214,8 @@ class PlayState extends MusicBeatState
 	function fastCarDrive()
 	{
 		//trace('Car drive');
-		FlxG.sound.play(Paths.soundRandom('carPass', 0, 1), 0.7);
+		var sound = Paths.soundRandom('carPass', 0, 1);
+		if (sound != null) FlxG.sound.play(sound, 0.7);
 
 		fastCar.velocity.x = (FlxG.random.int(170, 220) / FlxG.elapsed) * 3;
 		fastCarCanDrive = false;
@@ -5265,7 +5291,8 @@ class PlayState extends MusicBeatState
 
 	function lightningStrikeShit():Void
 	{
-		FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
+		var sound = Paths.soundRandom('thunder_', 1, 2);
+		if (sound != null) FlxG.sound.play(sound);
 		if(!ClientPrefs.lowQuality) halloweenBG.animation.play('halloweem bg lightning strike');
 
 		lightningStrikeBeat = curBeat;

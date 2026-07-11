@@ -60,6 +60,7 @@ class LoadingState extends MusicBeatState
 	var progressText:FlxText;
 	var originalBitmapKeys:Map<String, String> = [];
 	var requestedBitmaps:Map<String, BitmapData> = [];
+
 	var states:Array<String> = ['Images', 'Sounds', 'Musics', 'End'];
 	var menuID = -1;
 	static var lastPrecacheMeta:PrecacheMeta = null;
@@ -111,10 +112,8 @@ class LoadingState extends MusicBeatState
 		#if MULTITHREADED_LOADING
 		// Due to the Main thread and Discord thread, we decrease it by 2.
 		var threadCount:Int = Std.int(Math.max(1, getCPUThreadsCount() - #if DISCORD_ALLOWED 2 #else 1 #end));
-		#else
-		var threadCount:Int = 1;
-		#end
 		threadPool = new FixedThreadPool(threadCount);
+		#end
 
 		totals = images.length + sounds.length + musics.length + songs.length + characters.length;
 		trace('IN TOTAL: ' + totals);
@@ -280,10 +279,6 @@ class LoadingState extends MusicBeatState
 		progressText.y = progressBar.y - progressText.height;
 		add(progressText);
 
-		#if mobile
-		mobileControls.addMobilePad('NONE', 'A_B');
-		mobileControls.addMobilePadCamera(true);
-		#end
 		super.create();
 		new FlxTimer().start(0.6,function(tmr:FlxTimer){
 			precacheAssets();
@@ -379,7 +374,7 @@ class LoadingState extends MusicBeatState
 				});
 			}
 		}
-		
+
 		if (songs.length > 0){
 			for (song in songs){
 					threadPool.run(() -> {
@@ -390,7 +385,6 @@ class LoadingState extends MusicBeatState
 				});
 			}
 		}
-
 	}
 
 	inline static public function loadAndSwitchState(target:FlxState, stopMusic = false)
@@ -438,8 +432,6 @@ class LoadingState extends MusicBeatState
 		
 	}
 	
-	
-	// thread safe sound loader
 	function precacheImage(key:String):Null<BitmapData>
 	{
 		try {
