@@ -95,7 +95,7 @@ class FlxRuntimeShader extends FlxShader
 				return color * openfl_Alphav;
 			}
 			color = vec4(color.rgb / color.a, color.a);
-			mat4 colorMultiplier = mat4(0);
+			mat4 colorMultiplier = mat4(0.0);
 			colorMultiplier[0][0] = openfl_ColorMultiplierv.x;
 			colorMultiplier[1][1] = openfl_ColorMultiplierv.y;
 			colorMultiplier[2][2] = openfl_ColorMultiplierv.z;
@@ -198,7 +198,11 @@ class FlxRuntimeShader extends FlxShader
 	 */
 	public function new(fragmentSource:String = null, vertexSource:String = null, glslVersion:Int = 120):Void
 	{
+		#if mobile
+		_glslVersion = 100; // GLES 2.0 requires #version 100, not 120
+		#else
 		_glslVersion = glslVersion;
+		#end
 
 		if (fragmentSource == null)
 		{

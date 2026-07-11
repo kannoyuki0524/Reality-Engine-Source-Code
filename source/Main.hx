@@ -22,6 +22,7 @@ import mobile.backend.MobileScaleMode;
 import mobile.backend.StorageUtil;
 #if android
 import android.content.Context as AndroidContext;
+import mobile.CopyState;
 #end
 #end
 #if sys
@@ -35,7 +36,7 @@ class Main extends Sprite
 {
 	var gameWidth:Int = 1280; // Width of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
-	var initialState:Class<FlxState> = StartupState; // The FlxState the game starts with.
+	var initialState:Class<FlxState> = #if mobile CopyState #else StartupState #end; // The FlxState the game starts with.
 	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
 	var framerate:Int = 60; // How many frames per second the game should run at.
 	var skipSplash:Bool = true; // Whether to skip the flixel splash screen that appears in release mode.
@@ -117,7 +118,7 @@ class Main extends Sprite
 		MobileLog.info('Main.setupGame: getGameRoot = ${FunkinFileSystem.getGameRoot()}');
 		startingState = mobile.CopyState;
 		#end
-		var game = new FlxGame(gameWidth, gameHeight, initialState, #if (flixel < "5.0.0") zoom, #end framerate, framerate, skipSplash, startFullscreen);
+		var game = new FlxGame(gameWidth, gameHeight, startingState, #if (flixel < "5.0.0") zoom, #end framerate, framerate, skipSplash, startFullscreen);
 		@:privateAccess
 		game._customSoundTray = FunkinSoundTray;
 		addChild(game);

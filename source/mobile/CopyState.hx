@@ -135,7 +135,7 @@ class CopyState extends MusicBeatState
 			{
 				if (OpenflAssets.exists(getFile(file)))
 				{
-					if (textFilesExtensions.contains(Path.extension(file)))
+					if (textFilesExtensions.contains(Path.extension(file).toLowerCase()))
 						createContentFromInternal(file);
 					else
 						File.saveBytes(toFile, getFileBytes(getFile(file)));
@@ -154,7 +154,7 @@ class CopyState extends MusicBeatState
 
 	public static function getFileBytes(file:String):ByteArray
 	{
-		switch (Path.extension(file))
+		switch (Path.extension(file).toLowerCase())
 		{
 			case 'otf' | 'ttf':
 				return ByteArray.fromFile(file);
