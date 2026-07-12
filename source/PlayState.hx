@@ -4441,9 +4441,9 @@ class PlayState extends MusicBeatState
 		pauseButton.cameras = [camPauseHUD];
 		pauseButton.zIndex = 100;//LMAO?
 		add(pauseButton);
-		if (mobileControls.mobilePad != null) 
+		if (mobileControls.hitbox != null) 
 		{
-			for (hint in mobileControls.mobilePad.hints)
+			for (hint in mobileControls.hitbox.hints)
 			{
 				hint.deadZones = [pauseButton.button];
 			}
