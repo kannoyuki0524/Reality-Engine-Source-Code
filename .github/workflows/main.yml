@@ -145,7 +145,7 @@ jobs:
         uses: actions/upload-artifact@main
         with:
           name: androidBuild
-          path: export/release/android/bin/app/build/outputs/apk/release/*
+          path: export/release/android/bin/app/build/outputs/apk/debug/*
           include-hidden-files: true
           if-no-files-found: error
 
