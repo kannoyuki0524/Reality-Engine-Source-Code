@@ -11,6 +11,7 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 #if mobile
 import mobile.MobileControls;
+import mobile.objects.FunkinHitbox;
 #end
 class GameOverSubstate extends MusicBeatSubstate
 {

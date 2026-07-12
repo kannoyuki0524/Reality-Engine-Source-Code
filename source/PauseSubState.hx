@@ -15,6 +15,7 @@ import flixel.FlxCamera;
 import flixel.util.FlxStringUtil;
 #if mobile
 import mobile.MobileControls;
+import mobile.objects.FunkinHitbox;
 #end
 class PauseSubState extends MusicBeatSubstate
 {

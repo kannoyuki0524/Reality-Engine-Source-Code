@@ -4366,7 +4366,7 @@ class PlayState extends MusicBeatState
 	#if mobile
 	public function setupMobilePadForGameplay():Void
 	{
-		if (mobileManager?.mobilePad == null) return;
+		if (mobileControls?.mobilePad == null) return;
 
 		var idMap:Map<String, String> = [
 			'buttonLeft' => 'NOTE_LEFT',
@@ -4375,14 +4375,14 @@ class PlayState extends MusicBeatState
 			'buttonRight' => 'NOTE_RIGHT'
 		];
 
-		for (btn in mobileManager.mobilePad.buttons[0])
+		for (btn in mobileControls.mobilePad.buttons[0])
 		{
 			var newId = idMap.get(btn.name);
 			if (newId != null && btn.IDs != null && btn.IDs.length > 0)
 				btn.IDs[0] = newId;
 		}
 
-		mobileManager.mobilePad.updateTrackedButtons();
+		mobileControls.mobilePad.updateTrackedButtons();
 	}
 
 	private function setupMobileControlsForGameplay()

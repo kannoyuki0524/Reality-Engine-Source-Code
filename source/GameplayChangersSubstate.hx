@@ -25,6 +25,10 @@ import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
 
+#if mobile
+import mobile.MobileControls;
+import mobile.objects.FunkinHitbox;
+#end
 using StringTools;
 
 class GameplayChangersSubstate extends MusicBeatSubstate

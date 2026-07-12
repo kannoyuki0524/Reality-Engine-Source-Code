@@ -8,6 +8,10 @@ import llua.State;
 import llua.Convert;
 #end
 
+#if mobile
+import mobile.MobileControls;
+import mobile.objects.FunkinHitbox;
+#end
 import animateatlas.AtlasFrameMaker;
 import flixel.FlxG;
 import flixel.addons.effects.FlxTrail;
