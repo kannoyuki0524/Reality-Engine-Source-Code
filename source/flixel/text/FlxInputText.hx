@@ -629,11 +629,11 @@ class FlxInputText extends FlxText implements IFlxInputText
 			height + (fieldBorderThickness * 2)) : FlxRect.get(0, 0, width, height);
 		if (clipRect != null)
 		{
-			bounds = bounds.clipTo(clipRect);
+			bounds = clipRect.intersection(bounds, bounds);
 		}
 		bounds.offset(x - sprite.x, y - sprite.y);
 		
-		sprite.clipRect = rect.clipTo(bounds);
+		sprite.clipRect = clipRect.intersection(bounds, bounds);
 		
 		bounds.put();
 	}
@@ -1414,7 +1414,8 @@ class FlxInputText extends FlxText implements IFlxInputText
 					var boxRect = FlxRect.get(startBoundaries.x - scrollH, startBoundaries.y - scrollVOffset,
 						endBoundaries.right - startBoundaries.x,
 						startBoundaries.height);
-					boxRect.clipTo(FlxRect.weak(0, 0, width, height)); // clip the selection box inside the text sprite
+                    var recter = FlxRect.weak(0, 0, width, height);
+                    recter.intersection(boxRect, boxRect);// clip the selection box inside the text sprite
 					
 					box.setPosition(x + boxRect.x, y + boxRect.y);
 					box.makeGraphic(Std.int(boxRect.width), Std.int(boxRect.height));
@@ -1573,7 +1574,7 @@ class FlxInputText extends FlxText implements IFlxInputText
 	{
 		var overlap = false;
 		var pointerPos = FlxPoint.get();
-		for (camera in getCameras())
+		for (camera in cameras)
 		{
 			pointer.getWorldPosition(camera, pointerPos);
 			if (overlapsPoint(pointerPos, true, camera))
