@@ -117,7 +117,7 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
   {
     super.update(elapsed);
     
-	FlxG.mouse.visible = false;//FORCED LOL
+	  FlxG.mouse.visible = false;//FORCED LOL
     for (touch in FlxG.touches.list)
     {
       if (touch == null) continue;

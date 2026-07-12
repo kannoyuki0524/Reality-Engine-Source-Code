@@ -51,7 +51,6 @@
 	<define name="MODS_ALLOWED"/>
 	<define name="LUA_ALLOWED"/>
 	<define name="HSCRIPT_ALLOWED"/>
-	<define name="HAPTICS_ALLOWED" if="mobile"/>
 	<define name="ACHIEVEMENTS_ALLOWED" />
 	<define name="VIDEOS_ALLOWED" if="web || windows" unless="32bits"/>
 	<define name="PSYCH_WATERMARKS"/> <!-- DELETE THIS TO REMOVE WATERMARKS/DEV NAMES ON TITLE SCREEN -->
@@ -107,8 +106,6 @@
 	<section if="MODS_ALLOWED">
 		<assets path='example_mods' rename='mods' embed='false'/>
 	</section>
-	<assets path='assets/mobile' library='mobile' embed='false' if="mobile"/>
-	<assets path='assets/mobile' library='mobile' embed='true' unless="mobile"/>
 
 	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY 
 		TO FIX ONE OF THEM, I CONVERTED IT TO OTF. DUNNO IF YOU NEED TO
@@ -136,7 +133,6 @@
 	<haxelib name="flixel-ui"  version="2.4.0"/>
 	<haxelib name="flxgif"/>
 
-	<haxelib name="extension-haptics" if="mobile"/>
 	<haxelib name="hscript"/>
 	<haxelib name="hscript-iris-improved" unless="irisOut"/>
 	<haxelib name="linc_luajit" if="LUA_ALLOWED"/>
@@ -214,4 +210,7 @@
 	<icon path="art/icons/icon32.png" size='32'/>
 	<icon path="art/icons/icon64.png" size='64'/>
 	<icon path="art/icons/iconOG.png" />
+              <config>
+                        <ios deployment="13.6"/>
+              </config>
 </project>
