@@ -17,12 +17,11 @@ import backend.CrashHandler;
 import mobile.MobileLog;
 import crowplexus.iris.Iris;
 #if mobile
-
+import mobile.CopyState;
 import mobile.backend.MobileScaleMode;
 import mobile.backend.StorageUtil;
 #if android
 import android.content.Context as AndroidContext;
-import mobile.CopyState;
 #end
 #end
 #if sys
