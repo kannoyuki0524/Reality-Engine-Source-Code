@@ -254,7 +254,7 @@ class Paths
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
 		var path:String = getPath(key, TEXT, ignoreMods);
-		return Paths.getContent(path) == null ?;
+		return Paths.getContent(path);
 	}
 
 	inline static public function font(key:String)
