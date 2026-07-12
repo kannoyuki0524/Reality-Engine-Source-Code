@@ -141,7 +141,12 @@ class PauseSubState extends MusicBeatSubstate
 		mobileManager.addMobilePad('UP_DOWN', 'A_B');
 		mobileManager.addMobilePadCamera();
 		#end
-
+		FlxTween.globalManager.forEach(function(twn:FlxTween){
+		@:privateAccess{
+		if (this.members.contains(twn._object))
+		twn.active = true;
+		}
+	});
 	}
 
 	var holdTime:Float = 0;

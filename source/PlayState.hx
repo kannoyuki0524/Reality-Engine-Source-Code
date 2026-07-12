@@ -383,6 +383,7 @@ class PlayState extends MusicBeatState
 	public var funkyScripts:Array<FunkinScript> = [];
 
 	public static var nextReloadAll:Bool = false;
+	public static var pauseButton:PauseButton;
 	override public function create()
 	{
 		//trace('Playback Rate: ' + playbackRate);
@@ -3036,6 +3037,11 @@ class PlayState extends MusicBeatState
 				twn.active = true);
 			
 			paused = false;
+			
+			#if mobile
+			pauseButton.ranTween(true);
+			#end
+
 			callOnScripts('onResume', []);
 			#if VIDEOS_ALLOWED
 			FlxVideo.resumeAll();
@@ -3604,6 +3610,10 @@ class PlayState extends MusicBeatState
 			vocals.pause();
 		}
 		openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+		
+		#if mobile
+		pauseButton.ranTween(false);
+		#end
 		//}
 
 		#if desktop
@@ -4426,8 +4436,21 @@ class PlayState extends MusicBeatState
 				mobileControls.addMobilePadCamera();
 				setupMobilePadForGameplay();
 		}
+
+		pauseButton = new PauseButton(FlxG.width - 100, 20);
+		pauseButton.cameras = [camPauseHUD];
+		pauseButton.zIndex = 100;//LMAO?
+		add(pauseButton);
+		if (mobileControls.mobilePad != null) 
+		{
+			for (hint in mobileControls.mobilePad.hints)
+			{
+				hint.deadZones = [pauseButton.button];
+			}
+		}
 	}
 	#end
+
 
 	private function cachePopUpScore()
 	{

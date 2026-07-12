@@ -3,6 +3,10 @@ import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.util.FlxColor;
 
+#if mobile
+import mobile.MobileControls;
+import mobile.objects.FunkinHitbox;
+#end
 using StringTools;
 
 class ResetScoreSubState extends MusicBeatSubstate
