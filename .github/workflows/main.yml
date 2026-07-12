@@ -132,7 +132,7 @@ jobs:
           
       - name: Compile (iOS)
         if: startsWith(matrix.os, 'macos')
-        run: haxelib run lime build ios --final
+        run: haxelib run lime build ios --final --nosign
 
       - name: Make Ipa
         if: startsWith(matrix.os, 'macos')
