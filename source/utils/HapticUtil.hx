@@ -50,7 +50,7 @@ class HapticUtil
     final hapticsModes:Array<HapticsMode> = targetHapticsModes ?? [HapticsMode.ALL];
     if (!hapticsModes.contains(ClientPrefs.hapticsMode)) return;
 
-    final amplitudeValue = FlxMath.bound(amplitude * ClientPrefs.hapticsIntensityMultiplier, 0, 1);
+    final amplitudeValue = FlxMath.bound(amplitude, 0, 1);
 
     if (period > 0)
     {

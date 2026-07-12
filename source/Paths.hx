@@ -561,9 +561,9 @@ class Paths
 		// trace(gottenPath);
 		if(!currentTrackedSounds.exists(gottenPath))
 		#if MODS_ALLOWED
-			#if mobile
 			var folder:String = '';
 			if(path == 'songs') folder = 'songs:';
+			#if mobile
 			if (OpenFlAssets.exists(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)))
 			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
 			else

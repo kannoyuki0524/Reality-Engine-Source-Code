@@ -133,7 +133,7 @@ class FunkinHitbox extends Hitbox
 		catch (e:Dynamic) { return 0xFFFFFFFF; }
 	}
 
-	override function createHintGraphic(Width:Int, Height:Int, ?isLane:Bool = false):BitmapData
+	override function createHintGraphic(Width:Int, Height:Int, Color:FlxColor = 0xffffff, ?isLane:Bool = false):BitmapData
 	{
 		var shape:Shape = new Shape();
 		var matrix:Matrix = new Matrix();
@@ -183,13 +183,13 @@ class FunkinHitbox extends Hitbox
 		if (showHints)
 		{
 			hint.hintUp = new FunkinSprite();
-			hint.hintUp.loadGraphic(createHintGraphic(width, Math.floor(height * 0.020), true));
+			hint.hintUp.loadGraphic(createHintGraphic(width, Math.floor(height * 0.020), color, true));
 			hint.hintUp.x = x;
 			hint.hintUp.y = hint.y;
 			hint.hintUp.color = color;
 
 			hint.hintDown = new FunkinSprite();
-			hint.hintDown.loadGraphic(createHintGraphic(width, Math.floor(height * 0.020), true));
+			hint.hintDown.loadGraphic(createHintGraphic(width, Math.floor(height * 0.020), color, true));
 			hint.hintDown.x = x;
 			hint.hintDown.y = hint.y + hint.height / 1.020;
 			hint.hintDown.color = color;
