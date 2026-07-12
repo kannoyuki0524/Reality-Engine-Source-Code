@@ -142,8 +142,9 @@ class PauseSubState extends MusicBeatSubstate
 		mobileManager.addMobilePadCamera();
 		#end
 		FlxTween.globalManager.forEach(function(twn:FlxTween){
+		var twner = cast twn;
 		@:privateAccess{
-		if (this.members.contains(twn._object))
+		if (this.members.contains(twner._object))
 		twn.active = true;
 		}
 	});
