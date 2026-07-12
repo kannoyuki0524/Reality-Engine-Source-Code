@@ -59,6 +59,7 @@ class ClientPrefs {
 	public static var badWindow:Int = 135;
 	public static var safeFrames:Float = 10;
 
+	public static var hapticsMode:Int = 2;
 	public static var mobilePadAlpha:Float = #if mobile 0.6 #else 0 #end;
 	public static var hitboxAlpha:Float = #if mobile 0.7 #else 0 #end;
 	public static var hitboxMode:String = 'Normal';
@@ -206,6 +207,7 @@ class ClientPrefs {
 		FlxG.save.data.sickWindow = sickWindow;
 		FlxG.save.data.goodWindow = goodWindow;
 		FlxG.save.data.badWindow = badWindow;
+		FlxG.save.data.hapticsMode = hapticsMode;
 		FlxG.save.data.safeFrames = safeFrames;
 		FlxG.save.data.gameplaySettings = gameplaySettings;
 		FlxG.save.data.controllerMode = controllerMode;
@@ -251,6 +253,9 @@ class ClientPrefs {
 		}
 		if(FlxG.save.data.middleScroll != null) {
 			middleScroll = FlxG.save.data.middleScroll;
+		}
+		if(FlxG.save.data.hapticsMode != null) {
+			hapticsMode = FlxG.save.data.hapticsMode;
 		}
 		if(FlxG.save.data.opponentStrums != null) {
 			opponentStrums = FlxG.save.data.opponentStrums;

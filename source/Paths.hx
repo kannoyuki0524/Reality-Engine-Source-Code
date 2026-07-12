@@ -254,12 +254,7 @@ class Paths
 	static public function getTextFromFile(key:String, ?ignoreMods:Bool = false):String
 	{
 		var path:String = getPath(key, TEXT, ignoreMods);
-		#if sys
-		if (FileSystem.exists(path)) {
-			return File.getContent(path);
-		}
-		#end
-		return (OpenFlAssets.exists(path, TEXT)) ? Assets.getText(path) : null;
+		return Paths.getContent(path) == null ?;
 	}
 
 	inline static public function font(key:String)
@@ -337,7 +332,7 @@ class Paths
 		var xml:String = modsXml(key);
 		if(Paths.exists(xml)) xmlExists = true;
 
-		return FlxAtlasFrames.fromSparrow(imageLoaded, (xmlExists ? File.getContent(xml) : getPath('images/$key' + '.xml', TEXT, library)));
+		return FlxAtlasFrames.fromSparrow(imageLoaded, (xmlExists ? Paths.getContent(xml) : getPath('images/$key' + '.xml', TEXT, library)));
 		#else
 		return FlxAtlasFrames.fromSparrow(imageLoaded, getPath('images/$key' + '.xml', TEXT, library));
 		#end
@@ -353,7 +348,7 @@ class Paths
 		var txt:String = modsXml(key);
 		if(Paths.exists(txt)) txtExists = true;
 		
-		return FlxAtlasFrames.fromSpriteSheetPacker(imageLoaded, (txtExists ? File.getContent(txt) : getPath('images/$key' + '.txt', TEXT, library)));
+		return FlxAtlasFrames.fromSpriteSheetPacker(imageLoaded, (txtExists ? Paths.getContent(txt) : getPath('images/$key' + '.txt', TEXT, library)));
 		#else
 		return FlxAtlasFrames.fromSpriteSheetPacker(imageLoaded, getPath('images/$key' + '.txt', TEXT, library));
 		#end
@@ -567,7 +562,11 @@ class Paths
 		if(!currentTrackedSounds.exists(gottenPath))
 		#if MODS_ALLOWED
 			#if mobile
-			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(getPath('$path/$key.$SOUND_EXT', SOUND, library)));
+			var folder:String = '';
+			if(path == 'songs') folder = 'songs:';
+			if (OpenFlAssets.exists(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)))
+			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
+			else
 			#else
 			currentTrackedSounds.set(gottenPath, Sound.fromFile('./' + gottenPath));
 			#end
@@ -699,9 +698,9 @@ class Paths
 				{
 					var folder = dat[0];
 					var path = Paths.mods(folder + '/pack.json');
-					if(FileSystem.exists(path)) {
+					if(Paths.exists(path)) {
 						try{
-							var rawJson:String = File.getContent(path);
+							var rawJson:String = Paths.getContent(path);
 							if(rawJson != null && rawJson.length > 0) {
 								var stuff:Dynamic = Json.parse(rawJson);
 								var global:Bool = Reflect.getProperty(stuff, "runsGlobally");

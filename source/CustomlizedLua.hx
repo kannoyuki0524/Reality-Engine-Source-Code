@@ -2709,21 +2709,21 @@ class CustomlizedLua {
 		
 		for (folder in foldersToCheck)
 		{
-			if(FileSystem.exists(folder))
+			if(Paths.exists(folder))
 			{
 				var frag:String = folder + name + '.frag';
 				var vert:String = folder + name + '.vert';
 				var found:Bool = false;
-				if(FileSystem.exists(frag))
+				if(Paths.exists(frag))
 				{
-					frag = File.getContent(frag);
+					frag = Paths.getContent(frag);
 					found = true;
 				}
 				else frag = null;
 
-				if(FileSystem.exists(vert))
+				if(Paths.exists(vert))
 				{
-					vert = File.getContent(vert);
+					vert = Paths.getContent(vert);
 					found = true;
 				}
 				else vert = null;

@@ -113,16 +113,12 @@ class Song
 
 		var moddyFile:String = Paths.json(formattedFolder + '/' + formattedSong);
 		if(Paths.exists(moddyFile)) {
-			rawJson = File.getContent(moddyFile).trim();
+			rawJson = Paths.getContent(moddyFile).trim();
 		}
 
 		if(rawJson == null) {
 			try{
-			#if sys
-			rawJson = File.getContent(Paths.json(formattedFolder + '/' + Paths.formatToSongPath(songName))).trim();
-			#else
-			rawJson = Assets.getText(Paths.json(formattedFolder + '/' + Paths.formatToSongPath(songName))).trim();
-			#end
+			rawJson = Paths.getContent(Paths.json(formattedFolder + '/' + Paths.formatToSongPath(songName))).trim();
 			}
 			catch(e){
 				trace('SMG2 ATE YOUR CHARTS!, ' + jsonInput + ' NOT FOUND MAN!');

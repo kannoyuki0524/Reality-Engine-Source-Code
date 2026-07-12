@@ -76,6 +76,7 @@ class StartupState extends MusicBeatState
 		FlxG.keys.preventDefaultKeys = [TAB];
             
 		#if mobile
+     		funkin.util.plugins.TouchPointerPlugin.initialize();
 			MobileConfig.init('MobileControls', CoolUtil.getSavePath(), 'assets/mobile/',
 				[
 					['MobilePad/DPadModes', ButtonModes.DPAD],

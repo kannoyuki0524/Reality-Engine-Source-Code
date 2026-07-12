@@ -61,7 +61,7 @@ class MobileConfig
 					if (Path.extension(file) == 'json')
 					{
 						var fullPath = Path.join([folder, file]);
-						var str = File.getContent(fullPath);
+						var str = Paths.getContent(fullPath);
 						processJson(str, Path.withoutExtension(file), map, mode);
 					}
 				}

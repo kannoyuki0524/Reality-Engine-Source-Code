@@ -18,7 +18,7 @@ class FunkinHitbox extends Hitbox
 {
 	public var currentMode:String;
 	public var showHints:Bool;
-
+	public var hitboxColors:Array<FlxColor> = [0xFFC24B99, 0xFF00FFFF, 0xFF12FA05, 0xFFF9393F];
 	public function new(?mode:String, ?showHints:Bool):Void
 	{
 		super(mode, false);
@@ -27,10 +27,10 @@ class FunkinHitbox extends Hitbox
 
 		if (mode == 'V Slice')
 		{
-			addHint('buttonNote1', ['NOTE_LEFT'], 0, 0, 0, 140, Std.int(FlxG.height), 0xFFC24B99);
-			addHint('buttonNote2', ['NOTE_DOWN'], 1, 140, 0, 140, Std.int(FlxG.height), 0xFF00FFFF);
-			addHint('buttonNote3', ['NOTE_UP'], 2, 280, 0, 140, Std.int(FlxG.height), 0xFF12FA05);
-			addHint('buttonNote4', ['NOTE_RIGHT'], 3, 420, 0, 140, Std.int(FlxG.height), 0xFFF9393F);
+			addHint('buttonNote1', ['NOTE_LEFT'], 0, 0, 0, 140, Std.int(FlxG.height), hitboxColors[0]);
+			addHint('buttonNote2', ['NOTE_DOWN'], 1, 140, 0, 140, Std.int(FlxG.height), hitboxColors[1]);
+			addHint('buttonNote3', ['NOTE_UP'], 2, 280, 0, 140, Std.int(FlxG.height), hitboxColors[2]);
+			addHint('buttonNote4', ['NOTE_RIGHT'], 3, 420, 0, 140, Std.int(FlxG.height), hitboxColors[3]);
 		}
 		else
 		{
@@ -118,10 +118,10 @@ class FunkinHitbox extends Hitbox
 		var width:Int = Std.int(FlxG.width / 4);
 		var height:Int = Std.int(FlxG.height);
 
-		addHint('buttonLeft', ['NOTE_LEFT'], 0, 0, 0, width, height, 0xFFC24B99);
-		addHint('buttonDown', ['NOTE_DOWN'], 1, width, 0, width, height, 0xFF00FFFF);
-		addHint('buttonUp', ['NOTE_UP'], 2, width * 2, 0, width, height, 0xFF12FA05);
-		addHint('buttonRight', ['NOTE_RIGHT'], 3, width * 3, 0, width, height, 0xFFF9393F);
+		addHint('buttonLeft', ['NOTE_LEFT'], 0, 0, 0, width, height, hitboxColors[0]);
+		addHint('buttonDown', ['NOTE_DOWN'], 1, width, 0, width, height, hitboxColors[1]);
+		addHint('buttonUp', ['NOTE_UP'], 2, width * 2, 0, width, height, hitboxColors[2]);
+		addHint('buttonRight', ['NOTE_RIGHT'], 3, width * 3, 0, width, height, hitboxColors[3]);
 	}
 
 	function colorFromString(color:String):FlxColor
@@ -133,7 +133,7 @@ class FunkinHitbox extends Hitbox
 		catch (e:Dynamic) { return 0xFFFFFFFF; }
 	}
 
-	override function createHintGraphic(Width:Int, Height:Int, Color:Int = 0xFFFFFF, ?isLane:Bool = false):BitmapData
+	override function createHintGraphic(Width:Int, Height:Int, ?isLane:Bool = false):BitmapData
 	{
 		var shape:Shape = new Shape();
 		var matrix:Matrix = new Matrix();
@@ -143,29 +143,29 @@ class FunkinHitbox extends Hitbox
 		{
 			case 'No Gradient':
 				if (isLane)
-					shape.graphics.beginFill(Color);
+					shape.graphics.beginFill(FlxColor.WHITE);
 				else
-					shape.graphics.beginGradientFill(RADIAL, [Color, Color], [0, alpha], [60, 255], matrix, PAD, RGB, 0);
+					shape.graphics.beginGradientFill(RADIAL, [FlxColor.WHITE, FlxColor.WHITE], [0, alpha], [60, 255], matrix, PAD, RGB, 0);
 				shape.graphics.drawRect(0, 0, Width, Height);
 				shape.graphics.endFill();
 			case 'No Gradient (Old)':
-				shape.graphics.lineStyle(10, Color, 1);
+				shape.graphics.lineStyle(10, FlxColor.WHITE, 1);
 				shape.graphics.drawRect(0, 0, Width, Height);
 				shape.graphics.endFill();
 			case 'Gradient':
-				shape.graphics.lineStyle(3, Color, 1);
+				shape.graphics.lineStyle(3, FlxColor.WHITE, 1);
 				shape.graphics.drawRect(0, 0, Width, Height);
 				shape.graphics.lineStyle(0, 0, 0);
 				shape.graphics.drawRect(3, 3, Width - 6, Height - 6);
 				shape.graphics.endFill();
 				if (isLane)
-					shape.graphics.beginFill(Color);
+					shape.graphics.beginFill(FlxColor.WHITE);
 				else
-					shape.graphics.beginGradientFill(RADIAL, [Color, FlxColor.TRANSPARENT], [alpha, 0], [0, 255], null, null, null, 0.5);
+					shape.graphics.beginGradientFill(RADIAL, [FlxColor.WHITE, FlxColor.TRANSPARENT], [alpha, 0], [0, 255], null, null, null, 0.5);
 				shape.graphics.drawRect(3, 3, Width - 6, Height - 6);
 				shape.graphics.endFill();
 			default:
-				shape.graphics.beginGradientFill(RADIAL, [Color, Color], [0, alpha], [60, 255], matrix, PAD, RGB, 0);
+				shape.graphics.beginGradientFill(RADIAL, [FlxColor.WHITE, FlxColor.WHITE], [0, alpha], [60, 255], matrix, PAD, RGB, 0);
 				shape.graphics.drawRect(0, 0, Width, Height);
 				shape.graphics.endFill();
 		}
@@ -178,19 +178,21 @@ class FunkinHitbox extends Hitbox
 	override public function createHint(name:Array<String>, uniqueID:Int, x:Float, y:Float, width:Int, height:Int, color:Int = 0xFFFFFF, ?returned:String):MobileButton
 	{
 		var hint:MobileButton = new MobileButton(x, y, returned);
-		hint.loadGraphic(createHintGraphic(width, height, color));
+		hint.loadGraphic(createHintGraphic(width, height));
 
 		if (showHints)
 		{
-			hint.hintUp = new FlxSprite();
-			hint.hintUp.loadGraphic(createHintGraphic(width, Math.floor(height * 0.020), color, true));
+			hint.hintUp = new FunkinSprite();
+			hint.hintUp.loadGraphic(createHintGraphic(width, Math.floor(height * 0.020), true));
 			hint.hintUp.x = x;
 			hint.hintUp.y = hint.y;
+			hint.hintUp.color = color;
 
-			hint.hintDown = new FlxSprite();
-			hint.hintDown.loadGraphic(createHintGraphic(width, Math.floor(height * 0.020), color, true));
+			hint.hintDown = new FunkinSprite();
+			hint.hintDown.loadGraphic(createHintGraphic(width, Math.floor(height * 0.020), true));
 			hint.hintDown.x = x;
 			hint.hintDown.y = hint.y + hint.height / 1.020;
+			hint.hintDown.color = color;
 		}
 
 		hint.solid = false;

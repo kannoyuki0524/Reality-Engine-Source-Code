@@ -115,6 +115,11 @@
       "dir": "src",
       "ref": "8567c4dad34cfeaf2ff23fe12c3796f5db80685e",
       "url": "https://github.com/FunkinCrew/grig.audio"
+    },
+    {
+      "name": "extension-haptics",
+      "type": "haxelib",
+      "version": "1.0.3"
     }
   ]
 }

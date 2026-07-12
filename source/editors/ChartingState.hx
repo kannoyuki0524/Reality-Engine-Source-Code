@@ -1072,14 +1072,14 @@ class ChartingState extends MusicBeatState
 
 		for (i in 0...directories.length) {
 			var directory:String =  directories[i];
-			if(FileSystem.exists(directory)) {
+			if(Paths.exists(directory)) {
 				for (file in FileSystem.readDirectory(directory)) {
 					var path = haxe.io.Path.join([directory, file]);
 					if (!FileSystem.isDirectory(path) && file != 'readme.txt' && file.endsWith('.txt')) {
 						var fileToCheck:String = file.substr(0, file.length - 4);
 						if(!eventPushedMap.exists(fileToCheck)) {
 							eventPushedMap.set(fileToCheck, true);
-							eventStuff.push([fileToCheck, File.getContent(path)]);
+							eventStuff.push([fileToCheck, Paths.getContent(path)]);
 						}
 					}
 				}
@@ -2670,12 +2670,8 @@ class ChartingState extends MusicBeatState
 			path = Paths.getPreloadPath('characters/' + Character.DEFAULT_CHARACTER + '.json'); //If a character couldn't be found, change him to BF just to prevent a crash
 		}
 
-		#if MODS_ALLOWED
-		var rawJson = File.getContent(path);
-		#else
-		var rawJson = OpenFlAssets.getText(path);
-		#end
-
+		var rawJson = Paths.getContent(path);
+		
 		var json:Character.CharacterFile = cast Json.parse(rawJson);
 		return json.healthicon;
 	}
