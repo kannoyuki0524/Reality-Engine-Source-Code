@@ -560,7 +560,7 @@ class Paths
 		gottenPath = gottenPath.substring(gottenPath.indexOf(':') + 1, gottenPath.length);
 		// trace(gottenPath);
 		if(!currentTrackedSounds.exists(gottenPath)){
-                            
+                     
 		var folder:String = '';
 		if(path == 'songs') folder = 'songs:';
 		#if MODS_ALLOWED
@@ -568,9 +568,8 @@ class Paths
 			if (OpenFlAssets.exists(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)))
 			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
 			else
-			#else
-			currentTrackedSounds.set(gottenPath, Sound.fromFile('./' + gottenPath));
 			#end
+			currentTrackedSounds.set(gottenPath, Sound.fromFile('./' + gottenPath));
 		#else
 			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
 		
