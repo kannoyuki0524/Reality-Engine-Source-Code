@@ -39,8 +39,8 @@ class StorageUtil
 			Sys.getCwd()
 		#end;
 
+	public static var currentExternalStorageDirectory:String = null;
 	#if android
-	public static var currentExternalStorageDirectory:String;
 
 	public static function initExternalStorageDirectory():String
 	{
@@ -111,11 +111,6 @@ class StorageUtil
 		}
 
 		return daPath;
-	}
-
-	public static function getExternalStorageDirectory():String
-	{
-		return currentExternalStorageDirectory != null ? currentExternalStorageDirectory : getStorageDirectory();
 	}
 
 	public static function requestPermissions():Void
@@ -201,6 +196,12 @@ class StorageUtil
 		}
 	}
 	#end
+
+
+	public static function getExternalStorageDirectory():String
+	{
+		return currentExternalStorageDirectory != null ? currentExternalStorageDirectory : getStorageDirectory();
+	}
 
 	public static function saveContent(fileName:String, fileData:String):Void
 	{

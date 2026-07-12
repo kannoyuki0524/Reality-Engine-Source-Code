@@ -54,7 +54,6 @@ class Main extends Sprite
 		#if mobile
 		#if android
 		StorageUtil.initExternalStorageDirectory(); //do not make this jobs everytime
-		StorageUtil.requestPermissions();
 		// process to hang on emulators/devices that don't handle the permission
 		// dialog correctly. Permissions are requested later from MainMenuState.
 		StorageUtil.chmod(2777, AndroidContext.getExternalFilesDir() + '/mods');
