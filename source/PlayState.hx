@@ -1562,14 +1562,14 @@ class PlayState extends MusicBeatState
 		ModchartFuncs.loadLuaFunctions();
 		#end
 		callOnScripts('onCreatePost', []);
-
-		super.create();
-
+		
 		#if mobile
 
 		setupMobileControlsForGameplay();
 		#end
 
+		super.create();
+		refresh();
 		cacheCountdown();
 		cachePopUpScore();
 		for (key => type in precacheList)
@@ -4445,7 +4445,8 @@ class PlayState extends MusicBeatState
 		{
 			for (hint in mobileControls.hitbox.hints)
 			{
-				hint.deadZones = [pauseButton.button];
+				if (hint.deadZones == null) hint.deadZones = [];
+				hint.deadZones.push(pauseButton.button);
 			}
 		}
 	}

@@ -39,7 +39,7 @@ class PauseButton extends FlxSpriteGroup
         add(button);
     }
 
-    var tadaTimer = new FlxTimer();
+    var tadaTimer = null;
     public function ranTween(?fadeIn:Bool = true){ 
         if (tadaTimer != null) tadaTimer.cancel();
         FlxTween.cancelTweensOf(button);
@@ -55,7 +55,7 @@ class PauseButton extends FlxSpriteGroup
         FlxTween.tween(bg.scale, {x: 0.84 * 0.8, y: 0.8 * 0.8}, 0.4, {ease: FlxEase.backInOut});
         FlxTween.tween(bg, {alpha: 0.000001}, 0.6, {ease: FlxEase.quartOut});
             tadaTimer = new FlxTimer().start(0.3, function(t:FlxTimer){
-                FlxTween.tween(button, {alpha: 0}, 0.6, {ease: FlxEase.quartOut});
+                FlxTween.tween(button, {alpha: 0.0001}, 0.6, {ease: FlxEase.quartOut});
                 
             });
         }
