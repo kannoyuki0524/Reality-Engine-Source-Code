@@ -69,6 +69,7 @@ jobs:
           if-no-files-found: error
 
       - name: Upload Artifact (macOS)
+        if: startsWith(matrix.os, 'macos')
         uses: actions/upload-artifact@main
         with:
           name: macOSBuild-arm64
