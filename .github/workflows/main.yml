@@ -72,7 +72,7 @@ jobs:
         if: startsWith(matrix.os, 'macos')
         uses: actions/upload-artifact@main
         with:
-          name: macOSBuild-arm64
+          name: macOSBuild
           path: export/release/macos/bin/*
           include-hidden-files: true
           if-no-files-found: error
