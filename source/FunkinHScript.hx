@@ -239,7 +239,7 @@ class FunkinHScript extends FunkinScript
 			set('mobile', false);
 			set('FunkinHitbox', FunkinSprite);
 		#end
-			set('HapticUtil', HapticUtil);
+			set('HapticUtil', utils.HapticUtil);
 		for (i in 0...4) {
 			set('defaultPlayerStrumX' + i, 0);
 			set('defaultPlayerStrumY' + i, 0);

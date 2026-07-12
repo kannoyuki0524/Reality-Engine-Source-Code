@@ -526,7 +526,7 @@ class FunkinLua extends FunkinScript {
 
 		Lua_helper.add_callback(lua, "doVibrate", function(?period:Float = 0.1, ?duration:Float = 0.1,
       ?amplitude:Float = 0.5, ?sharpness:Float = 1){
-			utils.HapticUtil.doVibrate(period, duration, amplitude, sharpness);
+			utils.HapticUtil.vibrate(period, duration, amplitude, sharpness);
 		});
 
 		Lua_helper.add_callback(lua, "callScript", function(?file:String, ?funcName:String, ?args:Array<Dynamic>, ?extension:String = '.lua'){
