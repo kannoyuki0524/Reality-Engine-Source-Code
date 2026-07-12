@@ -523,6 +523,12 @@ class FunkinLua extends FunkinScript {
 			PlayState.instance.callOnHScripts(funcName, args, ignoreStops, exclusions);
 		});
 
+
+		Lua_helper.add_callback(lua, "doVibrate", function(?period:Float = 0.1, ?duration:Float = 0.1,
+      ?amplitude:Float = 0.5, ?sharpness:Float = 1){
+			utils.HapticUtil.doVibrate(period, duration, amplitude, sharpness);
+		});
+
 		Lua_helper.add_callback(lua, "callScript", function(?file:String, ?funcName:String, ?args:Array<Dynamic>, ?extension:String = '.lua'){
 			if(file==null){
 				#if (legacy_luajit >= "0.0.6")
