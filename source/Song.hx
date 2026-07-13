@@ -96,6 +96,28 @@ class Song
 		this.bpm = bpm;
 	}
 
+	public static function getDefaultSongData():SwagSong
+	{
+		return {
+				song: 'Test',
+				notes: [],
+				events: [],
+				bpm: 150.0,
+				needsVoices: true,
+				arrowSkin: '',
+				splashSkin: 'noteSplashes',//idk it would crash if i didn't
+				player1: 'bf',
+				player2: 'dad',
+				gfVersion: 'gf',
+				speed: 1,
+				stage: 'stage',
+				validScore: false,
+				igorAutoFix:true,
+				extraPlayers:[],
+				strumAmount:2
+			};
+	}
+
 	public static function loadFromJson(songName:String, ?diffic:String = '', ?folder:String):SwagSong
 	{
 		var jsonInput = songName + diffic;
@@ -124,8 +146,12 @@ class Song
 				trace('SMG2 ATE YOUR CHARTS!, ' + jsonInput + ' NOT FOUND MAN!');
 				if (Paths.exists(Paths.json(formattedFolder + '/' + Paths.formatToSongPath(songName))))
 				return Song.loadFromJson(songName, '', folder);
-				else
+				else{
+				if (songName != 'test')
 				return Song.loadFromJson('test', '', 'test');
+				else
+				return Song.getDefaultSongData();//i'm doomed bro
+				}
 			}
 		}
 

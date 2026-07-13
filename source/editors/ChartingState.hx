@@ -222,25 +222,7 @@ class ChartingState extends MusicBeatState
 		else
 		{
 			CoolUtil.difficulties = CoolUtil.defaultDifficulties.copy();
-
-			songData = {
-				song: 'Test',
-				notes: [],
-				events: [],
-				bpm: 150.0,
-				needsVoices: true,
-				arrowSkin: '',
-				splashSkin: 'noteSplashes',//idk it would crash if i didn't
-				player1: 'bf',
-				player2: 'dad',
-				gfVersion: 'gf',
-				speed: 1,
-				stage: 'stage',
-				validScore: false,
-				igorAutoFix:true,
-				extraPlayers:[],
-				strumAmount:2
-			};
+			songData = Song.getDefaultSongData();
 			addSection();
 			PlayState.SONG = songData;
 		}

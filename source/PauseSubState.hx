@@ -358,7 +358,7 @@ class PauseSubState extends MusicBeatSubstate
 			if (item.targetY == 0)
 			{
 				#if MOBILE_CONTROL_ALLOWED
-				alphabeter.targetX = 1;
+				item.targetX = 1;
 				#end
 				item.alpha = 1;
 				// item.setGraphicSize(Std.int(item.width));
@@ -370,7 +370,7 @@ class PauseSubState extends MusicBeatSubstate
 				}
 			}#if MOBILE_CONTROL_ALLOWED
 			else{
-				alphabeter.targetX = 0;
+				item.targetX = 0;
 			}
 			#end
 		}

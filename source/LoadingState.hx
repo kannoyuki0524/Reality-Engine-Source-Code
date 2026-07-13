@@ -95,7 +95,7 @@ class LoadingState extends MusicBeatState
 			}
 		}
 		if (stateName == 'PlayState' && PlayState.SONG != null){
-			getSongAssets();
+			getSongAssets(PlayState.SONG);
 			states.insert(1, 'Characters');
 			states.insert(2, 'Songs');
 		}
@@ -119,10 +119,20 @@ class LoadingState extends MusicBeatState
 		trace('IN TOTAL: ' + totals);
 	}
 	
-	function getSongAssets(){
-		var SONG = PlayState.SONG;
+	function getSongAssets(SONG:SwagSong){
 		var songName:String = Paths.formatToSongPath(SONG.song);
 		var stageData = StageData.getStageFile(SONG.stage);
+
+		songs.push({id:songData.song, name:'Inst'});
+		if (songData.needsVoices)
+		songs.push({id:songData.song, name:'Voices'});
+		if (songData.player1 != null && songData.player1.length >= 1)
+		characters.push(songData.player1);
+		if (songData.player2 != null && songData.player2.length >= 1)
+		characters.push(songData.player2);
+		if (songData.gfVersion != null && songData.gfVersion.length >= 1)
+		characters.push(songData.gfVersion);
+
 
 		if (Reflect.hasField(stageData, 'precache')){
 			var precacheList:Array<ListMeta> = cast Reflect.field(stageData, 'precache');
@@ -143,15 +153,6 @@ class LoadingState extends MusicBeatState
 				menuID = Reflect.field(list, 'menuID');
 		}
 
-		songs.push({id:SONG.song, name:'Inst'});
-		if (SONG.needsVoices)
-		songs.push({id:SONG.song, name:'Voices'});
-		if (SONG.player1 != null && SONG.player1.length >= 1)
-		characters.push(SONG.player1);
-		if (SONG.player2 != null && SONG.player2.length >= 1)
-		characters.push(SONG.player2);
-		if (SONG.gfVersion != null && SONG.gfVersion.length >= 1)
-		characters.push(SONG.gfVersion);
 
 		if (Paths.exists(Paths.getPath('data/' + songName + '/events.json', TEXT))){
 			var event = Paths.getJson(Paths.getPath('data/' + songName + '/events.json', TEXT));
@@ -164,7 +165,6 @@ class LoadingState extends MusicBeatState
 			eventsPrecache(SONG.events);
 		}
 	}
-
 	function eventsPrecache(events:Array<Dynamic>){
 		for (event in events){
 			for (i in 0...event[1].length)
@@ -180,6 +180,10 @@ class LoadingState extends MusicBeatState
 
 	function catchAssets(asset:ListMeta){
 		switch (asset.type){
+			case "Song":
+				var songName:String = Paths.formatToSongPath(asset.name);
+				var songData = Song.loadFromJson(Paths.formatToSongPath(songName).toLowerCase(), CoolUtil.getDifficultyFilePath(), Paths.formatToSongPath(songName).toLowerCase());
+				getSongAssets(songData);
 			case "Image":
 				images.push(asset.name);
 			case "Character":
