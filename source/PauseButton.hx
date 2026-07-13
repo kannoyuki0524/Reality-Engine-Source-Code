@@ -17,7 +17,7 @@ class PauseButton extends FlxSpriteGroup
     {
         super(X, Y);
         button = new FunkinSprite();
-        button.frames = Paths.getSparrowAtlas("button", "mobile");
+        button.frames = Paths.getSparrowAtlas("pauseButton");
         button.animation.addByIndices('idle', 'back', [0], "", 24, false);
         button.animation.addByIndices('hold', 'back', [5], "", 24, false);
         button.animation.addByIndices('confirm', 'back', [
@@ -26,17 +26,18 @@ class PauseButton extends FlxSpriteGroup
         button.scale.set(0.8, 0.8);
         button.updateHitbox();
         button.animation.play("idle");
-        button.setPosition((FlxG.width - button.width) - 35, 35);
 
-        bg = new FunkinSprite(0, 0, Paths.image("button", "mobile"));
+        bg = new FunkinSprite(0, 0, Paths.image("pauseCircle"));
         bg.scale.set(0.84, 0.8);
         bg.updateHitbox();
-        bg.x = ((button.x + (button.width / 2)) - (bg.width / 2));
-        bg.y = ((button.y + (button.height / 2)) - (bg.height / 2));
         bg.alpha = 0.1;
 
         add(bg);
         add(button);
+        
+        button.setPosition((X - button.width) - 35, Y);
+        bg.x = ((button.x + (button.width / 2)) - (bg.width / 2));
+        bg.y = ((button.y + (button.height / 2)) - (bg.height / 2));
     }
 
     var tadaTimer = null;

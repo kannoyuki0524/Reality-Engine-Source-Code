@@ -37,7 +37,7 @@ class ErrorState extends MusicBeatState
 		errorText.screenCenter();
 		add(errorText);
 		super.create();
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		var state:MusicBeatState = MusicBeatState.getState();
 		if (state != null && state.mobileControls != null) {
 			state.mobileControls.addMobilePad('LEFT_RIGHT', 'A_B');

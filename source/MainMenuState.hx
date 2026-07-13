@@ -161,7 +161,7 @@ class MainMenuState extends MusicBeatState
 		}
 		#end
 
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('UP_DOWN', 'A_B');
 		mobileControls.addMobilePadCamera(false);
 		#end

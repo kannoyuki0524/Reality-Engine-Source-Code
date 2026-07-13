@@ -90,7 +90,7 @@ class NotesSubState extends MusicBeatSubstate
 
 		changeSelection();
 
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileManager = new mobile.MobileControls(this);
 		mobileManager.addMobilePad('FULL', 'A_B_C');
 		mobileManager.addMobilePadCamera();

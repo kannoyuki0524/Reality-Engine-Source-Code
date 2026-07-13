@@ -4,7 +4,7 @@ package;
 import Discord.DiscordClient;
 import sys.thread.Thread;
 #end
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.MobileConfig;
 import mobile.MobileConfig.ButtonModes;
 import mobile.MobileLog;

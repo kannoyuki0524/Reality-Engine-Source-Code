@@ -219,7 +219,7 @@ class CharacterEditorState extends MusicBeatState
 
 		FlxG.mouse.visible = true;
 		reloadCharacterOptions();
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('FULL', 'CHARACTER_EDITOR');
 		mobileControls.addMobilePadCamera(true);
 		#end

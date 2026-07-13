@@ -263,6 +263,7 @@ class WeekData {
 				{
 					foundTheTop = true;
 					Paths.currentModDirectory = dat[0];
+					
 				}
 			}
 		}

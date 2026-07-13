@@ -34,7 +34,7 @@ class FlashingState extends MusicBeatState
 		warnText.screenCenter(Y);
 		add(warnText);
 
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('NONE', 'A_B');
 		mobileControls.addMobilePadCamera(true);
 		#end

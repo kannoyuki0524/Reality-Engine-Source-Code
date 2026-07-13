@@ -1,4 +1,4 @@
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 package mobile.options;
 
 import flixel.FlxG;
@@ -46,7 +46,7 @@ class MobileControlSelectState extends MusicBeatSubstate
 
 	override function create()
 	{
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileManager = new MobileControls(this);
 		mobileManager.addMobilePad('FULL', 'A_B_C');
 		mobileManager.addMobilePadCamera();
@@ -342,7 +342,7 @@ class MobileControlSelectState extends MusicBeatSubstate
 	{
 		clearPreview();
 		controls.isInSubstate = false;
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		if (mobileManager != null) mobileManager.destroy();
 		#end
 		super.destroy();

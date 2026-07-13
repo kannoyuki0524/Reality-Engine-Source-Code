@@ -11,7 +11,7 @@ import Discord.DiscordClient;
 import sys.FileSystem;
 import sys.io.File;
 #end
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.MobileLog;
 import mobile.backend.StorageUtil;
 #end

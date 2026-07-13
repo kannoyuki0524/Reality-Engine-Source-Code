@@ -29,7 +29,7 @@ using StringTools;
 
 class OptionsState extends MusicBeatState
 {
-	#if mobile
+	#if MOBILE_CONTROL_ALLOWED
 	var options:Array<String> = ['Note Colors', 'Controls', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay', 'Mobile Controls'];
 	#else
 	var options:Array<String> = ['Note Colors', 'Controls', 'Adjust Delay and Combo', 'Graphics', 'Visuals and UI', 'Gameplay'];
@@ -53,7 +53,7 @@ class OptionsState extends MusicBeatState
 			case 'Adjust Delay and Combo':
 				LoadingState.loadAndSwitchState(new options.NoteOffsetState());
 			case 'Mobile Controls':
-				#if mobile
+				#if MOBILE_CONTROL_ALLOWED
 				openSubState(new mobile.options.MobileControlSelectState());
 				#else
 				trace('Mobile Controls is only available on mobile platforms, DO YOU SURE YOU ARE ON MOBILE MY MAN?????!?!?');
@@ -98,7 +98,7 @@ class OptionsState extends MusicBeatState
 		changeSelection();
 		ClientPrefs.saveSettings();
 
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('UP_DOWN', 'A_B');
 		mobileControls.addMobilePadCamera(true);
 		#end
@@ -106,7 +106,7 @@ class OptionsState extends MusicBeatState
 	}
 
 	override function closeSubState() {
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('UP_DOWN', 'A_B');
 		mobileControls.addMobilePadCamera(true);
 		#end

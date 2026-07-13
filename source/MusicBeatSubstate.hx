@@ -7,7 +7,7 @@ import flixel.FlxSubState;
 import flixel.FlxBasic;
 import flixel.FlxSprite;
 import flixel.util.FlxSort;
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.MobileControls;
 import mobile.objects.FunkinHitbox;
 #end
@@ -43,7 +43,7 @@ class MusicBeatSubstate extends FlxUISubState
 		super();
 	}
 
-	#if mobile
+	#if MOBILE_CONTROL_ALLOWED
 	public var mobileManager:MobileControls;
 
 	public inline function mobileButtonJustPressed(buttons:Dynamic):Bool
@@ -81,7 +81,7 @@ class MusicBeatSubstate extends FlxUISubState
 	{
 		var ctrl:Controls = Controls.instance;
 		ctrl.isInSubstate = true;
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		if(mobileManager != null)
 		{
 			ctrl.requestedHitbox = mobileManager.hitbox;
@@ -94,7 +94,7 @@ class MusicBeatSubstate extends FlxUISubState
 
 	override function destroy()
 	{
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		if (mobileManager != null) mobileManager.destroy();
 		#end
 		instance = null;

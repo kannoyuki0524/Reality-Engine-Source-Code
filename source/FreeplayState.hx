@@ -161,7 +161,7 @@ class FreeplayState extends MusicBeatState
 		add(textBG);
 
 		#if PRELOAD_ALL
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		var leText:String = "Press Y to listen to the Song / Press C to open the Gameplay Changers Menu / Press Z to Reset your Score and Accuracy.";
 		var size:Int = 16;
 		#else
@@ -176,20 +176,22 @@ class FreeplayState extends MusicBeatState
 		text.setFormat(Paths.font("vcr.ttf"), size, FlxColor.WHITE, RIGHT);
 		text.scrollFactor.set();
 		add(text);
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('LEFT_FULL', 'A_B_C_X_Y_Z');
 		mobileControls.addMobilePadCamera(true);
 		#end
 		super.create();
 	}
-
+	var qutting = false;
 	override function closeSubState() {
 		changeSelection(0, false);
 		persistentUpdate = true;
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
+		if (!qutting){
 		mobileControls.removeMobilePad();
 		mobileControls.addMobilePad('LEFT_FULL', 'A_B_C_X_Y_Z');
 		mobileControls.addMobilePadCamera(true);
+		}
 		#end
 		super.closeSubState();
 	}
@@ -238,8 +240,8 @@ class FreeplayState extends MusicBeatState
 		var upP = controls.UI_UP_P;
 		var downP = controls.UI_DOWN_P;
 		var accepted = controls.ACCEPT;
-		var space = FlxG.keys.justPressed.SPACE #if mobile || mobileButtonJustPressed('Y') #end; 
-		var ctrl = FlxG.keys.justPressed.CONTROL #if mobile || mobileButtonJustPressed('C') #end;
+		var space = FlxG.keys.justPressed.SPACE #if MOBILE_CONTROL_ALLOWED || mobileButtonJustPressed('Y') #end; 
+		var ctrl = FlxG.keys.justPressed.CONTROL #if MOBILE_CONTROL_ALLOWED || mobileButtonJustPressed('C') #end;
 
 		var shiftMult:Int = 1;
 		if(FlxG.keys.pressed.SHIFT) shiftMult = 3;
@@ -270,7 +272,7 @@ class FreeplayState extends MusicBeatState
 				}
 			}
 			
-			#if mobile
+			#if MOBILE_CONTROL_ALLOWED
 			if(mobileButtonJustPressed('X'))
 			{
 				curSelected = 0;
@@ -299,6 +301,7 @@ class FreeplayState extends MusicBeatState
 				colorTween.cancel();
 			}
 			FlxG.sound.play(Paths.sound('cancelMenu'));
+			qutting = true;
 			MusicBeatState.switchState(new MainMenuState());
 		}
 
@@ -334,6 +337,7 @@ class FreeplayState extends MusicBeatState
 
 		else if (accepted)
 		{
+			qutting = true;
 			persistentUpdate = false;
 			var songLowercase:String = Paths.formatToSongPath(songs[curSelected].songName);
 
@@ -356,7 +360,7 @@ class FreeplayState extends MusicBeatState
 					
 			destroyFreeplayVocals();
 		}
-		else if(controls.RESET #if mobile || mobileButtonJustPressed('Z') #end)
+		else if(controls.RESET #if MOBILE_CONTROL_ALLOWED || mobileButtonJustPressed('Z') #end)
 		{
 			persistentUpdate = false;
 			openSubState(new ResetScoreSubState(songs[curSelected].songName, curDifficulty, songs[curSelected].songCharacter));

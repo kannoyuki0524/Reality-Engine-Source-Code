@@ -17,7 +17,7 @@ import openfl.ui.MouseCursor;
 import openfl.ui.Mouse;
 import flixel.FlxBasic;
 import funkin.scripts.*;
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.MobileControls;
 import mobile.objects.FunkinHitbox;
 #end
@@ -56,7 +56,7 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 	private var curDecBeat:Float = 0;
 	private var controls(get, never):Controls;
 
-	#if mobile
+	#if MOBILE_CONTROL_ALLOWED
 	public var mobileControls:MobileControls;
 
 	public inline function mobileButtonJustPressed(buttons:Dynamic):Bool
@@ -81,7 +81,7 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 	inline function get_controls():Controls
 	{
 		var ctrl:Controls = Controls.instance;
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		if(mobileControls != null)
 		{
 			ctrl.requestedHitbox = mobileControls.hitbox;
@@ -95,7 +95,7 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 	override public function destroy(){
 		if (_extensionScript != null)
 		_extensionScript.destroy();
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		if(mobileControls != null)
 			mobileControls.destroy();
 		#end
@@ -120,7 +120,7 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 	}
 	public function new(canBeScript:Bool = true){
 		canBeScripted = canBeScript;
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		if(mobileControls == null) mobileControls = new MobileControls(this);
 		#end
 		super();
@@ -231,7 +231,6 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 			return;
 		}
 		FlxTransitionableState.skipNextTransIn = false;
-		FlxG.switchState(nextState);
 		} catch(e:Dynamic) {
 			#if mobile
 			CoolUtil.showPopUp('switchState error: ' + Std.string(e), 'Error');

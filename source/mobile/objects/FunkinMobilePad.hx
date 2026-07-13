@@ -1,5 +1,5 @@
 
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 package mobile.objects;
 import mobile.MobilePad;
 import flixel.graphics.frames.FlxTileFrames;

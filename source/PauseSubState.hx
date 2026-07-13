@@ -13,7 +13,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.FlxCamera;
 import flixel.util.FlxStringUtil;
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.MobileControls;
 import mobile.objects.FunkinHitbox;
 #end
@@ -136,7 +136,7 @@ class PauseSubState extends MusicBeatSubstate
 		regenMenu();
 		cameras = [PlayState.instance.camPauseHUD];
 
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileManager = new MobileControls(this);
 		mobileManager.addMobilePad('UP_DOWN', 'A_B');
 		mobileManager.addMobilePadCamera();
@@ -175,6 +175,21 @@ class PauseSubState extends MusicBeatSubstate
 		}
 
 		var daSelected:String = menuItems[curSelected];
+		
+		#if MOBILE_CONTROL_ALLOWED
+		for (alphabeterID in 0...grpMenuShit.members.length){
+			var alphabeter = grpMenuShit.members[alphabeterID];
+			if (utils.TouchUtil.pressAction(alphabeter, cameras[0], true)){
+				if (alphabeter.targetY == 0){
+				accepted = true;
+				}else{
+				curSelected = alphabeterID;
+				changeSelection();
+				}
+   			 }
+		}
+		#end
+
 		switch (daSelected)
 		{
 			case 'Skip Time':
@@ -342,6 +357,9 @@ class PauseSubState extends MusicBeatSubstate
 
 			if (item.targetY == 0)
 			{
+				#if MOBILE_CONTROL_ALLOWED
+				alphabeter.targetX = 1;
+				#end
 				item.alpha = 1;
 				// item.setGraphicSize(Std.int(item.width));
 
@@ -350,7 +368,11 @@ class PauseSubState extends MusicBeatSubstate
 					curTime = Math.max(0, Conductor.songPosition);
 					updateSkipTimeText();
 				}
+			}#if MOBILE_CONTROL_ALLOWED
+			else{
+				alphabeter.targetX = 0;
 			}
+			#end
 		}
 	}
 
@@ -366,6 +388,14 @@ class PauseSubState extends MusicBeatSubstate
 			var item = new Alphabet(90, 320, menuItems[i], true);
 			item.isMenuItem = true;
 			item.targetY = i;
+			#if MOBILE_CONTROL_ALLOWED
+			item.changeX = true;
+			item.startPosition.y = 80;
+			item.distancePerItem.y = 80;
+			item.distancePerItem.x *= 1.25;
+			item.snapToPosition();
+			item.changeY = false;
+			#end
 			grpMenuShit.add(item);
 
 			if(menuItems[i] == 'Skip Time')

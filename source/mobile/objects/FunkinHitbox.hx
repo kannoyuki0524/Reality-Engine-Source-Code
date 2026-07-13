@@ -1,5 +1,5 @@
 
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 package mobile.objects;
 
 import mobile.Hitbox;
@@ -201,7 +201,7 @@ class FunkinHitbox extends Hitbox
 		hint.alpha = 0.00001;
 		hint.IDs = name;
 		hint.uniqueID = uniqueID;
-
+		hint.color = color;
 		hint.onDown.callback = function()
 		{
 			if (hint.alpha != alpha)

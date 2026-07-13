@@ -118,8 +118,9 @@ class Paths
 		}
 		#end
 
-		if (library != null)
+		if (library != null){
 			return getLibraryPath(file, library);
+		}
 
 		var levelPath:String = '';
 		if (currentLevel != null)
@@ -155,6 +156,10 @@ class Paths
 		return 'assets/$file';
 	}
 
+	inline public static function getFolderPath(file:String = '', library:String)
+	{
+		return 'assets/$library/$file';
+	}
 	inline static public function file(file:String, type:AssetType = TEXT, ?library:String)
 	{
 		return getPath(file, type, library);
@@ -564,12 +569,10 @@ class Paths
 		var folder:String = '';
 		if(path == 'songs') folder = 'songs:';
 		#if MODS_ALLOWED
-			#if mobile
-			if (OpenFlAssets.exists(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)))
-			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
-			else
-			#end
+			if (FileSystem.exists(getPath('$path/$key.$SOUND_EXT', SOUND, library)))
 			currentTrackedSounds.set(gottenPath, Sound.fromFile('./' + gottenPath));
+			else if (OpenFlAssets.exists(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)))
+			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
 		#else
 			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
 		

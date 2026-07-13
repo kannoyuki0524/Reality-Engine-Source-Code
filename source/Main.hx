@@ -128,7 +128,8 @@ class Main extends Sprite
 		//if(fpsVar != null) {
 		//	fpsVar.visible = ClientPrefs.showFPS;
 		//}
-		#elseif mobile
+		#end
+		#if mobile
 		FlxG.scaleMode = new MobileScaleMode();
 		#end
 

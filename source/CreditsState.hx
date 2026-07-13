@@ -158,7 +158,7 @@ class CreditsState extends MusicBeatState
 		bg.color = getCurrentBGColor();
 		intendedColor = bg.color;
 		changeSelection();
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('UP_DOWN', 'A_B');
 		mobileControls.addMobilePadCamera(true);
 		#end

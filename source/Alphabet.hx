@@ -225,7 +225,7 @@ class Alphabet extends FlxSpriteGroup
 		{
 			var lerpVal:Float = Math.exp(-elapsed * 9.6);
 			if(changeX && targetX != null)
-				x = FlxMath.lerp((targetY * distancePerItem.x) + startPosition.x + xAdd, x, lerpVal);
+				x = FlxMath.lerp((targetX * distancePerItem.x) + startPosition.x + xAdd, x, lerpVal);
 			if(changeY && targetY != null)
 				y = FlxMath.lerp((targetY * 1.3 * distancePerItem.y) + startPosition.y + yAdd, y, lerpVal);
 		}

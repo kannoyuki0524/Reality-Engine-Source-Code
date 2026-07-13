@@ -38,7 +38,7 @@ import flixel.util.FlxTimer;
 import lime.app.Application;
 import openfl.Assets;
 import haxe.io.Path;
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.MobileConfig;
 import mobile.MobileConfig.ButtonModes;
 import mobile.MobileLog;
@@ -75,8 +75,10 @@ class StartupState extends MusicBeatState
 		FlxG.sound.volumeUpKeys = TitleState.volumeUpKeys;
 		FlxG.keys.preventDefaultKeys = [TAB];
             
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
+			#if mobile
      		mobile.TouchPointerPlugin.initialize();
+			#end
 			MobileConfig.init('MobileControls', CoolUtil.getSavePath(), 'assets/mobile/',
 				[
 					['MobilePad/DPadModes', ButtonModes.DPAD],

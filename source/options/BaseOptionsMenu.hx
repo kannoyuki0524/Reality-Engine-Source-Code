@@ -24,7 +24,7 @@ import flixel.util.FlxTimer;
 import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.MobileControls;
 #end
 using StringTools;
@@ -126,7 +126,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 		changeSelection();
 		reloadCheckboxes();
 
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileManager = new MobileControls(this);
 		mobileManager.addMobilePad('FULL', 'A_B_C');
 		mobileManager.addMobilePadCamera();
@@ -248,7 +248,7 @@ class BaseOptionsMenu extends MusicBeatSubstate
 				}
 			}
 
-			if(controls.RESET #if mobile || mobileButtonJustPressed('C') #end)
+			if(controls.RESET #if MOBILE_CONTROL_ALLOWED || mobileButtonJustPressed('C') #end)
 			{
 				for (i in 0...optionsArray.length)
 				{

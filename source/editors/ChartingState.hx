@@ -399,7 +399,7 @@ class ChartingState extends MusicBeatState
 		zoomTxt.scrollFactor.set();
 		add(zoomTxt);
 		updateGrid();
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('CHART_EDITOR', 'CHART_EDITOR');
 		mobileControls.addMobilePadCamera(true);
 		#end

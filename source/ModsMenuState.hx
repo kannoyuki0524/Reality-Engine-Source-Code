@@ -371,7 +371,7 @@ class ModsMenuState extends MusicBeatState
 		changeSelection();
 		updatePosition();
 		FlxG.sound.play(Paths.sound('scrollMenu'));
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('UP_DOWN', 'B');
 		mobileControls.addMobilePadCamera(true);
 		#end

@@ -267,7 +267,7 @@ class TouchPointer extends FunkinSprite
   public function initialize(touchId:Int):Void
   {
     this.touchId = touchId;
-    loadGraphic(Paths.image("cursor/michael", "mobile"));
+    loadGraphic(Paths.image("michael"));
   }
 
   /**
@@ -297,12 +297,12 @@ class TouchPointer extends FunkinSprite
     {
       var angle = FlxAngle.angleBetweenPoint(this, lastPosition, true);
       this.angle = angle;
-      loadGraphic(Paths.image("cursor/kevin", "mobile"));
+      loadGraphic(Paths.image("kevin"));
     }
     else
     {
       angle = 0;
-      loadGraphic(Paths.image("cursor/michael", "mobile"));
+      loadGraphic(Paths.image("michael"));
     }
 
     lastPosition.copyFrom(viewPoint);

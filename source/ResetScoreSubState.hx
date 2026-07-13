@@ -3,7 +3,7 @@ import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.util.FlxColor;
 
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.MobileControls;
 import mobile.objects.FunkinHitbox;
 #end
@@ -74,7 +74,7 @@ class ResetScoreSubState extends MusicBeatSubstate
 		add(noText);
 		updateOptions();
 
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileManager = new MobileControls(this);
 		mobileManager.addMobilePad('LEFT_RIGHT', 'A_B');
 		mobileManager.addMobilePadCamera();

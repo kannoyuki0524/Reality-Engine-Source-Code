@@ -1,4 +1,4 @@
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 package mobile;
 
 import flixel.FlxCamera;

@@ -25,7 +25,7 @@ import flixel.input.keyboard.FlxKey;
 import flixel.graphics.FlxGraphic;
 import Controls;
 
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.MobileControls;
 import mobile.objects.FunkinHitbox;
 #end
@@ -166,7 +166,7 @@ class GameplayChangersSubstate extends MusicBeatSubstate
 		reloadCheckboxes();
 
 		
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileManager = new MobileControls(this);
 		mobileManager.addMobilePad('UP_DOWN', 'A_B');
 		mobileManager.addMobilePadCamera();

@@ -105,7 +105,7 @@ class DialogueEditorState extends MusicBeatState
 		daText.scaleY = 0.7;
 		add(daText);
 		changeText();
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('FULL', 'A_B_X_Y');
 		mobileControls.addMobilePadCamera(true);
 		#end

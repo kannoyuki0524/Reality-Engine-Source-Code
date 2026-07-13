@@ -70,7 +70,7 @@ class AchievementsMenuState extends MusicBeatState
 		descText.borderSize = 2.4;
 		add(descText);
 		changeSelection();
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('FULL', 'A_B_C');
 		mobileControls.addMobilePadCamera(true);
 		#end

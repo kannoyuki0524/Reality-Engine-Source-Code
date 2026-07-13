@@ -8,7 +8,7 @@ import llua.State;
 import llua.Convert;
 #end
 
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.MobileControls;
 import mobile.objects.FunkinHitbox;
 #end

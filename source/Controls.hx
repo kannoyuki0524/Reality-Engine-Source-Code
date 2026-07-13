@@ -4,7 +4,7 @@ import flixel.input.gamepad.FlxGamepadInputID;
 import flixel.input.keyboard.FlxKey;
 import flixel.FlxG;
 import flixel.input.touch.FlxTouch;
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.MobileControls;
 import mobile.objects.FunkinHitbox;
 import mobile.objects.FunkinMobilePad;
@@ -80,7 +80,7 @@ class Controls
 
 	public var isInSubstate:Bool = false;
 	public var requestedInstance:Dynamic;
-	#if mobile
+	#if MOBILE_CONTROL_ALLOWED
 	public var requestedHitbox:mobile.objects.FunkinHitbox;
 	public var requestedMobilePad:mobile.objects.FunkinMobilePad;
 	#end
@@ -88,7 +88,7 @@ class Controls
 	public var mobileControls(get, never):Bool;
 	private function get_mobileControls():Bool
 	{
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		return requestedHitbox != null || requestedMobilePad != null || ClientPrefs.hitboxAlpha >= 0.1 || ClientPrefs.mobilePadAlpha >= 0.1;
 		#else
 		return false;
@@ -105,7 +105,7 @@ class Controls
 		var gamepadResult:Bool = _myGamepadJustPressed(gamepadBinds[key]);
 		if(gamepadResult) return true;
 
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		var mobileResult:Bool = hitboxJustPressed(mobileBinds[key]) || mobilePadJustPressed(mobileBinds[key]);
 		if(mobileResult) return true;
 		#end
@@ -123,7 +123,7 @@ class Controls
 		var gamepadResult:Bool = _myGamepadPressed(gamepadBinds[key]);
 		if(gamepadResult) return true;
 
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		var mobileResult:Bool = hitboxPressed(mobileBinds[key]) || mobilePadPressed(mobileBinds[key]);
 		if(mobileResult) return true;
 		#end
@@ -141,7 +141,7 @@ class Controls
 		var gamepadResult:Bool = _myGamepadJustReleased(gamepadBinds[key]);
 		if(gamepadResult) return true;
 
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 		var mobileResult:Bool = hitboxJustReleased(mobileBinds[key]) || mobilePadJustReleased(mobileBinds[key]);
 		if(mobileResult) return true;
 		#end
@@ -199,7 +199,7 @@ class Controls
 		return false;
 	}
 
-	#if mobile
+	#if MOBILE_CONTROL_ALLOWED
 	private function mobilePadPressed(keys:Array<String>):Bool
 	{
 		if (keys != null && requestedInstance != null)

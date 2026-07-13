@@ -1,6 +1,7 @@
 package;
 //sam can you write smt here
 import flixel.graphics.FlxGraphic;
+import utils.TouchUtil;
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -82,7 +83,7 @@ import sys.io.File;
 #else import vlc.MP4Handler as FlxVideo; #end
 #end
 
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.MobileControls;
 #end
 
@@ -383,7 +384,7 @@ class PlayState extends MusicBeatState
 	public var funkyScripts:Array<FunkinScript> = [];
 
 	public static var nextReloadAll:Bool = false;
-	public static var pauseButton:PauseButton;
+	public static var pauseButton:PauseButton = null;
 	override public function create()
 	{
 		//trace('Playback Rate: ' + playbackRate);
@@ -1563,7 +1564,7 @@ class PlayState extends MusicBeatState
 		#end
 		callOnScripts('onCreatePost', []);
 		
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 
 		setupMobileControlsForGameplay();
 		#end
@@ -3038,7 +3039,8 @@ class PlayState extends MusicBeatState
 			
 			paused = false;
 			
-			#if mobile
+			#if MOBILE_CONTROL_ALLOWED
+			if (pauseButton != null)
 			pauseButton.ranTween(true);
 			#end
 
@@ -3278,8 +3280,9 @@ class PlayState extends MusicBeatState
 			botplaySine += 180 * elapsed;
 			botplayTxt.alpha = 1 - Math.sin((Math.PI * botplaySine) / 180);
 		}
-
-		if (controls.PAUSE && startedCountdown && canPause)
+		var pausing = false;
+		pausing = controls.PAUSE || ((pauseButton != null) && TouchUtil.pressAction(pauseButton.button)) #if android || FlxG.android.justReleased.BACK #end;
+		if (pausing && startedCountdown && canPause)
 		{
 			var ret:Dynamic = callOnScripts('onPause', [], false);
 			if(ret != Globals.Function_Stop) {
@@ -3611,7 +3614,8 @@ class PlayState extends MusicBeatState
 		}
 		openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 		
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
+		if (pauseButton != null)
 		pauseButton.ranTween(false);
 		#end
 		//}
@@ -4373,7 +4377,7 @@ class PlayState extends MusicBeatState
 	public var showComboNum:Bool = true;
 	public var showRating:Bool = true;
 
-	#if mobile
+	#if MOBILE_CONTROL_ALLOWED
 	public function setupMobilePadForGameplay():Void
 	{
 		if (mobileControls?.mobilePad == null) return;
@@ -4409,7 +4413,6 @@ class PlayState extends MusicBeatState
 			case 'hitbox':
 				mobileControls.addHitbox(ClientPrefs.hitboxMode);
 				mobileControls.addHitboxCamera();
-
 			case 'custom button':
 				mobileControls.addMobilePad(isReplayOrCpu ? 'LEFT_RIGHT' : 'FULL', 'NONE');
 				mobileControls.addMobilePadCamera();
@@ -4436,8 +4439,10 @@ class PlayState extends MusicBeatState
 				mobileControls.addMobilePadCamera();
 				setupMobilePadForGameplay();
 		}
+		FlxG.cameras.remove(camPauseHUD, false);
+		FlxG.cameras.add(camPauseHUD, false);
 
-		pauseButton = new PauseButton(FlxG.width - 100, 20);
+		pauseButton = new PauseButton(FlxG.width, 35);
 		pauseButton.cameras = [camPauseHUD];
 		pauseButton.zIndex = 100;//LMAO?
 		add(pauseButton);

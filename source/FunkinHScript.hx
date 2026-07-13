@@ -7,7 +7,7 @@ import llua.LuaL;
 import llua.State;
 import llua.Convert;
 #end
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.MobileControls;
 import mobile.objects.FunkinHitbox;
 #end
@@ -232,7 +232,7 @@ class FunkinHScript extends FunkinScript
 		set('mustHitSection', false);
 		set('altAnim', false);
 		set('gfSection', false);
-		#if mobile
+		#if MOBILE_CONTROL_ALLOWED
 			set('mobile', true);
 			set('FunkinHitbox', mobile.objects.FunkinHitbox);
 		#else

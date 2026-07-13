@@ -60,8 +60,8 @@ class ClientPrefs {
 	public static var safeFrames:Float = 10;
 
 	public static var hapticsMode:Int = 2;
-	public static var mobilePadAlpha:Float = #if mobile 0.6 #else 0 #end;
-	public static var hitboxAlpha:Float = #if mobile 0.7 #else 0 #end;
+	public static var mobilePadAlpha:Float = #if MOBILE_CONTROL_ALLOWED 0.6 #else 0 #end;
+	public static var hitboxAlpha:Float = #if MOBILE_CONTROL_ALLOWED 0.7 #else 0 #end;
 	public static var hitboxMode:String = 'Normal';
 	public static var hitboxType:String = 'No Gradient';
 	public static var hitboxLocation:String = 'Bottom';
