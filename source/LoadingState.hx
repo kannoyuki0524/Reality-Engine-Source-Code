@@ -123,15 +123,15 @@ class LoadingState extends MusicBeatState
 		var songName:String = Paths.formatToSongPath(SONG.song);
 		var stageData = StageData.getStageFile(SONG.stage);
 
-		songs.push({id:songData.song, name:'Inst'});
-		if (songData.needsVoices)
-		songs.push({id:songData.song, name:'Voices'});
-		if (songData.player1 != null && songData.player1.length >= 1)
-		characters.push(songData.player1);
-		if (songData.player2 != null && songData.player2.length >= 1)
-		characters.push(songData.player2);
-		if (songData.gfVersion != null && songData.gfVersion.length >= 1)
-		characters.push(songData.gfVersion);
+		songs.push({id:SONG.song, name:'Inst'});
+		if (SONG.needsVoices)
+		songs.push({id:SONG.song, name:'Voices'});
+		if (SONG.player1 != null && SONG.player1.length >= 1)
+		characters.push(SONG.player1);
+		if (SONG.player2 != null && SONG.player2.length >= 1)
+		characters.push(SONG.player2);
+		if (SONG.gfVersion != null && SONG.gfVersion.length >= 1)
+		characters.push(SONG.gfVersion);
 
 
 		if (Reflect.hasField(stageData, 'precache')){
