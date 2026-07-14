@@ -3612,7 +3612,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.pause();
 			vocals.pause();
 		}
-		openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+		openSubState(new PauseSubState());
 		
 		#if MOBILE_CONTROL_ALLOWED
 		if (pauseButton != null)

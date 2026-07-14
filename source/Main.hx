@@ -16,7 +16,7 @@ import openfl.display.StageScaleMode;
 import backend.CrashHandler;
 import mobile.MobileLog;
 import crowplexus.iris.Iris;
-#if mobile
+#if MOBILE_CONTROL_ALLOWED
 import mobile.CopyState;
 import mobile.backend.MobileScaleMode;
 import mobile.backend.StorageUtil;
@@ -128,9 +128,7 @@ class Main extends Sprite
 		//if(fpsVar != null) {
 		//	fpsVar.visible = ClientPrefs.showFPS;
 		//}
-		#end
-		#if mobile
-		FlxG.scaleMode = new MobileScaleMode();
+		FlxG.scaleMode = new mobile.backend.MobileScaleMode();
 		#end
 
 		#if html5
@@ -173,7 +171,7 @@ class Main extends Sprite
 						Paths.clearStoredMemory();
 
 						// Send the player to the StartupState
-						TitleState.initialized = false;
+						//TitleState.initialized = false;
 						FlxG.game.switchState();
 					}
 				}

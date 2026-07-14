@@ -68,7 +68,7 @@ class StartupState extends MusicBeatState
 		if(FlxG.save.data != null && FlxG.save.data.fullscreen)
 			FlxG.fullscreen = FlxG.save.data.fullscreen;
 
-
+		
 		FlxG.game.focusLostFramerate = 60;
 		FlxG.sound.muteKeys = TitleState.muteKeys;
 		FlxG.sound.volumeDownKeys = TitleState.volumeDownKeys;

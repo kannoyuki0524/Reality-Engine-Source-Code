@@ -383,7 +383,7 @@ class ChartingState extends MusicBeatState
 		updateGrid();
 		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('CHART_EDITOR', 'CHART_EDITOR');
-		mobileControls.addMobilePadCamera(true);
+		mobileControls.addMobilePadCamera(false);
 		#end
 		super.create();
 	}

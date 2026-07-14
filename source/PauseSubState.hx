@@ -34,10 +34,8 @@ class PauseSubState extends MusicBeatSubstate
 	//var botplayText:FlxText;
 
 	public static var songName:String = '';
-	public function new(x:Float, y:Float)
+	override public function create()
 	{
-
-		super();
 		if(CoolUtil.difficulties.length < 2) menuItemsOG.remove('Change Difficulty'); //No need to change difficulty if there is only one!
 
 		if(PlayState.chartingMode)
@@ -125,10 +123,6 @@ class PauseSubState extends MusicBeatSubstate
 		levelDifficulty.x = FlxG.width - (levelDifficulty.width + 20);
 		blueballedTxt.x = FlxG.width - (blueballedTxt.width + 20);
 
-		FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut});
-		FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3});
-		FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5});
-		FlxTween.tween(blueballedTxt, {alpha: 1, y: blueballedTxt.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7});
 
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
@@ -136,18 +130,21 @@ class PauseSubState extends MusicBeatSubstate
 		regenMenu();
 		cameras = [PlayState.instance.camPauseHUD];
 
-		#if MOBILE_CONTROL_ALLOWED
+		/*#if MOBILE_CONTROL_ALLOWED
 		mobileManager = new MobileControls(this);
 		mobileManager.addMobilePad('UP_DOWN', 'A_B');
 		mobileManager.addMobilePadCamera();
-		#end
-		FlxTween.globalManager.forEach(function(twn:FlxTween){
-		var twner = cast twn;
-		@:privateAccess{
-		if (this.members.contains(twner._object))
-		twn.active = true;
+		#end*/
+		super.create();
+		var tweensExclude = [];
+		tweensExclude.push(FlxTween.tween(bg, {alpha: 0.6}, 0.4, {ease: FlxEase.quartInOut}));
+		tweensExclude.push(FlxTween.tween(levelInfo, {alpha: 1, y: 20}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.3}));
+		tweensExclude.push(FlxTween.tween(levelDifficulty, {alpha: 1, y: levelDifficulty.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.5}));
+		tweensExclude.push(FlxTween.tween(blueballedTxt, {alpha: 1, y: blueballedTxt.y + 5}, 0.4, {ease: FlxEase.quartInOut, startDelay: 0.7}));
+
+		for (tween in tweensExclude){
+			tween.active = true;
 		}
-	});
 	}
 
 	var holdTime:Float = 0;
@@ -358,7 +355,9 @@ class PauseSubState extends MusicBeatSubstate
 			if (item.targetY == 0)
 			{
 				#if MOBILE_CONTROL_ALLOWED
+				FlxTween.cancelTweensOf(item);
 				item.targetX = 1;
+				FlxTween.tween(item, {targetX: 0}, 0.2, {ease: FlxEase.cubeIn});
 				#end
 				item.alpha = 1;
 				// item.setGraphicSize(Std.int(item.width));
@@ -370,6 +369,7 @@ class PauseSubState extends MusicBeatSubstate
 				}
 			}#if MOBILE_CONTROL_ALLOWED
 			else{
+				FlxTween.cancelTweensOf(item);
 				item.targetX = 0;
 			}
 			#end
