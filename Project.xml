@@ -54,10 +54,10 @@
 	<define name="HAPTICS_ALLOWED" if="mobile"/>
 	<define name="HSCRIPT_ALLOWED"/>
 	<define name="ACHIEVEMENTS_ALLOWED" />
-	<define name="VIDEOS_ALLOWED" if="web || windows" unless="32bits"/>
+	<define name="VIDEOS_ALLOWED" if="web || windows || android" unless="32bits"/>
 	<define name="PSYCH_WATERMARKS"/> <!-- DELETE THIS TO REMOVE WATERMARKS/DEV NAMES ON TITLE SCREEN -->
 	<define name="TITLE_SCREEN_EASTER_EGG" if="officialBuild"/> <!-- DELETE THE if="officialBuild" for enabling this on an unofficial build -->
-	<define name="CRASH_HANDLER" if="desktop release" />
+	<define name="CRASH_HANDLER" if="desktop" />
   	<define name="MULTICORE_LOADING"/>
   	<define name="SHOW_LOADING_SCREEN"/>
 	<assets path="assets/preload" rename="assets" exclude="*.ogg" if="web"/>
@@ -155,7 +155,6 @@
 	<!-- Android Specific -->
 	<java path="source/mobile/android/" if="android"/>
 	<haxedef name="DISABLE_AUDIO_FOCUS" if="android"/>
-	<set name="ANDROID_ARCH" value="arm64-v8a" if="android"/>
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 

@@ -4683,7 +4683,13 @@ class PlayState extends MusicBeatState
 		var key:Int = getKeyFromEvent(eventKey);
 		//trace('Pressed: ' + eventKey);
 
-		if (!cpuControlled && startedCountdown && !paused && key > -1 && (FlxG.keys.checkStatus(eventKey, JUST_PRESSED) || ClientPrefs.controllerMode))
+		if (!cpuControlled && startedCountdown && !paused && key > -1 && (
+			#if mobile
+			true
+			#else
+			FlxG.keys.checkStatus(eventKey, JUST_PRESSED) || ClientPrefs.controllerMode
+			#end
+		))
 		{
 			if(!boyfriend.stunned && generatedMusic && !endingSong)
 			{
@@ -4815,7 +4821,11 @@ class PlayState extends MusicBeatState
 		var parsedHoldArray:Array<Bool> = parseKeys();
 
 		// TO DO: Find a better way to handle controller inputs, this should work for now
+		#if mobile
+		if(true)
+		#else
 		if(ClientPrefs.controllerMode)
+		#end
 		{
 			var parsedArray:Array<Bool> = parseKeys('_P');
 			if(parsedArray.contains(true))
@@ -4858,7 +4868,11 @@ class PlayState extends MusicBeatState
 		}
 
 		// TO DO: Find a better way to handle controller inputs, this should work for now
+		#if mobile
+		if(true)
+		#else
 		if(ClientPrefs.controllerMode || strumsBlocked.contains(true))
+		#end
 		{
 			var parsedArray:Array<Bool> = parseKeys('_R');
 			if(parsedArray.contains(true))
