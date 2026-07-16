@@ -202,7 +202,7 @@ class CopyState extends MusicBeatState
 		for (file in locatedFiles)
 		{
 			var toFile = Path.join([to, file]);
-			if (FileSystem.exists(toFile))
+			if (FileSystem.exists(toFile) ||  toFile.startsWith('assets/embed/')
 			{
 				filesToRemove.push(file);
 			}
