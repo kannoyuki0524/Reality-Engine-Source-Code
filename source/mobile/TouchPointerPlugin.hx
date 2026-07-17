@@ -69,17 +69,10 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
 
       if (FlxG.cameras.list.contains(pointerCamera))
       {
-        FlxG.cameras.list.remove(pointerCamera);
+        FlxG.cameras.remove(pointerCamera, false);
       }
 
-      if (FlxG.game.contains(pointerCamera.flashSprite))
-      {
-        FlxG.game.removeChild(pointerCamera.flashSprite);
-      }
-
-      @:privateAccess
-      FlxG.game.addChildAt(pointerCamera.flashSprite, FlxG.game.getChildIndex(FlxG.game._inputContainer));
-      FlxG.cameras.list.push(pointerCamera);
+      FlxG.cameras.add(pointerCamera, false);
     }
 
     FlxG.cameras.cameraAdded.add(moveCameraToTop);
