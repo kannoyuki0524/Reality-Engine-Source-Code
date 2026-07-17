@@ -148,9 +148,9 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 	}
 	//https://github.com/CodenameCrew/CodenameEngine/blob/main/source/funkin/game/StrumLine.hx#L368
 	//credits since i don't wanna get killed from codename devs buddy
-	public static function getPositionFromPercent(percent:Float = 0.25,column:Float = 0){
-		var x = 4 + (FlxG.width * percent) - (Note.swagWidth * 2);
-    	x += Note.swagWidth * column;
+	public static function getPositionFromPercent(?percent:Float = 0.25, ?column:Float = 0, ?scale:Float = 1){
+		var x = 4 + (FlxG.width * percent) - (Note.swagWidth * 2 * scale);
+    	x += Note.swagWidth * column * scale;
 		return x;
 	}
 	override function update(elapsed:Float) {
