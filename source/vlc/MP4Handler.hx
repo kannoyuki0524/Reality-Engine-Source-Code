@@ -51,14 +51,16 @@ class MP4Handler extends FlxSpriteGroup
             trace("[MP4Handler] Warning: No camera available for video playback.");
         }
 
-        lastCamera = cameras[0]; 
+        lastCamera = cameras[0];
 
+        #if !mobile
         var precacheSprite = new FlxVideoSprite();
         add(precacheSprite);
 
         precacheSprite.load(videoName);
         precacheSprite.play();
         precacheSprite.stop();
+        #end
 
         videoSprite = new FlxVideoSprite();
         add(videoSprite);

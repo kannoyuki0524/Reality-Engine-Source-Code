@@ -569,10 +569,11 @@ class Paths
 		var folder:String = '';
 		if(path == 'songs') folder = 'songs:';
 		#if MODS_ALLOWED
-			if (FileSystem.exists(getPath('$path/$key.$SOUND_EXT', SOUND, library)))
+			#if (!mobile)
 			currentTrackedSounds.set(gottenPath, Sound.fromFile('./' + gottenPath));
-			else if (OpenFlAssets.exists(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)))
+			#else
 			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
+  #end
 		#else
 			currentTrackedSounds.set(gottenPath, OpenFlAssets.getSound(folder + getPath('$path/$key.$SOUND_EXT', SOUND, library)));
 		

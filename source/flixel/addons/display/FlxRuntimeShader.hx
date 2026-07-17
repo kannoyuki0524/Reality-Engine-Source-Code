@@ -6,6 +6,8 @@ import openfl.display.BitmapData;
 import openfl.display.ShaderInput;
 import openfl.display.ShaderParameter;
 import openfl.display.ShaderParameterType;
+import mobile.ShaderCompatibilityChecker;
+import mobile.MobileLog;
 
 /**
  * An wrapper for Flixel/OpenFL's shaders, which takes fragment and vertex source
@@ -204,6 +206,10 @@ class FlxRuntimeShader extends FlxShader
 		_glslVersion = glslVersion;
 		#end
 
+		// Store original sources for compatibility checking
+		var originalFragment = fragmentSource;
+		var originalVertex = vertexSource;
+
 		if (fragmentSource == null)
 		{
 			trace('Loading default fragment source...');
@@ -225,6 +231,11 @@ class FlxRuntimeShader extends FlxShader
 			var s = processVertexSource(vertexSource);
 			glVertexSource = s;
 		}
+
+		// Check compatibility and try to fix if needed
+		#if mobile
+		checkAndFixCompatibility(originalFragment, originalVertex);
+		#end
 
 		@:privateAccess {
 			// This tells the shader that the glVertexSource/glFragmentSource have been updated.
@@ -255,6 +266,129 @@ class FlxRuntimeShader extends FlxShader
 		result = StringTools.replace(result, PRAGMA_BODY, BASE_VERTEX_BODY);
 		return result;
 	}
+	
+	/**
+	 * Check and fix shader compatibility issues on mobile platforms
+	 */
+	#if mobile
+	function checkAndFixCompatibility(fragmentSource:String, vertexSource:String):Void
+	{
+		try
+		{
+			// Create a temporary shader for compatibility checking
+			var tempFragment = fragmentSource != null ? fragmentSource : DEFAULT_FRAGMENT_SOURCE;
+			var tempVertex = vertexSource != null ? vertexSource : DEFAULT_VERTEX_SOURCE;
+			
+			// Check compatibility
+			var isCompatible = ShaderCompatibilityChecker.checkCompatibility(this, "runtime_shader");
+			
+			if (!isCompatible)
+			{
+				MobileLog.warn('FlxRuntimeShader: Shader compatibility issues detected, attempting to fix...');
+				
+				// Try to fix the shader
+				var fixedShader = ShaderCompatibilityChecker.tryFixShader(this, "runtime_shader");
+				if (fixedShader != null)
+				{
+					MobileLog.info('FlxRuntimeShader: Successfully fixed shader compatibility');
+					// Update the shader with fixed version
+					this.glFragmentSource = fixedShader.glFragmentSource;
+					this.glVertexSource = fixedShader.glVertexSource;
+				}
+				else
+				{
+					MobileLog.error('FlxRuntimeShader: Failed to fix shader compatibility, using original version');
+				}
+			}
+			else
+			{
+				MobileLog.info('FlxRuntimeShader: Shader compatibility check passed');
+			}
+		}
+		catch (e:Dynamic)
+		{
+			MobileLog.error('FlxRuntimeShader: Error during compatibility check: $e');
+		}
+	}
+	#end
+
+	#if mobile
+	/**
+	 * 预编译检查：在正式创建 GLProgram 之前，手动编译 vertex/fragment shader 验证。
+	 *
+	 * 捕获 GL 编译器的具体错误（行号 + 错误类型）和对应源码，保存到文件。
+	 * 用于定位 GLES2ShaderConverter 转换后仍存在的问题。
+	 *
+	 * 注意：
+	 * - 此处创建的 shader 仅用于检查，会被立即删除，不影响正式编译
+	 * - OpenFL 的 __createGLShader 也会检查编译状态，但错误只输出到 Log.error（logcat）
+	 * - 此方法将错误信息+源码保存到文件，便于离线分析
+	 * - append 模式，保存所有失败的 shader（不会被后续编译覆盖）
+	 * - 预编译失败时返回 false，调用方据此跳过该 shader（不创建 GLProgram）
+	 *
+	 * @return true 表示编译通过（或仅有警告），可以继续创建 GLProgram；
+	 *         false 表示编译失败，应跳过该 shader
+	 */
+	private function __precompileCheck(vertexSource:String, fragmentSource:String):Bool
+	{
+		try
+		{
+			@:privateAccess
+			var gl = __context.gl;
+			var debugPath = "/storage/emulated/0/Android/data/me.reality.engine/files/shader_compile_errors.txt";
+
+			// 检查 fragment shader
+			var fragOk = __checkShaderCompile(gl, gl.FRAGMENT_SHADER, fragmentSource, "FRAGMENT", debugPath);
+			// 检查 vertex shader
+			var vertOk = __checkShaderCompile(gl, gl.VERTEX_SHADER, vertexSource, "VERTEX", debugPath);
+
+			return fragOk && vertOk;
+		}
+		catch (e:Dynamic)
+		{
+			MobileLog.error('FlxRuntimeShader: __precompileCheck failed: $e');
+			return false;
+		}
+	}
+
+	/**
+	 * 编译单个 shader 并检查错误，失败时保存到文件。
+	 *
+	 * @return true 表示编译通过（或仅有警告）；false 表示编译失败
+	 */
+	private function __checkShaderCompile(gl:Dynamic, shaderType:Int, source:String, label:String, debugPath:String):Bool
+	{
+		var shader = gl.createShader(shaderType);
+		gl.shaderSource(shader, source);
+		gl.compileShader(shader);
+
+		var compileStatus = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+		var infoLog:String = gl.getShaderInfoLog(shader);
+		gl.deleteShader(shader);
+
+		var hasError = (compileStatus == 0);
+		var hasWarning = infoLog != null && StringTools.trim(infoLog) != "" && !hasError;
+
+		if (hasError || hasWarning)
+		{
+			var f = sys.io.File.append(debugPath);
+			f.writeString('\n\n========== ${hasError ? "COMPILE ERROR" : "COMPILE WARNING"} - $label ==========\n');
+			f.writeString('Status: ${hasError ? "FAILED" : "OK (with warnings)"}\n');
+			f.writeString('InfoLog:\n${infoLog}\n');
+			f.writeString('=== $label SOURCE ===\n');
+			f.writeString(source);
+			f.writeString('\n=== END $label ===\n');
+			f.close();
+
+			if (hasError)
+			{
+				MobileLog.error('FlxRuntimeShader: $label shader compile FAILED. See: $debugPath');
+			}
+		}
+
+		return !hasError;
+	}
+	#end
 
 	function buildPrecisionHeaders():String {
 		return "#ifdef GL_ES
@@ -305,16 +439,31 @@ class FlxRuntimeShader extends FlxShader
 			var id = vertex + fragment;
 
 			if (__context.__programs.exists(id)) {
-				// Use the existing program if it has been compiled.
-				program = __context.__programs.get(id);
-			} else {
+			// Use the existing program if it has been compiled.
+			program = __context.__programs.get(id);
+		} else {
+			#if mobile
+			// 预编译检查：在正式创建 program 之前，手动编译 vertex/fragment shader 验证
+			// 若预编译失败，跳过该 shader（不创建 GLProgram），避免后续渲染异常或崩溃
+			// 错误详情已保存到 shader_compile_errors.txt
+			if (!__precompileCheck(vertex, fragment))
+			{
+				MobileLog.error('FlxRuntimeShader: Precompile failed, skipping shader program creation');
+				// 记录已跳过的 shader id，避免后续重复尝试编译
+				__context.__programs.set(id, null);
+				program = null;
+			}
+			else
+			#end
+			{
 				// Build the program.
 				program = __context.createProgram(GLSL);
 				program.__glProgram = __createGLProgram(vertex, fragment);
 				__context.__programs.set(id, program);
 			}
+		}
 
-			if (program != null) {
+		if (program != null) {
 				glProgram = program.__glProgram;
 
 				// Map attributes for each type.
