@@ -205,7 +205,7 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
       if (skipTween)
       {
         FlxTween.cancelTweensOf(pointer);
-        remove(pointer, true);
+        remove(pointer);
         continue;
       }
       pointer.alpha = 0.8;
@@ -214,7 +214,7 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
         onComplete: function(_)
         {
           if (pointer != null)
-          remove(pointer, true);
+          remove(pointer);
         }
       });
     }
