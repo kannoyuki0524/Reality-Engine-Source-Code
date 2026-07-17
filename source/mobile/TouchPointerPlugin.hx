@@ -86,7 +86,7 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
 
     FlxG.cameras.cameraRemoved.add(function(camera:FlxCamera)
     {
-    var bro = cast camera;
+      var bro = cast camera;
       if (bro == pointerCamera)
       {
         if (!bro.exists) // The camera got destroyed, we make a new one!
@@ -109,15 +109,19 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
 
     FlxG.signals.preStateSwitch.add(function()
     {
+      //FlxG.mouse.visible = false;//FORCED LOL
       instance.removeAll();
+    });
+    FlxG.signals.postStateSwitch.add(function()
+    {
+      //FlxG.mouse.visible = false;//FORCED LOL
     });
   }
 
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
-    
-	  FlxG.mouse.visible = false;//FORCED LOL
+    FlxG.mouse.visible = false;//FORCED LOL
     for (touch in FlxG.touches.list)
     {
       if (touch == null) continue;

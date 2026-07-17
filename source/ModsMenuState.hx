@@ -371,12 +371,15 @@ class ModsMenuState extends MusicBeatState
 		changeSelection();
 		updatePosition();
 		FlxG.sound.play(Paths.sound('scrollMenu'));
+		#if !MOBILE_CONTROL_ALLOWED
+		FlxG.mouse.visible = true;
+		#end
 		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('UP_DOWN', 'B');
 		mobileControls.addMobilePadCamera(true);
+		FlxG.mouse.visible = false;
 		#end
 
-		FlxG.mouse.visible = true;
 
 		super.create();
 	}

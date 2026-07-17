@@ -78,7 +78,9 @@ class MenuCharacterEditorState extends MusicBeatState
 		add(tipText);
 
 		addEditorBox();
+		#if !MOBILE_CONTROL_ALLOWED
 		FlxG.mouse.visible = true;
+		#end
 		updateCharTypeBox();
 
 		#if MOBILE_CONTROL_ALLOWED

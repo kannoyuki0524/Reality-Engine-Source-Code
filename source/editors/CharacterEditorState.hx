@@ -217,7 +217,9 @@ class CharacterEditorState extends MusicBeatState
 		addAnimationsUI();
 		UI_characterbox.selected_tab_id = 'Character';
 
+		#if !MOBILE_CONTROL_ALLOWED
 		FlxG.mouse.visible = true;
+		#end
 		reloadCharacterOptions();
 		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('FULL', 'CHARACTER_EDITOR');

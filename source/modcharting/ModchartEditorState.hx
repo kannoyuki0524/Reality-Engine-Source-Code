@@ -332,7 +332,9 @@ class ModchartEditorState extends MusicBeatState
 		Conductor.mapBPMChanges(PlayState.SONG);
 		Conductor.changeBPM(PlayState.SONG.bpm);
 
-        FlxG.mouse.visible = true;
+        #if !MOBILE_CONTROL_ALLOWED
+		FlxG.mouse.visible = true;
+		#end
 
         #if LEATHER 
         var SONG = PlayState.SONG;

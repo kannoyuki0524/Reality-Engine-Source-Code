@@ -159,7 +159,9 @@ class DialogueCharacterEditorState extends MusicBeatState
 		hudGroup.add(daText);
 
 		addEditorBox();
+		#if !MOBILE_CONTROL_ALLOWED
 		FlxG.mouse.visible = true;
+		#end
 		updateCharTypeBox();
 
 		#if MOBILE_CONTROL_ALLOWED

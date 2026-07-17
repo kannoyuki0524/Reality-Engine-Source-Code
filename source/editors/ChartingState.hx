@@ -259,8 +259,9 @@ class ChartingState extends MusicBeatState
 		nextRenderedNotes = new FlxTypedGroup<Note>();
 
 		if(curSec >= songData.notes.length) curSec = songData.notes.length - 1;
-
+		#if !MOBILE_CONTROL_ALLOWED
 		FlxG.mouse.visible = true;
+		#end
 		//FlxG.save.bind('funkin', 'ninjamuffin99');
 
 		tempBpm = songData.bpm;
@@ -1623,7 +1624,9 @@ class ChartingState extends MusicBeatState
 			strumLineNotes.members[i].y = strumLine.y;
 		}
 
-		FlxG.mouse.visible = true;//cause reasons. trust me
+		#if !MOBILE_CONTROL_ALLOWED
+		FlxG.mouse.visible = true;
+		#end
 
 		var lerpVal:Float = CoolUtil.boundTo(elapsed * 2.4, 0, 1);
 		var hi = strumLine.x + CAM_OFFSET + GRID_SIZE * (strumAmount - 2) * Note.NOTE_AMOUNT + fuckerOffset.x;

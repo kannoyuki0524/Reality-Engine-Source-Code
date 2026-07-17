@@ -113,7 +113,9 @@ class WeekEditorState extends MusicBeatState
 		addEditorBox();
 		reloadAllShit();
 
+		#if !MOBILE_CONTROL_ALLOWED
 		FlxG.mouse.visible = true;
+		#end
 
 		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('FULL', 'A_B');
