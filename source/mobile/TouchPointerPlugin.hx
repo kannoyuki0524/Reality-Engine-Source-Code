@@ -215,12 +215,12 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
         remove(pointer, true);
         continue;
       }
-
       pointer.alpha = 0.8;
-      FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 1), {
+      FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 1) * 0.5, {
         ease: FlxEase.quadIn,
         onComplete: function(_)
         {
+          if (pointer != null)
           remove(pointer, true);
         }
       });
