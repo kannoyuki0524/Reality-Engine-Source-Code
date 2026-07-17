@@ -886,6 +886,44 @@ class GLES2ShaderConverter
 			return 'float($v)$op$lit';
 		});
 
+		var addSubPattern = new EReg("(\\b\\w+)\\s*([+\\-])\\s*(\\d*\\.\\d+)", "g");
+		content = addSubPattern.map(content, function(ereg:EReg):String
+		{
+			var v = ereg.matched(1);
+			var op = ereg.matched(2);
+			var lit = ereg.matched(3);
+			if (!intVars.exists(v))
+				return ereg.matched(0);
+			var idx = ereg.matchedPos().pos;
+			var prev = idx - 1;
+			while (prev >= 0 && (content.charAt(prev) == " " || content.charAt(prev) == "\t")) prev--;
+			if (prev >= 0)
+			{
+				var wStart = prev;
+				while (wStart > 0 && isAlphaIdent(content.charAt(wStart - 1))) wStart--;
+				var word = content.substr(wStart, prev - wStart + 1);
+				if (word == "int" || word == "float" || word == "uniform" || word == "attribute" || word == "varying")
+					return ereg.matched(0);
+			}
+			if (idx >= 7 && content.substr(idx - 7, 7) == "float(f")
+				return ereg.matched(0);
+			return 'float($v)$op$lit';
+		});
+
+		var revAddSubPattern = new EReg("(\\d*\\.\\d+)\\s*([+\\-])\\s*(\\b\\w+)", "g");
+		content = revAddSubPattern.map(content, function(ereg:EReg):String
+		{
+			var lit = ereg.matched(1);
+			var op = ereg.matched(2);
+			var v = ereg.matched(3);
+			if (!intVars.exists(v))
+				return ereg.matched(0);
+			var matchEnd = ereg.matchedPos().pos + ereg.matchedPos().len;
+			if (matchEnd < content.length && content.charAt(matchEnd) == "(")
+				return ereg.matched(0);
+			return '$lit$op' + 'float($v)';
+		});
+
 		return content;
 	}
 
