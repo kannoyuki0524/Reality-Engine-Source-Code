@@ -3,6 +3,7 @@ package mobile;
 import sys.io.File;
 import sys.FileSystem;
 import mobile.MobileLog;
+import Lambda;
 using StringTools;
 
 class GLES2ShaderConverter
@@ -52,7 +53,11 @@ class GLES2ShaderConverter
 
 		content = fixGlobalScopeAssignments(content);
 
+		content = convertUnsupportedFunctions(content);
+
 		content = convertIntLiteralsToFloat(content);
+
+		content = convertIntArithmeticInFloatContext(content);
 
 		content = convertWhileLoops(content);
 
@@ -60,7 +65,13 @@ class GLES2ShaderConverter
 
 		content = convertFloatForLoops(content);
 
+		content = convertMainImage(content);
+
 		content = convertFragmentOutput(content);
+
+		content = injectShadertoyVariables(content);
+
+		content = fixFlixelTexture2DCalls(content);
 
 		if (content != original)
 		{
@@ -377,6 +388,30 @@ class GLES2ShaderConverter
 		return regex.replace(content, "texture2D(");
 	}
 
+	static function convertUnsupportedFunctions(content:String):String
+	{
+		if (content.indexOf("tanh") == -1)
+			return content;
+
+		if (content.indexOf("float tanh") != -1)
+			return content;
+
+		var tanhDef = "float tanh(float x) { float e2 = exp(2.0 * x); return (e2 - 1.0) / (e2 + 1.0); }\n"
+			+ "vec2 tanh(vec2 v) { return vec2(tanh(v.x), tanh(v.y)); }\n"
+			+ "vec3 tanh(vec3 v) { return vec3(tanh(v.x), tanh(v.y), tanh(v.z)); }\n"
+			+ "vec4 tanh(vec4 v) { return vec4(tanh(v.x), tanh(v.y), tanh(v.z), tanh(v.w)); }\n";
+
+		var funcRegex = ~/^(?:vec[234]|float|mat[234]|void|int|bool)\s+\w+\s*\(/m;
+		if (funcRegex.match(content))
+		{
+			var insertPos = funcRegex.matchedPos().pos;
+			var lineStart = content.lastIndexOf("\n", insertPos - 1);
+			if (lineStart < 0) lineStart = 0;
+			content = content.substr(0, lineStart + 1) + tanhDef + "\n" + content.substr(lineStart + 1);
+		}
+		return content;
+	}
+
 	static function convertFloatForLoops(content:String):String
 	{
 		var regex = ~/for\s*\(\s*float\s+(\w+)\s*=\s*(\d+\.?\d*)\s*;\s*\1\s*(<=?|>=?)\s*(\d+\.?\d*)\s*;\s*\1\s*\+=\s*(\d+\.?\d*)\s*\)/g;
@@ -422,6 +457,436 @@ class GLES2ShaderConverter
 		}
 
 		return result;
+	}
+
+	static function convertMainImage(content:String):String
+	{
+		if (content.indexOf("mainImage") == -1)
+			return content;
+
+		var hasMainImageDefine = ~/#define\s+mainImage\s+main/.match(content);
+
+		if (hasMainImageDefine)
+		{
+			var defineRegex = ~/#define\s+mainImage\s+main\s*\r?\n?/g;
+			content = defineRegex.replace(content, "");
+
+			var hasFragColorDefine = ~/#define\s+fragColor\s+gl_FragColor/.match(content);
+			if (hasFragColorDefine)
+			{
+				var fragColorDefineRegex = ~/#define\s+fragColor\s+gl_FragColor\s*\r?\n?/g;
+				content = fragColorDefineRegex.replace(content, "");
+			}
+
+			var mainImageRegex = ~/void\s+mainImage\s*\(\s*out\s+vec4\s+(\w+)\s*,\s*in\s+vec2\s+(\w+)\s*\)/;
+			if (mainImageRegex.match(content))
+			{
+				var fragColorVar = mainImageRegex.matched(1);
+				var fragCoordVar = mainImageRegex.matched(2);
+
+				content = StringTools.replace(content, mainImageRegex.matched(0), "void main()");
+
+				var mainBodyStart = content.indexOf("void main()");
+				if (mainBodyStart < 0)
+					return content;
+
+				var mainBodyEnd = findFunctionEnd(content, mainBodyStart);
+				if (mainBodyEnd < 0)
+					return content;
+
+				var before = content.substr(0, mainBodyStart);
+				var body = content.substr(mainBodyStart, mainBodyEnd - mainBodyStart);
+				var after = content.substr(mainBodyEnd);
+
+				var braceIdx = body.indexOf("{");
+				if (braceIdx >= 0)
+				{
+					var fragCoordDecl = '\n    vec2 $fragCoordVar = gl_FragCoord.xy;\n';
+					body = body.substr(0, braceIdx + 1) + fragCoordDecl + body.substr(braceIdx + 1);
+				}
+
+				var fragColorRegex = new EReg("\\b" + fragColorVar + "\\b", "g");
+				body = fragColorRegex.replace(body, "gl_FragColor");
+
+				if (hasFragColorDefine)
+				{
+					before = fragColorRegex.replace(before, "gl_FragColor");
+					after = fragColorRegex.replace(after, "gl_FragColor");
+				}
+
+				return before + body + after;
+			}
+
+			var anyMainImageRegex = ~/void\s+mainImage\s*\([^)]*\)/;
+			if (anyMainImageRegex.match(content))
+			{
+				content = StringTools.replace(content, anyMainImageRegex.matched(0), "void main()");
+
+				var mainBodyStart = content.indexOf("void main()");
+				if (mainBodyStart < 0)
+					return content;
+
+				var mainBodyEnd = findFunctionEnd(content, mainBodyStart);
+				if (mainBodyEnd < 0)
+					return content;
+
+				var before = content.substr(0, mainBodyStart);
+				var body = content.substr(mainBodyStart, mainBodyEnd - mainBodyStart);
+				var after = content.substr(mainBodyEnd);
+
+				if (hasFragColorDefine)
+				{
+					var fragColorRegex = ~/\bfragColor\b/g;
+					body = fragColorRegex.replace(body, "gl_FragColor");
+					before = fragColorRegex.replace(before, "gl_FragColor");
+					after = fragColorRegex.replace(after, "gl_FragColor");
+				}
+
+				return before + body + after;
+			}
+
+			if (hasFragColorDefine)
+			{
+				var fragColorRegex = ~/\bfragColor\b/g;
+				content = fragColorRegex.replace(content, "gl_FragColor");
+			}
+
+			return content;
+		}
+
+		var normalRegex = ~/void\s+mainImage\s*\(\s*out\s+vec4\s+(\w+)\s*,\s*in\s+vec2\s+(\w+)\s*\)/;
+		if (!normalRegex.match(content))
+			return content;
+
+		if (~/\bvoid\s+main\s*\(\s*\)/.match(content))
+			return content;
+
+		var fcVar = normalRegex.matched(1);
+		var foVar = normalRegex.matched(2);
+
+		content = StringTools.replace(content, normalRegex.matched(0), "void main()");
+
+		var bodyStart = content.indexOf("void main()");
+		if (bodyStart < 0)
+			return content;
+
+		var bodyEnd = findFunctionEnd(content, bodyStart);
+		if (bodyEnd < 0)
+			return content;
+
+		var beforePart = content.substr(0, bodyStart);
+		var bodyPart = content.substr(bodyStart, bodyEnd - bodyStart);
+		var afterPart = content.substr(bodyEnd);
+
+		var braceIdx2 = bodyPart.indexOf("{");
+		if (braceIdx2 >= 0)
+		{
+			var fragCoordDecl2 = '\n    vec2 $foVar = gl_FragCoord.xy;\n';
+			bodyPart = bodyPart.substr(0, braceIdx2 + 1) + fragCoordDecl2 + bodyPart.substr(braceIdx2 + 1);
+		}
+
+		var fcRegex = new EReg("\\b" + fcVar + "\\b", "g");
+		bodyPart = fcRegex.replace(bodyPart, "gl_FragColor");
+
+		return beforePart + bodyPart + afterPart;
+	}
+
+	static function findFunctionEnd(content:String, funcStart:Int):Int
+	{
+		var depth = 0;
+		var i = funcStart;
+		var started = false;
+		while (i < content.length)
+		{
+			var ch = content.charAt(i);
+			if (ch == "{")
+			{
+				depth++;
+				started = true;
+			}
+			else if (ch == "}")
+			{
+				depth--;
+				if (started && depth == 0)
+					return i + 1;
+			}
+			i++;
+		}
+		return -1;
+	}
+
+	static function injectShadertoyVariables(content:String):String
+	{
+		var shadertoyVars:Array<String> = [];
+
+		if (content.indexOf("iMouse") != -1 && !~/(uniform\s+vec4\s+iMouse|vec4\s+iMouse\s*[=;])/.match(content))
+			shadertoyVars.push("uniform vec4 iMouse;");
+
+		if (content.indexOf("iChannel0") != -1 && !~/(uniform\s+sampler2D\s+iChannel0|#define\s+iChannel0)/.match(content))
+			shadertoyVars.push("uniform sampler2D iChannel0;");
+
+		if (content.indexOf("iChannel1") != -1 && !~/(uniform\s+sampler2D\s+iChannel1|#define\s+iChannel1)/.match(content))
+			shadertoyVars.push("uniform sampler2D iChannel1;");
+
+		if (content.indexOf("iChannel2") != -1 && !~/(uniform\s+sampler2D\s+iChannel2|#define\s+iChannel2)/.match(content))
+			shadertoyVars.push("uniform sampler2D iChannel2;");
+
+		if (content.indexOf("iChannel3") != -1 && !~/(uniform\s+sampler2D\s+iChannel3|#define\s+iChannel3)/.match(content))
+			shadertoyVars.push("uniform sampler2D iChannel3;");
+
+		if (content.indexOf("iTime") != -1 && !~/uniform\s+float\s+iTime/.match(content))
+			shadertoyVars.push("uniform float iTime;");
+
+		if (content.indexOf("iResolution") != -1 && !~/(uniform\s+vec[23]\s+iResolution|#define\s+iResolution|vec[23]\s+iResolution\s*[=;])/.match(content))
+			shadertoyVars.push("uniform vec3 iResolution;");
+
+		if (shadertoyVars.length == 0)
+			return content;
+
+		var injection = shadertoyVars.join("\n") + "\n";
+
+		var mainRegex = ~/void\s+(?:main|mainImage)\s*\(/;
+		if (mainRegex.match(content))
+		{
+			var insertPos = mainRegex.matchedPos().pos;
+			var lineStart = content.lastIndexOf("\n", insertPos - 1);
+			if (lineStart < 0) lineStart = 0;
+			content = content.substr(0, lineStart + 1) + injection + content.substr(lineStart + 1);
+		}
+		else
+		{
+			content = injection + content;
+		}
+
+		return content;
+	}
+
+	static function fixFlixelTexture2DCalls(content:String):String
+	{
+		var threeArgDefRegex = ~/vec4\s+flixel_texture2D\s*\(\s*sampler2D\s+\w+\s*,\s*vec2\s+\w+\s*,\s*float\s+\w+\s*\)/;
+		if (!threeArgDefRegex.match(content))
+			return content;
+
+		var hasTextureDefine = ~/#define\s+texture\s+flixel_texture2D/.match(content);
+
+		content = fixTwoArgFunctionCalls(content, "flixel_texture2D");
+
+		if (hasTextureDefine)
+		{
+			content = fixTwoArgFunctionCalls(content, "texture");
+		}
+
+		return content;
+	}
+
+	static function fixTwoArgFunctionCalls(content:String, funcName:String):String
+	{
+		var result = new StringBuf();
+		var searchFrom = 0;
+
+		while (searchFrom < content.length)
+		{
+			var idx = -1;
+			var searchPos = searchFrom;
+			while (searchPos < content.length)
+			{
+				var found = content.indexOf(funcName + "(", searchPos);
+				if (found < 0)
+				{
+					idx = -1;
+					break;
+				}
+
+				if (found > 0)
+				{
+					var prev = content.charAt(found - 1);
+					if (isAlphaIdent(prev))
+					{
+						searchPos = found + 1;
+						continue;
+					}
+				}
+
+				var lineStart = content.lastIndexOf("\n", found);
+				if (lineStart < 0) lineStart = -1;
+				var prefix = StringTools.trim(content.substr(lineStart + 1, found - lineStart - 1));
+				if (prefix == "vec4" || prefix == "vec3" || prefix == "vec2" || prefix == "float"
+					|| prefix == "void" || prefix == "int" || prefix == "bool" || prefix == "mat4"
+					|| prefix == "mat3" || prefix == "mat2")
+				{
+					searchPos = found + 1;
+					continue;
+				}
+
+				idx = found;
+				break;
+			}
+
+			if (idx < 0)
+			{
+				result.add(content.substr(searchFrom, content.length - searchFrom));
+				break;
+			}
+
+			result.add(content.substr(searchFrom, idx - searchFrom));
+
+			var argStart = idx + funcName.length + 1;
+			var depth = 0;
+			var curArgStart = argStart;
+			var args:Array<String> = [];
+			var endIdx = -1;
+
+			var j = argStart;
+			while (j < content.length)
+			{
+				var c = content.charAt(j);
+				if (c == "(")
+				{
+					depth++;
+				}
+				else if (c == ")")
+				{
+					if (depth == 0)
+					{
+						args.push(content.substr(curArgStart, j - curArgStart));
+						endIdx = j;
+						break;
+					}
+					depth--;
+				}
+				else if (c == "," && depth == 0)
+				{
+					args.push(content.substr(curArgStart, j - curArgStart));
+					curArgStart = j + 1;
+				}
+				j++;
+			}
+
+			if (endIdx < 0)
+			{
+				result.add(content.substr(idx, funcName.length + 1));
+				searchFrom = idx + funcName.length + 1;
+				continue;
+			}
+
+			var isDefinition = false;
+			for (arg in args)
+			{
+				var trimmed = StringTools.trim(arg);
+				if (StringTools.startsWith(trimmed, "sampler2D ") || StringTools.startsWith(trimmed, "vec2 ")
+					|| StringTools.startsWith(trimmed, "float ") || StringTools.startsWith(trimmed, "int ")
+					|| StringTools.startsWith(trimmed, "bool ") || StringTools.startsWith(trimmed, "mat4 ")
+					|| StringTools.startsWith(trimmed, "mat3 ") || StringTools.startsWith(trimmed, "mat2 "))
+				{
+					isDefinition = true;
+					break;
+				}
+			}
+
+			if (isDefinition)
+			{
+				result.add(content.substr(idx, endIdx - idx + 1));
+				searchFrom = endIdx + 1;
+				continue;
+			}
+
+			if (args.length == 2)
+			{
+				result.add(funcName);
+				result.add("(");
+				result.add(StringTools.trim(args[0]));
+				result.add(", ");
+				result.add(StringTools.trim(args[1]));
+				result.add(", 0.0)");
+				searchFrom = endIdx + 1;
+			}
+			else
+			{
+				result.add(content.substr(idx, endIdx - idx + 1));
+				searchFrom = endIdx + 1;
+			}
+		}
+
+		return result.toString();
+	}
+
+	static function convertIntArithmeticInFloatContext(content:String):String
+	{
+		var intVars = new Map<String, Bool>();
+
+		var uniformIntRegex = ~/uniform\s+int\s+(\w+)\s*;/g;
+		var searchContent = content;
+		while (uniformIntRegex.match(searchContent))
+		{
+			intVars.set(uniformIntRegex.matched(1), true);
+			var pos = uniformIntRegex.matchedPos();
+			searchContent = searchContent.substr(pos.pos + pos.len);
+		}
+
+		var forIntRegex = ~/for\s*\(\s*int\s+(\w+)\s*=/g;
+		searchContent = content;
+		while (forIntRegex.match(searchContent))
+		{
+			intVars.set(forIntRegex.matched(1), true);
+			var pos = forIntRegex.matchedPos();
+			searchContent = searchContent.substr(pos.pos + pos.len);
+		}
+
+		var plainIntRegex = ~/\bint\s+(\w+)\s*[=;]/g;
+		searchContent = content;
+		while (plainIntRegex.match(searchContent))
+		{
+			intVars.set(plainIntRegex.matched(1), true);
+			var pos = plainIntRegex.matchedPos();
+			searchContent = searchContent.substr(pos.pos + pos.len);
+		}
+
+		if (Lambda.count(intVars) == 0)
+			return content;
+
+		var parenPattern = new EReg("\\((\\w+)\\s*([+\\-*/])\\s*(\\w+)\\)\\s*([*/])\\s*(\\d*\\.\\d+)", "g");
+		content = parenPattern.map(content, function(ereg:EReg):String
+		{
+			var v1 = ereg.matched(1);
+			var op = ereg.matched(2);
+			var v2 = ereg.matched(3);
+			var op2 = ereg.matched(4);
+			var floatLit = ereg.matched(5);
+			if (intVars.exists(v1) && intVars.exists(v2))
+			{
+				var pos = ereg.matchedPos().pos;
+				if (pos >= 5 && content.substr(pos - 5, 5) == "float")
+					return ereg.matched(0);
+				return 'float($v1$op$v2)$op2$floatLit';
+			}
+			return ereg.matched(0);
+		});
+
+		var simplePattern = new EReg("(\\b\\w+)\\s*([*/])\\s*(\\d*\\.\\d+)", "g");
+		content = simplePattern.map(content, function(ereg:EReg):String
+		{
+			var v = ereg.matched(1);
+			var op = ereg.matched(2);
+			var lit = ereg.matched(3);
+			if (!intVars.exists(v))
+				return ereg.matched(0);
+			var idx = ereg.matchedPos().pos;
+			var prev = idx - 1;
+			while (prev >= 0 && (content.charAt(prev) == " " || content.charAt(prev) == "\t")) prev--;
+			if (prev >= 0)
+			{
+				var wStart = prev;
+				while (wStart > 0 && isAlphaIdent(content.charAt(wStart - 1))) wStart--;
+				var word = content.substr(wStart, prev - wStart + 1);
+				if (word == "int" || word == "float" || word == "uniform" || word == "attribute" || word == "varying")
+					return ereg.matched(0);
+			}
+			if (idx >= 5 && content.substr(idx - 5, 5) == "float")
+				return ereg.matched(0);
+			return 'float($v)$op$lit';
+		});
+
+		return content;
 	}
 
 	static function convertIntLiteralsToFloat(content:String):String
@@ -501,6 +966,25 @@ class GLES2ShaderConverter
 				return '$prefix$num.0 $op $name$after';
 			});
 		}
+
+		var dotPropCmpRegex = ~/(\b\w+\.\w+)\s*(==|!=|<=|>=|<|>)\s*(\d+)(?!\d*\.)(?![\w.])/g;
+		result = dotPropCmpRegex.map(result, function(ereg:EReg):String
+		{
+			var prop = ereg.matched(1);
+			var op = ereg.matched(2);
+			var num = ereg.matched(3);
+			return '$prop $op $num.0';
+		});
+
+		var revDotPropCmpRegex = ~/(^|[^\w.])(\d+)(?!\d*\.)(?![\w.])\s*(==|!=|<=|>=|<|>)\s*(\b\w+\.\w+)/g;
+		result = revDotPropCmpRegex.map(result, function(ereg:EReg):String
+		{
+			var prefix = ereg.matched(1);
+			var num = ereg.matched(2);
+			var op = ereg.matched(3);
+			var prop = ereg.matched(4);
+			return '$prefix$num.0 $op $prop';
+		});
 
 		return result;
 	}
