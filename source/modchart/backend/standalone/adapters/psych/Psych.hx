@@ -141,7 +141,7 @@ class Psych implements IAdapter {
 		#if (FM_ENGINE_VERSION >= "0.7")
 		return ClientPrefs.data.downScroll;
 		#else
-		return ClientPrefs.downScroll;
+		return ClientPrefs.downScroll || ClientPrefs.vsliceHUD;
 		#end
 	}
 

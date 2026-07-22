@@ -89,7 +89,7 @@ class Controls
 	private function get_mobileControls():Bool
 	{
 		#if MOBILE_CONTROL_ALLOWED
-		return requestedHitbox != null || requestedMobilePad != null || ClientPrefs.hitboxAlpha >= 0.1 || ClientPrefs.mobilePadAlpha >= 0.1;
+		return requestedHitbox != null || requestedMobilePad != null;
 		#else
 		return false;
 		#end

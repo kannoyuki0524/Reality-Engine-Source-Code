@@ -33,7 +33,7 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 	}
 	private function set_posX(value:Float):Float {
 		if (posX != value){
-		x = defX + StrumNote.getPositionFromPercent(posX, noteData);
+		x = defX + StrumNote.getPositionXFromPercent(posX, noteData);
 		posX = value;
 		}
 		return value;
@@ -42,7 +42,7 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 
 	private function set_defX(value:Float):Float {
 		if (defX != value){
-		x = defX + StrumNote.getPositionFromPercent(posX, noteData);
+		x = defX + StrumNote.getPositionXFromPercent(posX, noteData);
 		defX = value;
 		}
 		return value;
@@ -143,15 +143,54 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 
 	public function postAddedToGroup() {
 		playAnim('static');
-		x = defX + StrumNote.getPositionFromPercent(posX, noteData);
 		ID = noteData;
+		if (ClientPrefs.vsliceHUD){
+		final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+		final scaleAlter:Float = ((FlxG.height / FlxG.width) * 1.95) * amplification;
+		final spacingAlter:Float = ((FlxG.height / FlxG.width) * 2.8) * amplification;
+			
+		function getXPos(direction:Int, isPlayer:Bool, spacing:Float, scale:Float):Float
+		{
+			var pos:Float = 0;
+			if (isPlayer) pos = 35 * (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+
+			return switch (direction)
+			{
+			case 0: -pos * 2;
+			case 1:
+				-(pos * 2) + (1 * Note.swagWidth) * (spacing * scale);
+			case 2:
+				pos + (2 * Note.swagWidth) * (spacing * scale);
+			case 3:
+				pos + (3 * Note.swagWidth) * (spacing * scale);
+			default: -pos * 2;
+			}
+		}
+		var playerStrumlineX = (FlxG.width - 4 * Note.swagWidth * scaleAlter * spacingAlter) / 2;
+		var opponentStrumlineX = (FlxG.width - 4 * Note.swagWidth * 0.4) / 2;	
+		if (player == 1){
+			scale.set(scaleAlter, scaleAlter);
+			updateHitbox();
+			x = getXPos(noteData, (player == 1), spacingAlter, scaleAlter);
+			x += 50 + -0.275 * (Note.swagWidth);
+			y = (FlxG.height - height) * 0.95;
+		}else{
+			scale.set(0.4, 0.4);
+			updateHitbox();
+			x = defX + StrumNote.getPositionXFromPercent(posX, noteData, 1.4, 0.4) - 50;
+		}
+
+		}else{
+		x = defX + StrumNote.getPositionXFromPercent(posX, noteData);
+		}
 	}
 	//https://github.com/CodenameCrew/CodenameEngine/blob/main/source/funkin/game/StrumLine.hx#L368
 	//credits since i don't wanna get killed from codename devs buddy
-	public static function getPositionFromPercent(?percent:Float = 0.25, ?column:Float = 0, ?scale:Float = 1){
-		var x = 4 + (FlxG.width * percent) - (Note.swagWidth * 2 * scale);
-    	x += Note.swagWidth * column * scale;
-		return x;
+	public static function getPositionXFromPercent(percent:Float = 0.25, column:Float = 0, ?spacing:Float = 1, ?scale:Float = 1):Float{
+		var xX:Float = 0;
+		xX = 4 + (FlxG.width * percent) - Note.swagWidth * (1.5 * spacing + 0.5) * scale;
+    	xX += Note.swagWidth * column * spacing * scale;
+		return xX;
 	}
 	override function update(elapsed:Float) {
 		if(resetAnim > 0) {

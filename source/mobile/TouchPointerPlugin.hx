@@ -11,6 +11,7 @@ import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.input.FlxPointer;
 import flixel.util.FlxTimer;
 
 // TODO: Replace all the touchBuddy littered around the game's code with the ACTUAL touchBuddy.
@@ -56,26 +57,15 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
     FlxG.plugins.drawOnTop = true;
     FlxG.plugins.addPlugin(instance);
 
-    function moveCameraToTop(camera:FlxCamera):Void
+    FlxG.cameras.cameraAdded.add(function(camera:FlxCamera)
     {
-      if (camera == pointerCamera && pointerCamera == null) return;
-
-      // If there aren't any cameras then the CameraFrontEnd got reset so we have to wait for that finish (which is most of the time after state switch)
-      if (FlxG.cameras.list.length == 0)
-      {
-        FlxG.signals.postStateSwitch.addOnce(moveCameraToTop.bind(null));
-        return;
-      }
-
-      if (FlxG.cameras.list.contains(pointerCamera))
+      var bro = cast camera;
+      if (bro != pointerCamera && pointerCamera != null)
       {
         FlxG.cameras.remove(pointerCamera, false);
+        FlxG.cameras.add(pointerCamera, false);
       }
-
-      FlxG.cameras.add(pointerCamera, false);
-    }
-
-    FlxG.cameras.cameraAdded.add(moveCameraToTop);
+    });
 
     FlxG.cameras.cameraRemoved.add(function(camera:FlxCamera)
     {
@@ -85,30 +75,41 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
         if (!bro.exists) // The camera got destroyed, we make a new one!
         {
           instance.cameras = [pointerCamera = new FunkinCamera()];
-          moveCameraToTop(null);
           pointerCamera.bgColor.alpha = 0;
           pointerCamera.ID = FlxG.cameras.list.length - 1;
         }
-        else // It's not destroyed so just move it to the top!
-        {
-          moveCameraToTop(null);
-        }
-      }
-      else
-      {
-        moveCameraToTop(null);
       }
     });
 
     FlxG.signals.preStateSwitch.add(function()
     {
       //FlxG.mouse.visible = false;//FORCED LOL
-      instance.removeAll();
+      instance.removeAll(true);
     });
+
     FlxG.signals.postStateSwitch.add(function()
     {
+      FlxG.cameras.add(pointerCamera, false);
       //FlxG.mouse.visible = false;//FORCED LOL
     });
+  }
+
+  public function CREATETOUCH(?toucher:FlxPointer){
+      var IDS = 0;
+      if (Std.isOfType(toucher, FlxTouch)){
+        var touchh = cast toucher;
+        IDS = touchh.touchPointID;
+      }
+    var pointer:TouchPointer = findPointerByTouchId(IDS);
+
+      if (pointer == null)
+      {
+        pointer = recycle(TouchPointer);
+        pointer.initialize(IDS);
+        add(pointer);
+      }
+
+      pointer.updateFromTouch(toucher, pointerCamera);
   }
 
   override public function update(elapsed:Float):Void
@@ -121,29 +122,27 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
 
       if (touch.justPressed) removeAll(true);
 
-      var pointer:TouchPointer = findPointerByTouchId(touch.touchPointID);
-
-      if (pointer == null)
-      {
-        pointer = recycle(TouchPointer);
-        pointer.initialize(touch.touchPointID);
-        add(pointer);
-      }
-
-      pointer.updateFromTouch(touch, pointerCamera);
+      CREATETOUCH(touch);
     }
-
+    #if desktop
+    if (FlxG.mouse.pressed){
+      if (FlxG.mouse.justPressed) {
+        removeAll(true);
+      }
+      CREATETOUCH(FlxG.mouse);
+    }
+    #end
     for (pointer in members)
     {
-      if (pointer == null || touchExists(pointer.touchId)) continue;
+      if (pointer == null || touchExists(pointer.touchId) #if desktop || FlxG.mouse.pressed #end) continue;
       if (pointer.touchId != -2)
       {
         pointer.alpha = 0.8;
-        FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 0.9), {
+        FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.6, 0.7), {
           ease: FlxEase.cubeIn,
           onComplete: function(_)
           {
-            remove(pointer, true);
+            remove(pointer);
           }
         });
         pointer.touchId = -2;
@@ -274,7 +273,7 @@ class TouchPointer extends FunkinSprite
    * @param touch The FlxTouch object containing the current touch input data.
    * @param camera The FlxCamera to grab the touch's view position from.
    */
-  public function updateFromTouch(touch:FlxTouch, camera:FlxCamera):Void
+  public function updateFromTouch(touch:FlxPointer, camera:FlxCamera):Void
   {
     // Grab the view coordinates
     touch.getViewPosition(camera, viewPoint);

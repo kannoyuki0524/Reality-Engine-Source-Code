@@ -178,7 +178,7 @@ class FreeplayState extends MusicBeatState
 		add(text);
 		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('LEFT_FULL', 'A_B_C_X_Y_Z');
-		mobileControls.addMobilePadCamera(true);
+		mobileControls.addMobilePadCamera(false);
 		#end
 		super.create();
 	}
@@ -190,7 +190,7 @@ class FreeplayState extends MusicBeatState
 		if (!qutting){
 		mobileControls.removeMobilePad();
 		mobileControls.addMobilePad('LEFT_FULL', 'A_B_C_X_Y_Z');
-		mobileControls.addMobilePadCamera(true);
+		mobileControls.addMobilePadCamera(false);
 		}
 		#end
 		super.closeSubState();

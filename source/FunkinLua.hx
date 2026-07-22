@@ -210,6 +210,7 @@ class FunkinLua extends FunkinScript {
 
 		// Some settings, no jokes
 		set('downscroll', ClientPrefs.downScroll);
+		set('vsliceHUD', ClientPrefs.vsliceHUD);
 		set('middlescroll', ClientPrefs.middleScroll);
 		set('framerate', ClientPrefs.framerate);
 		set('ghostTapping', ClientPrefs.ghostTapping);

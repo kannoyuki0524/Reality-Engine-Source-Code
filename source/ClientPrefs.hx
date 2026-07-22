@@ -38,6 +38,7 @@ class ClientPrefs {
 	public static var pauseMusic:String = 'Tea Time';
 	public static var checkForUpdates:Bool = true;
 	public static var comboStacking = true;
+	public static var vsliceHUD:Bool = #if mobile true #else false #end;
 	public static var fpsBGOpacity:Float = 0.5;
 	public static var gameplaySettings:Map<String, Dynamic> = [
 		'scrollspeed' => 1.0,
@@ -60,8 +61,8 @@ class ClientPrefs {
 	public static var safeFrames:Float = 10;
 
 	public static var hapticsMode:Int = 2;
-	public static var mobilePadAlpha:Float = #if MOBILE_CONTROL_ALLOWED 0.6 #else 0 #end;
-	public static var hitboxAlpha:Float = #if MOBILE_CONTROL_ALLOWED 0.7 #else 0 #end;
+	public static var mobilePadAlpha:Float = #if MOBILE_CONTROL_ALLOWED 0.3 #else 0 #end;
+	public static var hitboxAlpha:Float = #if MOBILE_CONTROL_ALLOWED 0.4 #else 0 #end;
 	public static var hitboxMode:String = 'Normal';
 	public static var hitboxType:String = 'No Gradient';
 	public static var hitboxLocation:String = 'Bottom';
@@ -200,6 +201,7 @@ class ClientPrefs {
 		FlxG.save.data.noReset = noReset;
 		FlxG.save.data.healthBarAlpha = healthBarAlpha;
 		FlxG.save.data.comboOffset = comboOffset;
+		FlxG.save.data.vsliceHUD = vsliceHUD;
 		FlxG.save.data.achievementsMap = Achievements.achievementsMap;
 		FlxG.save.data.henchmenDeath = Achievements.henchmenDeath;
 
@@ -288,6 +290,9 @@ class ClientPrefs {
 		}
 		if(FlxG.save.data.lowQuality != null) {
 			lowQuality = FlxG.save.data.lowQuality;
+		}
+		if(FlxG.save.data.vsliceHUD != null) {
+			vsliceHUD = FlxG.save.data.vsliceHUD;
 		}
 		if(FlxG.save.data.shaders != null) {
 			shaders = FlxG.save.data.shaders;

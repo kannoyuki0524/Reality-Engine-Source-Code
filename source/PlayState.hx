@@ -382,7 +382,7 @@ class PlayState extends MusicBeatState
 
 	public var scriptsToClose:Array<FunkinScript> = [];
 	public var funkyScripts:Array<FunkinScript> = [];
-
+	public var downscroll:Bool = false;
 	public static var nextReloadAll:Bool = false;
 	public static var pauseButton:PauseButton = null;
 	override public function create()
@@ -430,6 +430,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.stop();
 
 		// Gameplay settings
+		downscroll = ClientPrefs.downScroll || ClientPrefs.vsliceHUD;
 		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
 		healthLoss = ClientPrefs.getGameplaySetting('healthloss', 1);
 		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
@@ -1113,7 +1114,7 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition = -5000 / Conductor.songPosition;
 
 		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50).makeGraphic(FlxG.width, 10);
-		if(ClientPrefs.downScroll) strumLine.y = FlxG.height - 150;
+		if(downscroll) strumLine.y = FlxG.height - 150;
 		strumLine.scrollFactor.set();
 
 		var showTime:Bool = (ClientPrefs.timeBarType != 'Disabled');
@@ -1123,7 +1124,7 @@ class PlayState extends MusicBeatState
 		timeTxt.alpha = 0;
 		timeTxt.borderSize = 2;
 		timeTxt.visible = showTime;
-		if(ClientPrefs.downScroll) timeTxt.y = FlxG.height - 44;
+		if(downscroll) timeTxt.y = FlxG.height - 44;
 
 		if(ClientPrefs.timeBarType == 'Song Name')
 		{
@@ -1220,7 +1221,7 @@ class PlayState extends MusicBeatState
 		healthBarBG.xAdd = -4;
 		healthBarBG.yAdd = -4;
 		add(healthBarBG);
-		if(ClientPrefs.downScroll) healthBarBG.y = 0.11 * FlxG.height;
+		if(downscroll) healthBarBG.y = 0.11 * FlxG.height;
 
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
@@ -1257,7 +1258,7 @@ class PlayState extends MusicBeatState
 		botplayTxt.borderSize = 1.25;
 		botplayTxt.visible = cpuControlled;
 		add(botplayTxt);
-		if(ClientPrefs.downScroll) {
+		if(downscroll) {
 			botplayTxt.y = timeBarBG.y - 78;
 		}
 
@@ -1588,7 +1589,7 @@ class PlayState extends MusicBeatState
 		}
 		Paths.clearUnusedMemory();
 		
-		CustomFadeTransition.nextCamera = camOther;
+		CustomFadeTransition.nextCamera = camPauseHUD;
 	}
 
 	#if (!flash && sys)
@@ -2762,7 +2763,7 @@ class PlayState extends MusicBeatState
 				swagNote.gfNote = (section.gfSection && (songNotes[1]<Note.NOTE_AMOUNT));
 				swagNote.noteType = songNotes[3];
 				if(!Std.isOfType(songNotes[3], String)) swagNote.noteType = editors.ChartingState.noteTypeList[songNotes[3]]; //Backward compatibility + compatibility with Week 7 charts
-
+				swagNote.zIndex = 3;
 				swagNote.scrollFactor.set();
 
 				var susLength:Float = swagNote.sustainLength;
@@ -2787,7 +2788,7 @@ class PlayState extends MusicBeatState
 						swagNote.tail.push(sustainNote);
 						sustainNote.parent = swagNote;
 						unspawnNotes.push(sustainNote);
-
+						sustainNote.zIndex = 1;
 						sustainNote.hitCallback = swagNote.hitCallback;
 						
 						if (sustainNote.mustPress)
@@ -2973,7 +2974,7 @@ class PlayState extends MusicBeatState
 			}
 
 			var babyArrow:StrumNote = new StrumNote(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, strumLine.y, i, player);
-			babyArrow.downScroll = ClientPrefs.downScroll;
+			babyArrow.downScroll = downscroll;
 			babyArrow.posX = 0.25 + (0.5) * player;
 			if (!isStoryMode && !skipArrowStartTween)
 			{
@@ -3425,7 +3426,25 @@ class PlayState extends MusicBeatState
 				notes.insert(0, dunceNote);
 				dunceNote.spawned=true;
 				var leData:Int = Math.round(Math.abs(dunceNote.noteData));
-					dunceNote.targetStrum = strumTargets[dunceNote.fieldIndex].members[leData];
+				dunceNote.targetStrum = strumTargets[dunceNote.fieldIndex].members[leData];
+				
+				if (ClientPrefs.vsliceHUD){
+					dunceNote.offsetY += dunceNote.height / 6;
+					if (!dunceNote.isSustainNote){
+					dunceNote.scale.set(dunceNote.targetStrum.scale.x, dunceNote.targetStrum.scale.y);
+					dunceNote.updateHitbox();
+					}
+					else{
+					dunceNote.scale.y /= Conductor.stepCrochet / 100 * 1.05;
+					dunceNote.scale.y *= Conductor.stepCrochet / 100 * 1.07 * dunceNote.targetStrum.scale.y;
+					dunceNote.scale.set(dunceNote.targetStrum.scale.x, dunceNote.scale.y);
+					dunceNote.updateHitbox();
+					dunceNote.offsetX += dunceNote.width / 3;
+					}
+					if (!dunceNote.pressAble){
+						dunceNote.visible = false;
+					}
+				}
 				callOnScripts('onSpawnNote', [notes.members.indexOf(dunceNote), dunceNote.noteData, dunceNote.noteType, dunceNote.isSustainNote]);
 
 				var index:Int = unspawnNotes.indexOf(dunceNote);
@@ -4734,7 +4753,7 @@ class PlayState extends MusicBeatState
 						// eee jack detection before was not super good
 						if (!notesStopped) {
 							epicNote.hitCallback(epicNote);
-							trace(epicNote);
+							//trace(epicNote);
 							pressNotes.push(epicNote);
 						}
 
@@ -5497,7 +5516,7 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
-			notes.sort(FlxSort.byY, ClientPrefs.downScroll ? FlxSort.ASCENDING : FlxSort.DESCENDING);
+			notes.sort(CoolUtil.byZIndex, FlxSort.ASCENDING);
 		}
 
 		iconP1.scale.set(1.2, 1.2);
