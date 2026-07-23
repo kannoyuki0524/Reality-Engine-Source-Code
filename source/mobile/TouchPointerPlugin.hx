@@ -93,56 +93,40 @@ class TouchPointerPlugin extends FlxTypedSpriteGroup<TouchPointer>
       //FlxG.mouse.visible = false;//FORCED LOL
     });
   }
-
-  public function CREATETOUCH(?toucher:FlxPointer){
-      var IDS = 0;
-      if (Std.isOfType(toucher, FlxTouch)){
-        var touchh = cast toucher;
-        IDS = touchh.touchPointID;
-      }
-    var pointer:TouchPointer = findPointerByTouchId(IDS);
-
-      if (pointer == null)
-      {
-        pointer = recycle(TouchPointer);
-        pointer.initialize(IDS);
-        add(pointer);
-      }
-
-      pointer.updateFromTouch(toucher, pointerCamera);
-  }
-
+  
   override public function update(elapsed:Float):Void
   {
     super.update(elapsed);
-    FlxG.mouse.visible = false;//FORCED LOL
+
     for (touch in FlxG.touches.list)
     {
       if (touch == null) continue;
 
       if (touch.justPressed) removeAll(true);
 
-      CREATETOUCH(touch);
-    }
-    #if desktop
-    if (FlxG.mouse.pressed){
-      if (FlxG.mouse.justPressed) {
-        removeAll(true);
+      var pointer:TouchPointer = findPointerByTouchId(touch.touchPointID);
+
+      if (pointer == null)
+      {
+        pointer = recycle(TouchPointer);
+        pointer.initialize(touch.touchPointID);
+        add(pointer);
       }
-      CREATETOUCH(FlxG.mouse);
+
+      pointer.updateFromTouch(touch, pointerCamera);
     }
-    #end
+
     for (pointer in members)
     {
-      if (pointer == null || touchExists(pointer.touchId) #if desktop || FlxG.mouse.pressed #end) continue;
+      if (pointer == null || touchExists(pointer.touchId)) continue;
       if (pointer.touchId != -2)
       {
         pointer.alpha = 0.8;
-        FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.6, 0.7), {
+        FlxTween.tween(pointer, {alpha: 0}, FlxG.random.float(0.8, 0.9), {
           ease: FlxEase.cubeIn,
           onComplete: function(_)
           {
-            remove(pointer);
+            remove(pointer, true);
           }
         });
         pointer.touchId = -2;
