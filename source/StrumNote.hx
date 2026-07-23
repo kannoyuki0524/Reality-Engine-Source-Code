@@ -179,6 +179,7 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 			x = getXPos(noteData, false, 1.4, 0.4);
 		}
 		x += 50 + -0.275 * (Note.swagWidth);
+		y = 50;
 		}else{
 		x = defX + StrumNote.getPositionXFromPercent(posX, noteData);
 		}
