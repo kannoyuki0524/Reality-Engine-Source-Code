@@ -35,7 +35,7 @@ class CustomFadeTransition extends MusicBeatSubstate {
 		}else{
 			cameras = [FlxG.cameras.list[FlxG.cameras.list.length-1]];
 		}
-		var width:Int = Std.int(FlxG.width / Math.max(camera.zoom, 0.001));
+		var width:Int = Std.int(FlxG.width / Math.max(camera.zoom, 0.001)) + 5;
 		var height:Int = Std.int(FlxG.height / Math.max(camera.zoom, 0.001));
 
 		transGradient = FlxGradient.createGradientFlxSprite(1, height, (isTransIn ? [0x0, FlxColor.BLACK] : [FlxColor.BLACK, 0x0]));

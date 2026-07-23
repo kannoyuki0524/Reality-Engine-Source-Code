@@ -100,7 +100,7 @@ class VisualsUISubState extends BaseOptionsMenu
 		#end
 		*/
 		var option:Option = new Option('FPS BG Opacity',
-			'How much transparent should the FPS bg be..',
+			'How much transparent should the FPS bg be.',
 			'fpsBGOpacity',
 			'percent',
 			0.5);
@@ -138,9 +138,70 @@ class VisualsUISubState extends BaseOptionsMenu
 			true);
 		addOption(option);
 
+		#if MOBILE_CONTROL_ALLOWED
+		var option:Option = new Option('FPS Counter',
+			'Choose Your FPS Counter Visuals!',
+			'debugDisplay',
+			'string',
+			'Off',
+			['Off', 'Simple', 'Advanced']);
+		addOption(option);
+		option.onChange = onChangeFPSCounter;
+		
+		var option:Option = new Option('Mobile Pad Alpha (UI)',
+			'How much transparent should the ui pad be.',
+			'mobilePadUIAlpha',
+			'percent',
+			0.7);
+		option.scrollSpeed = 1.6;
+		option.minValue = 0.0;
+		option.maxValue = 1;
+		option.changeValue = 0.1;
+		option.decimals = 1;
+		addOption(option);
+		option.onChange = onChangeMobilePadUI;
+
+		
+		var option:Option = new Option('Mobile Pad Alpha (Gameplay)',
+			'How much transparent should the gameplay pad be.',
+			'mobilePadAlpha',
+			'percent',
+			0.3);
+		option.scrollSpeed = 1.6;
+		option.minValue = 0.0;
+		option.maxValue = 1;
+		option.changeValue = 0.1;
+		option.decimals = 1;
+		addOption(option);
+
+		
+		var option:Option = new Option('Hit Boxes Alpha',
+			'How much transparent should the hitboxes be.',
+			'hitboxAlpha',
+			'percent',
+			0.4);
+		option.scrollSpeed = 1.6;
+		option.minValue = 0.0;
+		option.maxValue = 1;
+		option.changeValue = 0.1;
+		option.decimals = 1;
+		addOption(option);
+		#end
 		super();
 	}
 
+	#if MOBILE_CONTROL_ALLOWED
+	function onChangeMobilePadUI(){
+		mobileManager.mobilePad.alpha = ClientPrefs.mobilePadUIAlpha;
+	}
+
+	function onChangeFPSCounter()
+	{
+		Main.debugDisplay.updateDisplay(ClientPrefs.debugDisplay);
+		trace('DEBUG DISPLAY MODE: ' + ClientPrefs.debugDisplay);
+	}
+
+	#end
 	var changedMusic:Bool = false;
 	function onChangePauseMusic()
 	{
@@ -151,6 +212,7 @@ class VisualsUISubState extends BaseOptionsMenu
 
 		changedMusic = true;
 	}
+
 	@:dontInject
 	override public function destroy()
 	{

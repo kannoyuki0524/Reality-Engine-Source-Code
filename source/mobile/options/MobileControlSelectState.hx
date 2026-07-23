@@ -1,4 +1,3 @@
-#if MOBILE_CONTROL_ALLOWED
 package mobile.options;
 
 import flixel.FlxG;
@@ -37,7 +36,6 @@ class MobileControlSelectState extends MusicBeatSubstate
 	var dragOffsetY:Float = 0;
 
 	var nextAccept:Int = 5;
-
 	public function new()
 	{
 		controls.isInSubstate = true;
@@ -46,68 +44,58 @@ class MobileControlSelectState extends MusicBeatSubstate
 
 	override function create()
 	{
-		#if MOBILE_CONTROL_ALLOWED
-		mobileManager = new MobileControls(this);
-		mobileManager.addMobilePad('FULL', 'A_B_C');
-		mobileManager.addMobilePadCamera();
-		#end
-
 		cameras = [FlxG.cameras.list[FlxG.cameras.list.length - 1]];
+		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
+		bg.color = 0xFFea71fd;
+		bg.setGraphicSize(Std.int(FlxG.width * 1.2));
+		bg.updateHitbox();
+		bg.screenCenter();
+		bg.antialiasing = ClientPrefs.globalAntialiasing;
+		add(bg);
 
-		// Layer 1: Preview (pad/hitbox)
+
 		previewLayer = new FlxGroup();
 		add(previewLayer);
 
-		// Layer 2: UI elements
 		uiLayer = new FlxGroup();
 		add(uiLayer);
 
-		// Title
 		var title:FlxText = new FlxText(0, 10, FlxG.width, 'Mobile Control');
-		title.setFormat(Paths.font('vcr.ttf'), 28, FlxColor.WHITE, CENTER);
+		title.setFormat(Paths.font('vcr.ttf'), 28, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		title.scrollFactor.set();
+		title.borderSize = 2;
 		uiLayer.add(title);
 
-		// Style selection
 		styleTexts = new FlxTypedGroup<FlxText>();
 		uiLayer.add(styleTexts);
 
 		for (i in 0...styleList.length)
 		{
 			var text:FlxText = new FlxText(20, 60 + i * 40, 0, styleNames[i]);
-			text.setFormat(Paths.font('vcr.ttf'), 22, FlxColor.WHITE, LEFT);
+			text.setFormat(Paths.font('vcr.ttf'), 22, FlxColor.WHITE, LEFT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 			text.ID = i;
 			text.scrollFactor.set();
+			text.borderSize = 2;
 			styleTexts.add(text);
 		}
 
-		// Description
 		descText = new FlxText(0, FlxG.height - 100, FlxG.width, '');
-		descText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.GRAY, CENTER);
+		descText.setFormat(Paths.font('vcr.ttf'), 16, FlxColor.GRAY, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		descText.scrollFactor.set();
+		descText.borderSize = 2;
 		uiLayer.add(descText);
 
-		// Save button (only visible in custom mode)
 		saveBtn = new FlxButton(FlxG.width / 2 - 80, FlxG.height - 45, 'Save', onSave);
-		saveBtn.label.setFormat(Paths.font('vcr.ttf'), 14, FlxColor.WHITE);
 		saveBtn.scrollFactor.set();
-		saveBtn.visible = false;
 		uiLayer.add(saveBtn);
 
-		// Reset button (only visible in custom mode)
 		resetBtn = new FlxButton(FlxG.width / 2 + 20, FlxG.height - 45, 'Reset', onReset);
-		resetBtn.label.setFormat(Paths.font('vcr.ttf'), 14, FlxColor.WHITE);
 		resetBtn.scrollFactor.set();
-		resetBtn.visible = false;
 		uiLayer.add(resetBtn);
 
-		// Back button (always visible)
 		var backBtn:FlxButton = new FlxButton(FlxG.width - 100, 10, 'Back', onBack);
-		backBtn.label.setFormat(Paths.font('vcr.ttf'), 14, FlxColor.WHITE);
 		backBtn.scrollFactor.set();
 		uiLayer.add(backBtn);
-
-		// Init
 		curStyle = styleList.indexOf(ClientPrefs.curMobileControl);
 		if (curStyle < 0) curStyle = 0;
 		updateUI();
@@ -179,11 +167,10 @@ class MobileControlSelectState extends MusicBeatSubstate
 			switch (style)
 			{
 				case 'classic':
-
+					// default position
 				case 'classic-right':
 					for (btn in previewPad.buttons[0])
 						btn.x = FlxG.width - 312 + btn.x;
-
 				case 'custom button':
 					for (name => pos in ClientPrefs.mobilePad)
 					{
@@ -258,13 +245,6 @@ class MobileControlSelectState extends MusicBeatSubstate
 
 		if (controls.UI_UP_P) changeStyle(-1);
 		if (controls.UI_DOWN_P) changeStyle(1);
-
-		if (nextAccept <= 0 && controls.ACCEPT && styleList[curStyle] != 'custom button')
-		{
-			onSave();
-			nextAccept = 5;
-			return;
-		}
 
 		if (FlxG.mouse.justPressed)
 		{
@@ -348,4 +328,3 @@ class MobileControlSelectState extends MusicBeatSubstate
 		super.destroy();
 	}
 }
-#end

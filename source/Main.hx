@@ -168,14 +168,15 @@ class Main extends Sprite
 	
 						Iris.destroyAll();
 						crowplexus.hscript.Interp.staticVariables.clear();
-						FlxG.game._requestedState = new TitleState();
+						
+						FlxG.game._requestedState = new StartupState();
 
 						// Reload EVERYTHING
 						Paths.clearUnusedMemory();
 						Paths.clearStoredMemory();
 
 						// Send the player to the StartupState
-						//TitleState.initialized = false;
+						TitleState.initialized = false;
 						FlxG.game.switchState();
 					}
 				}

@@ -61,6 +61,7 @@ class ClientPrefs {
 	public static var safeFrames:Float = 10;
 
 	public static var hapticsMode:Int = 2;
+	public static var mobilePadUIAlpha:Float = #if MOBILE_CONTROL_ALLOWED 0.7 #else 0 #end;
 	public static var mobilePadAlpha:Float = #if MOBILE_CONTROL_ALLOWED 0.3 #else 0 #end;
 	public static var hitboxAlpha:Float = #if MOBILE_CONTROL_ALLOWED 0.4 #else 0 #end;
 	public static var hitboxMode:String = 'Normal';
@@ -209,6 +210,7 @@ class ClientPrefs {
 		FlxG.save.data.sickWindow = sickWindow;
 		FlxG.save.data.goodWindow = goodWindow;
 		FlxG.save.data.badWindow = badWindow;
+		FlxG.save.data.mobilePadUIAlpha = mobilePadUIAlpha;
 		FlxG.save.data.hapticsMode = hapticsMode;
 		FlxG.save.data.safeFrames = safeFrames;
 		FlxG.save.data.gameplaySettings = gameplaySettings;
@@ -264,6 +266,9 @@ class ClientPrefs {
 		}
 		if(FlxG.save.data.discordClient != null) {
 			discordClient = FlxG.save.data.discordClient;
+		}
+		if(FlxG.save.data.mobilePadUIAlpha != null) {
+			mobilePadUIAlpha = FlxG.save.data.mobilePadUIAlpha;
 		}
 		if(FlxG.save.data.fpsBGOpacity != null) {
 			fpsBGOpacity = FlxG.save.data.fpsBGOpacity;

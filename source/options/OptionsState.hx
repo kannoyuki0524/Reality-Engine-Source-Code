@@ -73,8 +73,8 @@ class OptionsState extends MusicBeatState
 
 		var bg:FlxSprite = new FlxSprite().loadGraphic(Paths.image('menuDesat'));
 		bg.color = 0xFFea71fd;
+		bg.setGraphicSize(Std.int(FlxG.width * 1.2));
 		bg.updateHitbox();
-
 		bg.screenCenter();
 		bg.antialiasing = ClientPrefs.globalAntialiasing;
 		add(bg);
@@ -100,15 +100,18 @@ class OptionsState extends MusicBeatState
 
 		#if MOBILE_CONTROL_ALLOWED
 		mobileControls.addMobilePad('UP_DOWN', 'A_B');
-		mobileControls.addMobilePadCamera(true);
+		mobileControls.addMobilePadCamera(false);
 		#end
 		super.create();
 	}
 
+	var qutting = false;
 	override function closeSubState() {
 		#if MOBILE_CONTROL_ALLOWED
+		if (!qutting){
 		mobileControls.addMobilePad('UP_DOWN', 'A_B');
-		mobileControls.addMobilePadCamera(true);
+		mobileControls.addMobilePadCamera(false);
+		}
 		#end
 		nextAccept = 5;
 		super.closeSubState();
@@ -126,6 +129,7 @@ class OptionsState extends MusicBeatState
 		}
 
 		if (controls.BACK) {
+			qutting = true;
 			FlxG.sound.play(Paths.sound('cancelMenu'));
 			MusicBeatState.switchState(new MainMenuState());
 		}

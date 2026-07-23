@@ -4,7 +4,8 @@ import Section.SwagSection;
 import haxe.Json;
 import haxe.format.JsonParser;
 import lime.utils.Assets;
-
+import Note.EventNote;
+import flixel.sound.FlxSound;
 #if sys
 import sys.io.File;
 import sys.FileSystem;
@@ -36,10 +37,14 @@ typedef SwagSong =
 }
 
 class Song
-{
+{	
+	public var loaded:Bool = false;
+	public var luaArray:Array<FunkinLua> = [];
+	public var hscriptArray:Array<FunkinHScript> = [];
+	public var scripts:Array<FunkinScript> = [];
 	public var song:String;
-	public var notes:Array<SwagSection>;
-	public var events:Array<Dynamic>;
+	public var notes:Array<Note> = [];
+	public var events:Array<EventNote> = []; //SONION
 	public var bpm:Float;
 	public var needsVoices:Bool = true;
 	public var arrowSkin:String;
@@ -49,8 +54,11 @@ class Song
 	public var stage:String;
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
+	public var vocals:FlxSound;
+	public var inst:FlxSound;
 	public var gfVersion:String = 'gf';
 	public var legacyStrumMode:Bool = false;
+	public var data:SwagSong = null;
 	
 	private static function onLoadJson(songJson:Dynamic) // Convert old charts to newest format
 	{
@@ -89,11 +97,16 @@ class Song
 		}
 	}
 
-	public function new(song, notes, bpm)
+	public function new(?data:SwagSong = null)
 	{
-		this.song = song;
-		this.notes = notes;
-		this.bpm = bpm;
+		this.data = data;
+		if (data != null){
+			this.player1 = data.player1;
+			this.player2 = data.player2;
+			this.gfVersion = data.gfVersion;
+			this.song = data.song;
+			this.bpm = data.bpm;
+		}
 	}
 
 	public static function getDefaultSongData():SwagSong

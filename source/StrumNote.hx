@@ -171,15 +171,15 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 		if (player == 1){
 			scale.set(scaleAlter, scaleAlter);
 			updateHitbox();
-			x = getXPos((noteData % 4), (player == 1), spacingAlter, scaleAlter);
-			x += 50 + -0.275 * (Note.swagWidth);
+			x = getXPos((noteData % 4), (player == 1), spacingAlter, scaleAlter) + playerStrumlineX;
 			y = (FlxG.height - height) * 0.95;
 		}else{
 			scale.set(0.4, 0.4);
 			updateHitbox();
-			x = StrumNote.getPositionXFromPercent(posX, noteData, 1.4, 0.4);
+			x = getXPos((noteData % 4), false, 1.4, 0.4);
+			y = 50;
 		}
-
+		x += 50 + -0.275 * (Note.swagWidth);
 		}else{
 		x = defX + StrumNote.getPositionXFromPercent(posX, noteData);
 		}

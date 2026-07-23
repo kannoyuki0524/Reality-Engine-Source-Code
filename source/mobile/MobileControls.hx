@@ -22,11 +22,14 @@ class MobileControls implements IFlxDestroyable
 		curState = target;
 	}
 
-	public function addMobilePad(DPad:String, Action:String):Void
+	public function addMobilePad(DPad:String, Action:String, type:String = 'UI'):Void
 	{
 		if (mobilePad != null) removeMobilePad();
 		mobilePad = new FunkinMobilePad(DPad, Action);
-		mobilePad.alpha = ClientPrefs.mobilePadAlpha;
+		mobilePad.alpha = switch (type.toUpperCase()){
+		case 'UI': ClientPrefs.mobilePadUIAlpha;
+		default: ClientPrefs.mobilePadAlpha;
+		}
 		curState.add(mobilePad);
 	}
 
