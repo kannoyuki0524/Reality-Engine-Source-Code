@@ -76,10 +76,8 @@
     },
     {
       "name": "flixel-animate",
-      "type": "git",
-      "dir": null,
-      "ref": "4fb307acac9379966dfa0b7619b37036fcd39b32",
-      "url": "https://github.com/MaybeMaru/flixel-animate"
+      "type": "haxelib",
+      "version": "1.5.0"
     },
     {
       "name": "hxcpp",
