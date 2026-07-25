@@ -997,12 +997,12 @@ class PlayState extends MusicBeatState
 				doPushHx = true;
 			}
 		}
-		trace('LOADED FROM HX: ' + hxFile);
 
 		if(doPushHx){
 			var fileData = new FunkinHScript(curStage,hxFile,true);
 			hscriptArray.push(fileData);
 			funkyScripts.push(fileData);
+			trace('LOADED FROM HX: ' + hxFile);
 		}
 		#end
 
@@ -1178,6 +1178,9 @@ class PlayState extends MusicBeatState
 
 		notes = new FlxTypedGroup<Note>();
 		add(notes);
+		
+		songSpeedType = ClientPrefs.getGameplaySetting('scrolltype','multiplicative');
+
 		generateSong(SONG);
 		
 
@@ -2327,23 +2330,23 @@ class PlayState extends MusicBeatState
 		var ret:Dynamic = callOnScripts('onStartCountdown', [], false);
 		if(ret != Globals.Function_Stop) {
 			if (skipCountdown || startOnTime > 0) skipArrowStartTween = true;
-			if (!strumGenerated)
-			for (strumNum in 0...strumAmount)
-			generateStaticArrows(strumNum);
-			strumGenerated = true;
-			#if MC_TOOLS_ALLOWED
-			NoteMovement.getDefaultStrumPos(this);
-			#end
-			for (i in 0...playerStrums.length) {
-				setOnScripts('defaultPlayerStrumX' + i, playerStrums.members[i].x);
-				setOnScripts('defaultPlayerStrumY' + i, playerStrums.members[i].y);
+			if (!strumGenerated){
+				for (strumNum in 0...strumAmount)
+				generateStaticArrows(strumNum);
+				strumGenerated = true;
+				#if MC_TOOLS_ALLOWED
+				NoteMovement.getDefaultStrumPos(this);
+				#end
+				for (i in 0...playerStrums.length) {
+					setOnScripts('defaultPlayerStrumX' + i, playerStrums.members[i].x);
+					setOnScripts('defaultPlayerStrumY' + i, playerStrums.members[i].y);
+				}
+				for (i in 0...opponentStrums.length) {
+					setOnScripts('defaultOpponentStrumX' + i, opponentStrums.members[i].x);
+					setOnScripts('defaultOpponentStrumY' + i, opponentStrums.members[i].y);
+					//if(ClientPrefs.middleScroll) opponentStrums.members[i].visible = false;
+				}
 			}
-			for (i in 0...opponentStrums.length) {
-				setOnScripts('defaultOpponentStrumX' + i, opponentStrums.members[i].x);
-				setOnScripts('defaultOpponentStrumY' + i, opponentStrums.members[i].y);
-				//if(ClientPrefs.middleScroll) opponentStrums.members[i].visible = false;
-			}
-
 			if (ret == Globals.Function_Halt) {
 				trace('BRO');
 				return;
@@ -2657,7 +2660,14 @@ class PlayState extends MusicBeatState
 	private function generateSong(songData:SwagSong, ?isCurrentSong:Bool = true):Void
 	{
 		// FlxG.log.add(ChartParser.parse());
-
+		var tempedSpeed = songData.speed;
+		switch(songSpeedType)
+		{
+			case "multiplicative":
+				tempedSpeed = tempedSpeed * ClientPrefs.getGameplaySetting('scrollspeed', 1);
+			case "constant":
+				tempedSpeed = ClientPrefs.getGameplaySetting('scrollspeed', 1);
+		}
 		var tempedVocals = vocals;
 
 		if (songData.needsVoices)
@@ -2878,15 +2888,14 @@ class PlayState extends MusicBeatState
 		inst = tempedInst;
 		if (FlxG.sound.music != null && FlxG.sound.music != inst){
 		FlxG.sound.list.add(FlxG.sound.music);
+		FlxG.sound.music.onComplete = null;
 		}
 		FlxG.sound.music = inst;
 		FlxG.sound.list.add(vocals);
-
+		
 		addCharacterToList(songData.player1, 0);
 		addCharacterToList(songData.player2, 1);
 		addCharacterToList(songData.gfVersion, 2);
-
-		songSpeedType = ClientPrefs.getGameplaySetting('scrolltype','multiplicative');
 
 		switch(songSpeedType)
 		{
@@ -2902,19 +2911,24 @@ class PlayState extends MusicBeatState
 		curSong = songData.data.song;
 		
 		generatedMusic = true;
+		moveCameraSection();
 	}
 
 	public function switchSong(?songName:String = ''){
 		if (songName == null || songName == '') return;
 		KillNotes();
 		endSong(true);
+		startingSong = true;
+		endingSong = false;
+		generatedMusic = false;
+		startedCountdown = false;
+		moveCameraSection();
 		loadSong(songName);
-		
+		songTime = 0;
 		triggerEventNote('Change Character', '0', PlayState.SONG.player1);
 		triggerEventNote('Change Character', '1', PlayState.SONG.player2);
 		triggerEventNote('Change Character', '2', PlayState.SONG.gfVersion);
-		Conductor.songPosition = -5000;
-		curStep = -5;
+		Conductor.songPosition = 0;
 		updateStep();
 		startIntro();
 
@@ -2999,6 +3013,8 @@ class PlayState extends MusicBeatState
 		if(!eventPushedMap.exists(event.event)) {
 			eventPushedMap.set(event.event, true);
 		}
+
+		callOnScripts('onEventPushed', [event]);
 	}
 
 	function eventNoteEarlyTrigger(event:EventNote):Float {

@@ -27,10 +27,10 @@ class FunkinHitbox extends Hitbox
 
 		if (mode == 'V Slice')
 		{
-			addHint('buttonNote1', ['NOTE_LEFT'], 0, 0, 0, 140, Std.int(FlxG.height), hitboxColors[0]);
-			addHint('buttonNote2', ['NOTE_DOWN'], 1, 140, 0, 140, Std.int(FlxG.height), hitboxColors[1]);
-			addHint('buttonNote3', ['NOTE_UP'], 2, 280, 0, 140, Std.int(FlxG.height), hitboxColors[2]);
-			addHint('buttonNote4', ['NOTE_RIGHT'], 3, 420, 0, 140, Std.int(FlxG.height), hitboxColors[3]);
+			addHint('buttonNote1', ['NOTE_LEFT'], 0, 0, 0, 160, Std.int(FlxG.height), hitboxColors[0]);
+			addHint('buttonNote2', ['NOTE_DOWN'], 1, 160, 0, 160, Std.int(FlxG.height), hitboxColors[1]);
+			addHint('buttonNote3', ['NOTE_UP'], 2, 320, 0, 160, Std.int(FlxG.height), hitboxColors[2]);
+			addHint('buttonNote4', ['NOTE_RIGHT'], 3, 480, 0, 160, Std.int(FlxG.height), hitboxColors[3]);
 		}
 		else
 		{
