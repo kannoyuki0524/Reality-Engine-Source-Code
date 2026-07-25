@@ -2660,6 +2660,7 @@ class PlayState extends MusicBeatState
 	private function generateSong(songData:SwagSong, ?isCurrentSong:Bool = true):Void
 	{
 		// FlxG.log.add(ChartParser.parse());
+		var ogSpeed = songSpeed;
 		var tempedSpeed = songData.speed;
 		switch(songSpeedType)
 		{
@@ -2668,6 +2669,7 @@ class PlayState extends MusicBeatState
 			case "constant":
 				tempedSpeed = ClientPrefs.getGameplaySetting('scrollspeed', 1);
 		}
+		songSpeed = tempedSpeed;
 		var tempedVocals = vocals;
 
 		if (songData.needsVoices)
@@ -2858,7 +2860,7 @@ class PlayState extends MusicBeatState
 
 		// trace(unspawnNotes.length);
 		// playerCounter += 1;
-
+		songSpeed = ogSpeed;
 		tempedNotes.sort(sortByShit);
 		if(tempedEvents.length > 1) { //No need to sort if there's a single one or none at all
 			tempedEvents.sort(sortByTime);
@@ -2871,6 +2873,7 @@ class PlayState extends MusicBeatState
 		loadedSongs.set(songName, newSong);
 		if (isCurrentSong){
 		loadSong(songName);
+		checkEventNote();
 		//add(notes); SONION WHY DO WE ADD THIS IN HERE
 		}
 
@@ -2906,8 +2909,7 @@ class PlayState extends MusicBeatState
 		}
 		Conductor.mapBPMChanges(songData.data);
 		Conductor.changeBPM(songData.data.bpm);
-
-		checkEventNote();
+		
 		curSong = songData.data.song;
 		
 		generatedMusic = true;
@@ -2921,7 +2923,8 @@ class PlayState extends MusicBeatState
 		endingSong = false;
 		generatedMusic = false;
 		startedCountdown = false;
-		loadSong(songName);
+		canPause = true;
+		updateTime = (ClientPrefs.timeBarType != 'Disabled');
 		moveCameraSection();
 		songTime = 0;
 		triggerEventNote('Change Character', '0', PlayState.SONG.player1);
@@ -2930,7 +2933,7 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition = 0;
 		updateStep();
 		startIntro();
-
+		checkEventNote();
 		callOnScripts('onSongSwitched', [songName]);
 	}
 
@@ -3517,8 +3520,10 @@ class PlayState extends MusicBeatState
 					dunceNote.updateHitbox();
 					}
 					else{
+					if (!dunceNote.animation.curAnim.name.endsWith('end')){
 					dunceNote.scale.y /= Conductor.stepCrochet / 100 * 1.05;
 					dunceNote.scale.y *= Conductor.stepCrochet / 100 * 1.07 * dunceNote.targetStrum.scale.y;
+					}
 					dunceNote.scale.set(dunceNote.targetStrum.scale.x, dunceNote.scale.y);
 					dunceNote.updateHitbox();
 					dunceNote.offsetX += dunceNote.width / 3;

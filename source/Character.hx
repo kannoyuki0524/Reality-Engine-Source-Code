@@ -298,7 +298,8 @@ class Character extends FunkinSprite
 				
 							if (getAnimName().endsWith('miss') && isAnimFinished() && !debugMode)
 							{
-								playAnim('idle', true, false, 10);
+								dance();
+								finishAnim();
 							}
 				
 							if (getAnimName() == 'firstDeath' && isAnimFinished() && startedDeath)
