@@ -153,7 +153,11 @@ class Song
 
 		if(rawJson == null) {
 			try{
-			rawJson = Paths.getContent(Paths.json(formattedFolder + '/' + Paths.formatToSongPath(songName))).trim();
+			#if sys
+			rawJson = File.getContent(Paths.json(formattedFolder + '/' + Paths.formatToSongPath(songName))).trim();
+			#else
+			rawJson = Assets.getText(Paths.json(formattedFolder + '/' + Paths.formatToSongPath(songName))).trim();
+			#end
 			}
 			catch(e){
 				trace('SMG2 ATE YOUR CHARTS!, ' + jsonInput + ' NOT FOUND MAN!');
