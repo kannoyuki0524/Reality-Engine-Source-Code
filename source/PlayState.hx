@@ -2911,7 +2911,6 @@ class PlayState extends MusicBeatState
 		curSong = songData.data.song;
 		
 		generatedMusic = true;
-		moveCameraSection();
 	}
 
 	public function switchSong(?songName:String = ''){
@@ -2922,8 +2921,8 @@ class PlayState extends MusicBeatState
 		endingSong = false;
 		generatedMusic = false;
 		startedCountdown = false;
-		moveCameraSection();
 		loadSong(songName);
+		moveCameraSection();
 		songTime = 0;
 		triggerEventNote('Change Character', '0', PlayState.SONG.player1);
 		triggerEventNote('Change Character', '1', PlayState.SONG.player2);
