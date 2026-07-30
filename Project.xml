@@ -205,7 +205,7 @@
 	<haxedef name='no-deprecation-warnings' />
 	<!--HXCPP Safety for mobile - stack trace for debugging-->
 	<haxedef name="HXCPP_STACK_TRACE" if="mobile" />
-	<certificate path="key.keystore" password="realityEngine" alias="psychport" alias-password="realityEngine" if="android" unless="debug" />
+	
 	<!-- _________________________________ Custom _______________________________ -->
 
 	<!--Place custom nodes like icons here (higher priority to override the HaxeFlixel icon)-->
