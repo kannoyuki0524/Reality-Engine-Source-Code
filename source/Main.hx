@@ -7,7 +7,10 @@ import flixel.FlxGame;
 import flixel.FlxState;
 import openfl.Assets;
 import openfl.Lib;
+import crowplexus.iris.ErrorSeverity;
+import crowplexus.iris.IrisConfig;
 import openfl.display.FPS;
+import crowplexus.iris.Iris;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.display.StageScaleMode;
@@ -28,7 +31,7 @@ import android.content.Context as AndroidContext;
 import sys.FileSystem;
 import sys.io.File;
 #end
-
+using crowplexus.iris.utils.Ansi;
 using StringTools;
 
 class Main extends Sprite
@@ -86,7 +89,7 @@ class Main extends Sprite
 
 		setupGame();
 	}
-
+	var oldTrace = haxe.Log.trace;
   	public static var debugDisplay:debug.FunkinDebugDisplay;
 	private function setupGame():Void
 	{
@@ -143,6 +146,47 @@ class Main extends Sprite
 		#if android
 		FlxG.android.preventDefaultKeys = [BACK];
 		#end
+		
+		haxe.Log.trace = function(v:Dynamic, ?infos:haxe.PosInfos) {
+			oldTrace(v, infos);
+			var str = haxe.Log.formatOutput(v, infos);
+
+			MobileLog.log(str, 'TRACE');
+		};
+
+		Iris.logLevel = function(level: ErrorSeverity, x, ?pos: haxe.PosInfos): Void {
+		if (pos == null) {
+			@:privateAccess
+			pos = Iris.getDefaultPos();
+		}
+
+		var out = Std.string(x);
+		if (pos != null && pos.customParams != null)
+			for (i in pos.customParams)
+				out += "," + i;
+
+		var prefix = ErrorSeverityTools.getPrefix(level);
+		if (prefix != "" && prefix != null) {
+			prefix = '$prefix:';
+		}
+		var posPrefix = '[$prefix${pos.fileName}]';
+		if (pos.lineNumber != -1)
+			posPrefix = '[$prefix${pos.fileName}:${pos.lineNumber}]';
+
+		MobileLog.log(posPrefix + ": " + out, "SCRIPT LOG");
+		if (prefix != "" && prefix != null) {
+			posPrefix = posPrefix.fg(ErrorSeverityTools.getColor(level)).reset();
+			if (level == FATAL) {
+				posPrefix = posPrefix.attr(INTENSITY_BOLD);
+			}
+		}
+		#if sys
+		Sys.println((posPrefix + ": " + out).stripColor());
+		#else
+		// Since non-sys targets lack printLn, a simple trace should work
+		trace((posPrefix + ": " + out).stripColor());
+		#end
+		};
 
 		Lib.current.stage.addEventListener(openfl.events.KeyboardEvent.KEY_DOWN, (e:openfl.events.KeyboardEvent) -> {
 			
@@ -155,35 +199,23 @@ class Main extends Sprite
 					@:privateAccess {
 						try
 						{
+							// Reload EVERYTHING
 							Paths.freeGraphicsFromMemory();
 							if (FlxG.game._state != null) FlxG.game._state.destroy();
-							FlxG.game._state = null;
+							FlxG.game._state = null;	
+							Iris.destroyAll();
+							crowplexus.hscript.Interp.staticVariables.clear();
 						}
 						catch(e) {
 							trace("Error on restarting game: " + e);
 						}
-
-						FlxTransitionableState.skipNextTransIn = true;
-						FlxTransitionableState.skipNextTransOut = true;
-	
-						Iris.destroyAll();
-						crowplexus.hscript.Interp.staticVariables.clear();
-						
 						FlxG.game._requestedState = new StartupState();
-
-						// Reload EVERYTHING
-						Paths.clearUnusedMemory();
-						Paths.clearStoredMemory();
-
-						// Send the player to the StartupState
+						FlxG.game.switchState();// Send the player to the StartupState
 						TitleState.initialized = false;
-						FlxG.game.switchState();
 					}
 				}
 				else
 				{
-					FlxTransitionableState.skipNextTransIn = true;
-					FlxTransitionableState.skipNextTransOut = true;
 
 					trace('RELOADING GAME...');
 					try{

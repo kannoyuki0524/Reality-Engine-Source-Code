@@ -3515,22 +3515,24 @@ class PlayState extends MusicBeatState
 				
 				if (ClientPrefs.vsliceHUD){
 					dunceNote.offsetY += dunceNote.height / 6;
+					dunceNote.multSpeed *= 2;
 					if (!dunceNote.isSustainNote){
 					dunceNote.scale.set(dunceNote.targetStrum.scale.x, dunceNote.targetStrum.scale.y);
 					dunceNote.updateHitbox();
 					}
 					else{
-					if (!dunceNote.animation.curAnim.name.endsWith('end')){
-					dunceNote.scale.y /= Conductor.stepCrochet / 100 * 1.05;
-					dunceNote.scale.y *= Conductor.stepCrochet / 100 * 1.07 * dunceNote.targetStrum.scale.y;
-					}
 					dunceNote.scale.set(dunceNote.targetStrum.scale.x, dunceNote.scale.y);
-					dunceNote.updateHitbox();
-					dunceNote.offsetX += dunceNote.width / 3;
+                        if (!dunceNote.animation.curAnim.name.endsWith('end')){
+                        dunceNote.scale.y *= Conductor.stepCrochet / 100 * 0.45 * dunceNote.targetStrum.scale.y;
+                        dunceNote.offsetY -= dunceNote.height / 3 + 10;
+                        }
+                        dunceNote.updateHitbox();
+                        dunceNote.offsetY += 10;
 					}
 					if (!dunceNote.pressAble){
 						dunceNote.visible = false;
 					}
+					dunceNote.offsetX += 30;
 				}
 				callOnScripts('onSpawnNote', [notes.members.indexOf(dunceNote), dunceNote.noteData, dunceNote.noteType, dunceNote.isSustainNote]);
 
@@ -4536,7 +4538,7 @@ class PlayState extends MusicBeatState
 				}
 				mobileControls.addHitboxCamera();
 			case 'custom button':
-				mobileControls.addMobilePad(isReplayOrCpu ? 'LEFT_RIGHT' : 'FULL', 'NONE');
+				mobileControls.addMobilePad(isReplayOrCpu ? 'NONE' : 'FULL', 'NONE');
 				mobileControls.addMobilePadCamera();
 				setupMobilePadForGameplay();
 				for (name => pos in ClientPrefs.mobilePad)
@@ -4550,16 +4552,30 @@ class PlayState extends MusicBeatState
 				}
 
 			case 'classic-right':
-				mobileControls.addMobilePad(isReplayOrCpu ? 'LEFT_RIGHT' : 'FULL', 'NONE');
+				mobileControls.addMobilePad(isReplayOrCpu ? 'NONE' : 'FULL', 'NONE');
 				mobileControls.addMobilePadCamera();
 				setupMobilePadForGameplay();
 				for (btn in mobileControls.mobilePad.buttons[0])
 					btn.x = FlxG.width - 312 + btn.x;
 
 			default: // classic
-				mobileControls.addMobilePad(isReplayOrCpu ? 'LEFT_RIGHT' : 'FULL', 'NONE');
+				mobileControls.addMobilePad(isReplayOrCpu ? 'NONE' : 'FULL', 'NONE');
 				mobileControls.addMobilePadCamera();
 				setupMobilePadForGameplay();
+		}
+		if (ClientPrefs.vsliceHUD){
+			if (mobileControls.mobilePad != null) 
+					{
+						for (button in 0...mobileControls.mobilePad.buttons.length)
+						{
+							for (sonion in 0...mobileControls.mobilePad.buttons[button].length){
+							mobileControls.mobilePad.buttons[button][sonion].x = playerStrums.members[sonion].x;
+							mobileControls.mobilePad.buttons[button][sonion].y = playerStrums.members[sonion].y;
+							mobileControls.mobilePad.buttons[button][sonion].setGraphicSize(playerStrums.members[sonion].width, playerStrums.members[sonion].height);
+							mobileControls.mobilePad.buttons[button][sonion].updateHitbox();
+							}
+						}
+					}
 		}
 		FlxG.cameras.remove(camPauseHUD, false);
 		FlxG.cameras.add(camPauseHUD, false);

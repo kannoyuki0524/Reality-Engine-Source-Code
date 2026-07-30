@@ -117,7 +117,16 @@ class FunkinHScript extends FunkinScript
         set("Map", haxe.ds.StringMap);
         set("Path", haxe.io.Path);
 		set("Date", Date);
-		set("DateTools", DateTools);
+		set("DateTools", {
+			format:DateTools.format,
+			delta:DateTools.delta,
+			getMonthDays:DateTools.getMonthDays,
+			seconds:DateTools.seconds,
+			minutes:DateTools.minutes,
+			hours:DateTools.hours,
+			days:DateTools.days,
+			parse:DateTools.parse,
+			make:DateTools.make});
 		set('FlxTextBorderStyle', FlxTextBorderStyle);
 		set('FlxTypeText', flixel.addons.text.FlxTypeText);
 		set('PlayState', PlayState);
@@ -195,6 +204,9 @@ class FunkinHScript extends FunkinScript
 		#end
 		set('ShaderFilter', openfl.filters.ShaderFilter);
 		set('StringTools', StringTools);
+		set('SwipeUtil', utils.SwipeUtil);
+		set('FlxSpriteUtil', flixel.util.FlxSpriteUtil);
+		set('TouchUtil', utils.TouchUtil);
 		set('curStep', 0);
 		set('curBeat', 0);
 		set('curSection', 0);
@@ -208,6 +220,7 @@ class FunkinHScript extends FunkinScript
 		// Camera poo
 		set('cameraX', 0);
 		set('cameraY', 0);
+		set('Rectangle', openfl.geom.Rectangle);
 
 		// Screen stuff
 		set('screenWidth', FlxG.width);
@@ -227,7 +240,7 @@ class FunkinHScript extends FunkinScript
 		set('ratingName', '');
 		set('ratingFC', '');
 		set('version', MainMenuState.psychEngineVersion.trim());
-
+			
 		set('inGameOver', false);
 		set('mustHitSection', false);
 		set('altAnim', false);

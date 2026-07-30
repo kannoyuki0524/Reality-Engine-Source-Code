@@ -229,6 +229,12 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 				};
 			}
 			return;
+		}else{
+			if(nextState == FlxG.state) {
+					FlxG.resetState();
+			} else {
+					FlxG.switchState(nextState);
+			}
 		}
 		FlxTransitionableState.skipNextTransIn = false;
 		} catch(e:Dynamic) {
@@ -260,7 +266,7 @@ class MusicBeatState extends #if MC_TOOLS_ALLOWED modcharting.ModchartMusicBeatS
 				switchState(new MainMenuState());
 			}
 		}else
-		MusicBeatState.switchState(getState());
+		FlxG.resetState();
 	}
 
 	public static function getState():MusicBeatState {

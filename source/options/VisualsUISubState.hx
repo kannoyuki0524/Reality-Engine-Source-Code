@@ -138,6 +138,14 @@ class VisualsUISubState extends BaseOptionsMenu
 			true);
 		addOption(option);
 
+		var option:Option = new Option('VSLICE HUD', //Name
+			'If checked, using the vanilla game style hud.', //Description
+			'vsliceHUD', //Save data variable name
+			'bool', //Variable type
+			false); //Default value
+		addOption(option);
+
+		
 		#if MOBILE_CONTROL_ALLOWED
 		var option:Option = new Option('FPS Counter',
 			'Choose Your FPS Counter Visuals!',

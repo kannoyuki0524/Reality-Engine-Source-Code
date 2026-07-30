@@ -126,10 +126,10 @@ class MobileControlSelectState extends MusicBeatSubstate
 
 		descText.text = switch (styleList[curStyle])
 		{
-			case 'classic': 'Pad on the left side (default position)';
-			case 'classic-right': 'Pad on the right side (default position)';
+			case 'classic': 'Pad on the left side (default position)\n(NOTICE THAT THIS WON\'T CHANGE IN V SLICE HUD!)';
+			case 'classic-right': 'Pad on the right side (default position)\n(NOTICE THAT THIS WON\'T CHANGE IN V SLICE HUD!)';
 			case 'hitbox': 'Hitbox style (default position)';
-			case 'custom button': 'Drag buttons to adjust, then press Save';
+			case 'custom button': 'Drag buttons to adjust, then press Save\n(NOTICE THAT THIS WON\'T CHANGE IN V SLICE HUD!)';
 			default: '';
 		};
 	}
