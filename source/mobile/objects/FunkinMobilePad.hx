@@ -18,7 +18,7 @@ class FunkinMobilePad extends MobilePad
 	{
 		var frames:FlxGraphic;
 		var path:String = MobileConfig.mobileFolderPath + 'MobilePad/Textures/$framePath.png';
-
+		
 		if (Assets.exists(path))
 			frames = FlxGraphic.fromBitmapData(Assets.getBitmapData(path));
 		else

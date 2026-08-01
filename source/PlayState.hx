@@ -1495,12 +1495,11 @@ class PlayState extends MusicBeatState
 		#if MC_TOOLS_ALLOWED
 		ModchartFuncs.loadLuaFunctions();
 		#end
-		callOnScripts('onCreatePost', []);
-		
 		#if MOBILE_CONTROL_ALLOWED
-
 		setupMobileControlsForGameplay();
 		#end
+		callOnScripts('onCreatePost', []);
+		
 
 		super.create();
 		refresh();
@@ -3514,8 +3513,6 @@ class PlayState extends MusicBeatState
 				dunceNote.targetStrum = strumTargets[dunceNote.fieldIndex].members[leData];
 				
 				if (ClientPrefs.vsliceHUD){
-					dunceNote.offsetY += dunceNote.height / 6;
-					dunceNote.multSpeed *= 2;
 					if (!dunceNote.isSustainNote){
 					dunceNote.scale.set(dunceNote.targetStrum.scale.x, dunceNote.targetStrum.scale.y);
 					dunceNote.updateHitbox();
@@ -3524,15 +3521,14 @@ class PlayState extends MusicBeatState
 					dunceNote.scale.set(dunceNote.targetStrum.scale.x, dunceNote.scale.y);
                         if (!dunceNote.animation.curAnim.name.endsWith('end')){
                         dunceNote.scale.y *= Conductor.stepCrochet / 100 * 0.45 * dunceNote.targetStrum.scale.y;
-                        dunceNote.offsetY -= dunceNote.height / 3 + 10;
                         }
                         dunceNote.updateHitbox();
-                        dunceNote.offsetY += 10;
+					dunceNote.offsetX = 0;
+					dunceNote.offsetX += dunceNote.width * 1.5;
 					}
 					if (!dunceNote.pressAble){
 						dunceNote.visible = false;
 					}
-					dunceNote.offsetX += 30;
 				}
 				callOnScripts('onSpawnNote', [notes.members.indexOf(dunceNote), dunceNote.noteData, dunceNote.noteType, dunceNote.isSustainNote]);
 
