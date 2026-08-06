@@ -22,7 +22,7 @@ import mobile.objects.FunkinHitbox;
 	"stepHit",
 	"beatHit"
 ], "substates"))
-class MusicBeatSubstate extends FlxUISubState
+class MusicBeatSubstate extends FlxSubState
 {
 	public static var instance:MusicBeatSubstate;
 
