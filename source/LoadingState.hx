@@ -340,6 +340,7 @@ class LoadingState extends MusicBeatState
 				threadPool.run(() -> {
 					mutex.acquire();
 					precacheImage(image);
+     trace('IMAGE PRECACHED:' + image);
 					mutex.release();
 					currentProgress += 1;
 				});
@@ -351,6 +352,7 @@ class LoadingState extends MusicBeatState
 				threadPool.run(() -> {
 					mutex.acquire();
 					precacheCharacter(character);
+     trace('CHARACTER PRECACHED:' + character);
 					mutex.release();
 					currentProgress += 1;
 				});
@@ -362,6 +364,7 @@ class LoadingState extends MusicBeatState
 				threadPool.run(() -> {
 				mutex.acquire();
 				Paths.sound(sound);
+    trace('SOUND PRECACHED:' + sound);
 				mutex.release();
 				currentProgress += 1;
 				});
@@ -373,6 +376,7 @@ class LoadingState extends MusicBeatState
 				threadPool.run(() -> {
 					mutex.acquire();
 					Paths.music(music);
+    trace('MUSIC PRECACHED:' + music);
 					mutex.release();
 					currentProgress += 1;
 				});
@@ -384,6 +388,7 @@ class LoadingState extends MusicBeatState
 					threadPool.run(() -> {
 					mutex.acquire();
 					Paths.track(song.id, song.name);
+    trace('SONG FILE PRECACHED:' + Std.string(song));
 					mutex.release();
 					currentProgress += 1;
 				});
