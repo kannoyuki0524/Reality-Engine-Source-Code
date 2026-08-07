@@ -1311,7 +1311,7 @@ class PlayState extends MusicBeatState
 					fileData = new FunkinLua(luaToLoad);
 				}
 			}
-			if (file != null){
+			if (fileData != null){
 			luaArray.push(fileData);
 			funkyScripts.push(fileData);
 			}
@@ -1340,7 +1340,7 @@ class PlayState extends MusicBeatState
 					fileData = new FunkinHScript(notetype,hxToLoad,true);
 				}
 			}
-			if (file != null){
+			if (fileData != null){
 				hscriptArray.push(fileData);
 				funkyScripts.push(fileData);
 				}
@@ -1373,7 +1373,7 @@ class PlayState extends MusicBeatState
 					fileData = new FunkinLua(luaToLoad);
 				}
 			}
-			if (file != null){
+			if (fileData != null){
 				luaArray.push(fileData);
 				funkyScripts.push(fileData);
 				}
@@ -1402,7 +1402,7 @@ class PlayState extends MusicBeatState
 					fileData = new FunkinHScript(event,hxToLoad,true);
 				}
 			}
-			if (file != null){
+			if (fileData != null){
 				hscriptArray.push(fileData);
 				funkyScripts.push(fileData);
 				}
@@ -1461,10 +1461,10 @@ class PlayState extends MusicBeatState
 						}
 					}
 				}
-				trace('Created ' + luaArray.length + ' LUA scripts and ' + hscriptArray.length + ' HX scripts');
+				
 			}
 		}
-
+        trace('Created ' + luaArray.length + ' LUA scripts and ' + hscriptArray.length + ' HX scripts');
 		startIntro();
 		RecalculateRating();
 
