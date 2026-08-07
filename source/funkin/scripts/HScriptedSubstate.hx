@@ -38,10 +38,4 @@ class HScriptedSubstate extends MusicBeatSubstate
 
 		return null;
 	}
-	override function getEvent(id:String, sender:Dynamic, data:Dynamic, ?params:Array<Dynamic>)
-		{
-			if (_extensionScript != null){
-				_extensionScript.call('getEvent',[id,sender,data,params]);
-			}
-		}
 }
