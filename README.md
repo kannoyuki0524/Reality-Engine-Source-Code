@@ -2,20 +2,13 @@
 Engine originally used on [FUNKIN' CORRUPTION: LAST REALITY Mod](nuh uh link), intended to be a fix for the vanilla version's many issues while keeping the casual play aspect of it. Also aiming to be an easier alternative to newbie coders.
 
 ## Installation:
-You must have [the most up-to-date version of Haxe](https://haxe.org/download/), seriously, stop using 4.1.5, it misses some stuff.
+You MUST use Haxe 4.3.x (e.g., 4.3.2, 4.3.6, or 4.3.7; DO NOT DOWNLOAD 5.0.0-PREVIEW). STOP using 4.1.5 or 4.2.5, as they are missing some features.
 
 Follow a Friday Night Funkin' source code compilation tutorial, after this you will need to install LuaJIT.
 
-To install LuaJIT do this: `haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit` on a Command prompt/PowerShell
+You can use "hmm install" to install all haxelib
 
-...Or if you don't want your mod to be able to run .lua scripts, delete the "LUA_ALLOWED" line on Project.xml
-
-
-If you get an error about StatePointer when using Lua, run `haxelib remove linc_luajit` into Command Prompt/PowerShell, then re-install linc_luajit.
-
-If you want video support on your mod, simply do `haxelib install hxCodec` on a Command prompt/PowerShell
-
-otherwise, you can delete the "VIDEOS_ALLOWED" Line on Project.xml
+If you want video support on your mod, simply do `haxelib install hxvlc 2.0.1` on a Command prompt/PowerShell
 
 ## Credits:
 * Shadow Mario - Programmer
