@@ -3513,22 +3513,7 @@ class PlayState extends MusicBeatState
 				dunceNote.targetStrum = strumTargets[dunceNote.fieldIndex].members[leData];
 				
 				if (ClientPrefs.vsliceHUD){
-					if (!dunceNote.isSustainNote){
-					dunceNote.scale.set(dunceNote.targetStrum.scale.x, dunceNote.targetStrum.scale.y);
-					dunceNote.updateHitbox();
-					}
-					else{
-					dunceNote.scale.set(dunceNote.targetStrum.scale.x, dunceNote.scale.y);
-                        if (!dunceNote.animation.curAnim.name.endsWith('end')){
-                        dunceNote.scale.y *= Conductor.stepCrochet / 100 * 0.45 * dunceNote.targetStrum.scale.y;
-                        }
-                        dunceNote.updateHitbox();
-					dunceNote.offsetX = 0;
-					dunceNote.offsetX += dunceNote.width * 1.5;
-					}
-					if (!dunceNote.pressAble){
-						dunceNote.visible = false;
-					}
+					//gulp
 				}
 				callOnScripts('onSpawnNote', [notes.members.indexOf(dunceNote), dunceNote.noteData, dunceNote.noteType, dunceNote.isSustainNote]);
 
