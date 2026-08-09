@@ -2869,6 +2869,7 @@ class PlayState extends MusicBeatState
 		newSong.events = tempedEvents;
 		newSong.vocals = tempedVocals;
 		newSong.inst = tempedInst;
+		newSong.speed = tempedSpeed;
 		loadedSongs.set(songName, newSong);
 		if (isCurrentSong){
 		loadSong(songName);
