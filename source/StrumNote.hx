@@ -172,14 +172,20 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 			scale.set(scaleAlter, scaleAlter);
 			updateHitbox();
 			x = getXPos((noteData % 4), (player == 1), spacingAlter, scaleAlter) + playerStrumlineX;
+  if (downScroll)
 			y = (FlxG.height - height) * 0.95 + 70;
+  else
+   y = 50;
 			if (ClientPrefs.vsliceHUD)
 			x += 40;
 		}else{
 			scale.set(0.4, 0.4);
 			updateHitbox();
 			x = getXPos((noteData % 4), false, 1.4, 0.4);
+   if (downScroll)
 			y = 50;
+   else
+   y = (FlxG.height - height) * 0.95;
 		}
 		x += 50 + -0.275 * (Note.swagWidth);
 		}else{
