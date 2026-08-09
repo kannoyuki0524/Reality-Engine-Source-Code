@@ -9,7 +9,7 @@ import flixel.input.gamepad.FlxGamepadInputID;
 
 class ClientPrefs {
 	public static var extraParams:Map<String,Map<String, Dynamic>> = ['Default' => new Map<String, Dynamic>()];
-	public static var downScroll:Bool = false;
+	public static var downScroll:Bool = #if mobile true #else false #end;
 	public static var middleScroll:Bool = false;
 	public static var opponentStrums:Bool = true;
 	public static var showFPS:Bool = true;
