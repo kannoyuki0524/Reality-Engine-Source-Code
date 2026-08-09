@@ -63,6 +63,13 @@ class GameplaySettingsSubState extends BaseOptionsMenu
 			true);
 		addOption(option);
 
+		var option:Option = new Option('V Slice Controls',
+			"If checked, the strum layout matches the original\nFriday Night Funkin': Mobile.\n(WARNING: can break some mechanics/modcharts, best for simple mods)",
+			'ogGameControls',
+			'bool',
+			false);
+		addOption(option);
+
 		var option:Option = new Option('Ghost Tapping',
 			"If checked, you won't get misses from pressing keys\nwhile there are no notes able to be hit.",
 			'ghostTapping',

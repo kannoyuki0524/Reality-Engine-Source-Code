@@ -3509,7 +3509,16 @@ class PlayState extends MusicBeatState
 				dunceNote.targetStrum = strumTargets[dunceNote.fieldIndex].members[leData];
 				
 				if (ClientPrefs.vsliceHUD){
-					//gulp
+					// 隐藏对手音符
+					if (!dunceNote.mustPress) {
+						dunceNote.visible = false;
+						if (dunceNote.tail != null) {
+							for (i in 0...dunceNote.tail.length) {
+								if (dunceNote.tail[i] != null)
+									dunceNote.tail[i].visible = false;
+							}
+						}
+					}
 				}
 				callOnScripts('onSpawnNote', [notes.members.indexOf(dunceNote), dunceNote.noteData, dunceNote.noteType, dunceNote.isSustainNote]);
 

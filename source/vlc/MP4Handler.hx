@@ -68,9 +68,10 @@ class MP4Handler extends FlxSpriteGroup
         videoSprite.bitmap.onEndReached.add(finishVideo);
 
         var args = this.shouldLoop ? ['input-repeat=65535'] : null;
-        videoSprite.load(videoName, args);
-        if (startPlay)
-        videoSprite.play();
+        if (!videoSprite.load(videoName, args))
+            trace('[MP4Handler] Failed to load video: ' + videoName);
+        else if (startPlay)
+            videoSprite.play();
 
         if (this.shouldResize)
         {

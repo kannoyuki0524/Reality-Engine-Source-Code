@@ -106,7 +106,8 @@ class Song
 			this.gfVersion = data.gfVersion;
 			this.song = data.song;
 			this.bpm = data.bpm;
-   this.speed = data.speed;
+   			this.speed = data.speed;
+			trace('speed: ' + this.speed);
 		}
 	}
 

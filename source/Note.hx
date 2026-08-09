@@ -114,6 +114,23 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 	public var targetStrum:StrumNote = null;
 	public var hitsoundDisabled:Bool = false;
 	public static var NOTE_AMOUNT:Int = 4;
+
+	/* Playfield scale multiplier relative to the default 0.7 note/strum scale.
+	   vsliceHUD enlarges the strums in StrumNote.postAddedToGroup(), but the note
+	   travel rate in followStrumNote() is a flat px/ms figure, so notes end up
+	   visually cramped (reads as a faster scroll speed than songSpeed implies).
+	   Everything that lives in playfield pixels multiplies by this so the visual
+	   density stays consistent. Returns 1.0 when vsliceHUD is off. */
+	public static var DEFAULT_SCALE:Float = 0.7;
+	public static var playfieldScale(get, never):Float;
+	static function get_playfieldScale():Float
+	{
+		if (!ClientPrefs.vsliceHUD) return 1.0;
+
+		final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+		final scaleAlter:Float = ((FlxG.height / FlxG.width) * 1.95) * amplification;
+		return scaleAlter / DEFAULT_SCALE;
+	}
 	private function set_multSpeed(value:Float):Float {
 		resizeByRatio(value / multSpeed);
 		multSpeed = value;
@@ -350,7 +367,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 			animation.addByPrefix(colArray[noteData] + 'hold', colArray[noteData] + ' hold piece');
 		}
 
-		setGraphicSize(Std.int(width * 0.7));
+		setGraphicSize(Std.int(width * DEFAULT_SCALE));
 		updateHitbox();
 	}
 
@@ -442,7 +459,11 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 		var strumDirection:Float = myStrum.direction;
 		var strumAlpha:Float = myStrum.alpha;
 
-		distance = (0.45 * (Conductor.songPosition - strumTime) * songSpeed * multSpeed);
+		var speedMultiplier:Float = 1.0;
+		if (ClientPrefs.vsliceHUD) {
+			speedMultiplier = 1.0 / playfieldScale;
+		}
+		distance = (0.45 * (Conductor.songPosition - strumTime) * songSpeed * multSpeed * speedMultiplier);
 		if (!myStrum.downScroll) distance *= -1;
 
 		var angleDir = strumDirection * Math.PI / 180;
@@ -462,12 +483,12 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 			if(myStrum.downScroll && isSustainNote)
 				{
 					if (animation.curAnim.name.endsWith('end')) {
-						y += 10.5 * (fakeCrochet / 400) * 1.5 * songSpeed + (46 * (songSpeed - 1));
-						y -= 46 * (1 - (fakeCrochet / 600)) * songSpeed;
 						if(isPixelNote) {
 							y += 8 + (6 - originalHeightForCalcs) * PlayState.daPixelZoom;
 						} else {
-							y -= 19;
+							if (ClientPrefs.vsliceHUD) {
+								y += height / 2 + 1;//WHAT THE FUCK IS OFFSET 1 PX????
+							}
 						}
 					}
 					y += (swagWidth / 2) - (60.5 * (songSpeed - 1));
@@ -486,6 +507,8 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 			var swagRect:FlxRect = clipRect;
 			if(swagRect == null) swagRect = new FlxRect(0, 0, frameWidth, frameHeight);
 
+			var shouldClip:Bool = false;
+
 			if (myStrum.downScroll)
 			{
 				if(y - offset.y * scale.y + height >= centerY)
@@ -493,6 +516,10 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 					swagRect.width = frameWidth;
 					swagRect.height = (centerY - y) / scale.y;
 					swagRect.y = frameHeight - swagRect.height;
+
+					// 确保裁剪区域有效
+					if (swagRect.height > 0 && swagRect.height <= frameHeight)
+						shouldClip = true;
 				}
 			}
 			else if (y + offset.y * scale.y <= centerY)
@@ -500,8 +527,16 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 				swagRect.y = (centerY - y) / scale.y;
 				swagRect.width = width / scale.x;
 				swagRect.height = (height / scale.y) - swagRect.y;
+
+				// 确保裁剪区域有效
+				if (swagRect.height > 0 && swagRect.height <= frameHeight)
+					shouldClip = true;
 			}
-			clipRect = swagRect;
+
+			if (shouldClip)
+				clipRect = swagRect;
+			else
+				clipRect = null;
 		}
 	}
 }

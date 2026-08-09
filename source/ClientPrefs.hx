@@ -39,6 +39,7 @@ class ClientPrefs {
 	public static var checkForUpdates:Bool = true;
 	public static var comboStacking = true;
 	public static var vsliceHUD:Bool = #if mobile true #else false #end;
+	public static var ogGameControls:Bool = false; //V-Slice (FNF: Mobile) strum layout
 	public static var fpsBGOpacity:Float = 0.5;
 	public static var gameplaySettings:Map<String, Dynamic> = [
 		'scrollspeed' => 1.0,
@@ -203,6 +204,7 @@ class ClientPrefs {
 		FlxG.save.data.healthBarAlpha = healthBarAlpha;
 		FlxG.save.data.comboOffset = comboOffset;
 		FlxG.save.data.vsliceHUD = vsliceHUD;
+		FlxG.save.data.ogGameControls = ogGameControls;
 		FlxG.save.data.achievementsMap = Achievements.achievementsMap;
 		FlxG.save.data.henchmenDeath = Achievements.henchmenDeath;
 
@@ -298,6 +300,9 @@ class ClientPrefs {
 		}
 		if(FlxG.save.data.vsliceHUD != null) {
 			vsliceHUD = FlxG.save.data.vsliceHUD;
+		}
+		if(FlxG.save.data.ogGameControls != null) {
+			ogGameControls = FlxG.save.data.ogGameControls;
 		}
 		if(FlxG.save.data.shaders != null) {
 			shaders = FlxG.save.data.shaders;

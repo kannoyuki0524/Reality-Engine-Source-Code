@@ -167,12 +167,14 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 			}
 		}
 		var playerStrumlineX = (FlxG.width - 4 * Note.swagWidth * scaleAlter * spacingAlter) / 2;
-		var opponentStrumlineX = (FlxG.width - 4 * Note.swagWidth * 0.4) / 2;	
+		var opponentStrumlineX = (FlxG.width - 4 * Note.swagWidth * 0.4) / 2;
 		if (player == 1){
 			scale.set(scaleAlter, scaleAlter);
 			updateHitbox();
 			x = getXPos((noteData % 4), (player == 1), spacingAlter, scaleAlter) + playerStrumlineX;
-			y = (FlxG.height - height) * 0.95;
+			y = (FlxG.height - height) * 0.95 + 70;
+			if (ClientPrefs.vsliceHUD)
+			x += 40;
 		}else{
 			scale.set(0.4, 0.4);
 			updateHitbox();
