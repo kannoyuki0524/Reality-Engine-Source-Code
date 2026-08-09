@@ -2898,14 +2898,7 @@ class PlayState extends MusicBeatState
 		addCharacterToList(songData.player1, 0);
 		addCharacterToList(songData.player2, 1);
 		addCharacterToList(songData.gfVersion, 2);
-
-		switch(songSpeedType)
-		{
-			case "multiplicative":
-				songSpeed = songData.speed * ClientPrefs.getGameplaySetting('scrollspeed', 1);
-			case "constant":
-				songSpeed = ClientPrefs.getGameplaySetting('scrollspeed', 1);
-		}
+		songSpeed = songData.speed;
 		Conductor.mapBPMChanges(songData.data);
 		Conductor.changeBPM(songData.data.bpm);
 		
