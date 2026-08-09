@@ -207,7 +207,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
 		this.inEditor = inEditor;
-		var downscroll = ClientPrefs.downScroll || ClientPrefs.vsliceHUD;
+		var downscroll = ClientPrefs.downScroll;
 		x += (ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X) + 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
 		y -= 2000;
