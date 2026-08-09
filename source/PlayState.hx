@@ -431,7 +431,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.stop();
 
 		// Gameplay settings
-		downscroll = ClientPrefs.downScroll || ClientPrefs.vsliceHUD;
+		downscroll = ClientPrefs.downScroll;
 		healthGain = ClientPrefs.getGameplaySetting('healthgain', 1);
 		healthLoss = ClientPrefs.getGameplaySetting('healthloss', 1);
 		instakillOnMiss = ClientPrefs.getGameplaySetting('instakill', false);
@@ -4510,7 +4510,7 @@ class PlayState extends MusicBeatState
 		switch (controlStyle)
 		{
 			case 'hitbox':
-				if (!ClientPrefs.vsliceHUD)
+				if (!ClientPrefs.ogGameControls)
 				mobileControls.addHitbox(ClientPrefs.hitboxMode);
 				else{
 				mobileControls.addHitbox('V Slice');
@@ -4549,7 +4549,7 @@ class PlayState extends MusicBeatState
 				mobileControls.addMobilePadCamera();
 				setupMobilePadForGameplay();
 		}
-		if (ClientPrefs.vsliceHUD){
+		if (ClientPrefs.ogGameControls){
 			if (mobileControls.mobilePad != null) 
 					{
 						for (button in 0...mobileControls.mobilePad.buttons.length)
