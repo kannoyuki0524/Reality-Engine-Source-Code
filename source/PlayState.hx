@@ -1114,7 +1114,7 @@ class PlayState extends MusicBeatState
 		dialogueBox.nextDialogueThing = startNextDialogue;
 		dialogueBox.skipDialogueThing = skipDialogue;
 
-		Conductor.songPosition = 0;
+		Conductor.songPosition = -Conductor.crochet * 5 + Conductor.offset;
 
 		strumLine = new FlxSprite(ClientPrefs.middleScroll ? STRUM_X_MIDDLESCROLL : STRUM_X, 50).makeGraphic(FlxG.width, 10);
 		if(downscroll) strumLine.y = FlxG.height - 150;
@@ -2351,7 +2351,7 @@ class PlayState extends MusicBeatState
 				return;
 			}
 			startedCountdown = true;
-			Conductor.songPosition = -Conductor.crochet * 5;
+			//Conductor.songPosition = -Conductor.crochet * 5;
 			setOnScripts('startedCountdown', true);
 			callOnScripts('onCountdownStarted', []);
 			var swagCounter:Int = 0;
@@ -2923,13 +2923,15 @@ class PlayState extends MusicBeatState
 		generatedMusic = false;
 		startedCountdown = false;
 		canPause = true;
+
+		loadSong(songName);
+		Conductor.songPosition = -Conductor.crochet * 5 + Conductor.offset;
 		updateTime = (ClientPrefs.timeBarType != 'Disabled');
 		moveCameraSection();
 		songTime = 0;
 		triggerEventNote('Change Character', '0', PlayState.SONG.player1);
 		triggerEventNote('Change Character', '1', PlayState.SONG.player2);
 		triggerEventNote('Change Character', '2', PlayState.SONG.gfVersion);
-		Conductor.songPosition = 0;
 		updateStep();
 		startIntro();
 		checkEventNote();
