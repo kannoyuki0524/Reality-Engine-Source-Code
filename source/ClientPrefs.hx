@@ -16,7 +16,7 @@ class ClientPrefs {
 	public static var flashing:Bool = true;
 	public static var globalAntialiasing:Bool = true;
 	public static var noteSplashes:Bool = true;
-	public static var lowQuality:Bool = #if mobile true #else false #end;
+	public static var lowQuality:Bool = false;
 	public static var shaders:Bool = true;
 	public static var framerate:Int = 60;
 	public static var cursing:Bool = true;
@@ -39,7 +39,7 @@ class ClientPrefs {
 	public static var checkForUpdates:Bool = true;
 	public static var comboStacking = true;
 	public static var vsliceHUD:Bool = #if mobile true #else false #end;
-	public static var ogGameControls:Bool = false; //V-Slice (FNF: Mobile) strum layout
+	public static var ogGameControls:Bool = #if mobile true #else false #end; //V-Slice (FNF: Mobile) strum layout
 	public static var fpsBGOpacity:Float = 0.5;
 	public static var gameplaySettings:Map<String, Dynamic> = [
 		'scrollspeed' => 1.0,
