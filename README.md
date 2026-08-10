@@ -10,12 +10,36 @@ You can use "hmm install" to install all haxelib
 
 If you want video support on your mod, simply do `haxelib install hxvlc 2.0.1` on a Command prompt/PowerShell
 
-## Credits:
+##build target (support)
+
+*Windows
+
+*Linux
+
+*MacOS
+
+*Android
+
+*Ios
+
+##Mobile Support
+
+yep, this engine support mobile.
+
+this is my lime config，u can take a look
+
+*JDK Version：17
+
+*NDK Version：r20b or r21e
+
+*Android SDK：API-36(latest version)
+
+## Psych Credits:
 * Shadow Mario - Programmer
 * RiverOaken - Artist
 * Yoshubs - Assistant Programmer
 
-### Special Thanks
+### Psych Engine Special Thanks
 * bbpanzu - Ex-Programmer
 * shubs - New Input System
 * SqirraRNG - Crash Handler and Base code for Chart Editor's Waveform
