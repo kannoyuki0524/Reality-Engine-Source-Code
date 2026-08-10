@@ -27,7 +27,7 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 	private function set_texture(value:String):String {
 		if(texture != value) {
 			texture = value;
-			reloadNote();
+			reloadNote(true, PlayState.isPixelStage);
 		}
 		return value;
 	}
@@ -59,16 +59,19 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 		var skin:String = 'NOTE_assets';
 		if(PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1) skin = PlayState.SONG.arrowSkin;
 		texture = skin; //Load texture and anims
-
+  reloadNote(false, PlayState.isPixelStage);
 		scrollFactor.set();
 	}
 
-	public function reloadNote()
+	public function reloadNote(?keepScale:Bool = true,?isPixel:Bool = false)
 	{
+  var lastScaleX:Float = this.scale.x;
+  var lastScaleY:Float = this.scale.y;
+  
 		var lastAnim:String = null;
 		if(animation.curAnim != null) lastAnim = animation.curAnim.name;
-
-		if(PlayState.isPixelStage)
+  
+		if(isPixel)
 		{
 			loadGraphic(Paths.image('pixelUI/' + texture));
 			width = width / 4;
@@ -133,14 +136,17 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 					animation.addByPrefix('confirm', 'right confirm', 24, false);
 			}
 		}
+  if (keepScale)
+  scale.set(lastScaleX,lastScaleY);
 		updateHitbox();
 
 		if(lastAnim != null)
 		{
 			playAnim(lastAnim, true);
 		}
+  if (keepScale)
 	}
-
+ 
 	public function postAddedToGroup() {
 		playAnim('static');
 		ID = noteData;
@@ -168,16 +174,16 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 		}
 		var playerStrumlineX = (FlxG.width - 4 * Note.swagWidth * scaleAlter * spacingAlter) / 2;
 		var opponentStrumlineX = (FlxG.width - 4 * Note.swagWidth * 0.4) / 2;
+  
 		if (player == 1){
 			scale.set(scaleAlter, scaleAlter);
 			updateHitbox();
 			x = getXPos((noteData % 4), (player == 1), spacingAlter, scaleAlter) + playerStrumlineX;
   if (downScroll)
-			y = (FlxG.height - height) * 0.95 + 70;
+			y = (FlxG.height - height) * 0.95;
   else
    y = 50;
-			if (ClientPrefs.vsliceHUD)
-			x += 40;
+			
 		}else{
 			scale.set(0.4, 0.4);
 			updateHitbox();
@@ -191,6 +197,7 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 		}else{
 		x = defX + StrumNote.getPositionXFromPercent(posX, noteData);
 		}
+
 	}
 	//https://github.com/CodenameCrew/CodenameEngine/blob/main/source/funkin/game/StrumLine.hx#L368
 	//credits since i don't wanna get killed from codename devs buddy
