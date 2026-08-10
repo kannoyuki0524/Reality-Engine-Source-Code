@@ -144,7 +144,7 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 		{
 			playAnim(lastAnim, true);
 		}
-  if (keepScale)
+  
 	}
  
 	public function postAddedToGroup() {
