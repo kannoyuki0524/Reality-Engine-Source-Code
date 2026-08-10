@@ -10,29 +10,29 @@ You can use "hmm install" to install all haxelib
 
 If you want video support on your mod, simply do `haxelib install hxvlc 2.0.1` on a Command prompt/PowerShell
 
-##build target (support)
+## build target (support)
 
-*Windows
+* Windows
 
-*Linux
+* Linux
 
-*MacOS
+* MacOS
 
-*Android
+* Android
 
-*Ios
+* Ios
 
-##Mobile Support
+## Mobile Support
 
 yep, this engine support mobile.
 
 this is my lime config，u can take a look
 
-*JDK Version：17
+* JDK Version：17
 
-*NDK Version：r20b or r21e
+* NDK Version：r20b or r21e
 
-*Android SDK：API-36(latest version)
+* Android SDK：API-36(latest version)
 
 ## Psych Credits:
 * Shadow Mario - Programmer
