@@ -8,7 +8,7 @@ Follow a Friday Night Funkin' source code compilation tutorial, after this you w
 
 You can use "hmm install" to install all haxelib
 
-If you want video support on your mod, simply do `haxelib install hxvlc 2.0.1` on a Command prompt/PowerShell
+If you want video support on your mod, simply do `haxelib install hxvlc 2.2.5` on a Command prompt/PowerShell
 
 ## build target (support)
 
