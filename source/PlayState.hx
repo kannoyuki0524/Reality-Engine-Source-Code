@@ -2791,7 +2791,7 @@ class PlayState extends MusicBeatState
 					{
 						oldNote = tempedNotes[Std.int(tempedNotes.length - 1)];
 
-						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + (Conductor.stepCrochet / FlxMath.roundDecimal(songSpeed, 2)), daNoteData, oldNote, true);
+						var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote), daNoteData, oldNote, true);
 						callOnScripts("onGeneratedHold", [sustainNote]);
 						sustainNote.mustPress = gottaHitNote;
 						sustainNote.fieldIndex = daNoteField;
@@ -3509,7 +3509,6 @@ class PlayState extends MusicBeatState
 				dunceNote.targetStrum = strumTargets[dunceNote.fieldIndex].members[leData];
 				
 				if (ClientPrefs.vsliceHUD){
-					// 隐藏对手音符
 					if (!dunceNote.mustPress) {
 						dunceNote.visible = false;
 						if (dunceNote.tail != null) {
@@ -4507,6 +4506,8 @@ class PlayState extends MusicBeatState
 		if (mobileControls.mobilePad != null) mobileControls.removeMobilePad();
 		if (mobileControls.hitbox != null) mobileControls.removeHitbox();
 
+		if (ClientPrefs.vsliceHUD) controlStyle = 'hitbox';
+
 		switch (controlStyle)
 		{
 			case 'hitbox':
@@ -4518,7 +4519,8 @@ class PlayState extends MusicBeatState
 					{
 						for (hint in 0...mobileControls.hitbox.hints.length)
 						{
-							mobileControls.hitbox.hints[hint].x = playerStrums.members[hint].x;
+							mobileControls.hitbox.hints[hint].x = playerStrums.members[hint].x - 50;
+							mobileControls.hitbox.hints[hint].alpha = 0.001;
 						}
 					}
 				}

@@ -259,18 +259,25 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 			{
 				prevNote.animation.play(colArray[prevNote.noteData % NOTE_AMOUNT] + 'hold');
 
-				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
+				var bpmChange = Conductor.getBPMFromSeconds(prevNote.strumTime / 1000);
+				var baseSustainScale:Float = bpmChange.stepCrochet / 100;
+				var songSpeed:Float = 1.0;
+
 				if(PlayState.instance != null)
 				{
-					prevNote.scale.y *= PlayState.instance.songSpeed;
+					songSpeed = PlayState.instance.songSpeed;
 				}
+
+				var gapCorrection:Float = calculateGapCorrection(songSpeed, isPixelNote);
+
+				prevNote.scale.y *= baseSustainScale * gapCorrection * songSpeed;
 
 				if(isPixelNote) {
 					prevNote.scale.y *= 1.19;
-					prevNote.scale.y *= (6 / height); //Auto adjust note size
+					prevNote.scale.y *= (6 / height);
 				}
 				prevNote.updateHitbox();
-				// prevNote.setGraphicSize();
+
 			}
 
 			if(isPixelNote) {
@@ -434,7 +441,33 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 		]);
 	}
 
-	public var correctionOffset:Float = 0; //dont mess with this
+	public var correctionOffset:Float = 0;
+
+	private static function calculateGapCorrection(songSpeed:Float, isPixelNote:Bool):Float
+	{
+		var baseCorrection:Float = 1.0;
+
+		if (isPixelNote) {
+			baseCorrection = 1.0 + (0.3 / Math.max(songSpeed, 0.5));
+		} else {
+			baseCorrection = 1.0 + (0.4 / Math.max(songSpeed, 0.5));
+		}
+
+		return baseCorrection;
+	}
+
+	private static function calculateSustainOffset(songSpeed:Float, bpm:Float):Float
+	{
+		var speedDiff:Float = songSpeed - 1;
+		var bpmRatio:Float = (bpm / 100) - 1;
+
+		var baseOffset:Float = swagWidth / 2;
+		var speedCorrection:Float = 60.5 * speedDiff;
+		var bpmCorrection:Float = 27.5 * bpmRatio * speedDiff;
+
+		return baseOffset - speedCorrection + bpmCorrection;
+	}
+
 	public function followStrumNote(myStrum:StrumNote, ?fakeCrochet:Null<Float> = -1, ?songSpeed:Null<Float> = null,?bpm:Float = -1)
 	{
 		if (fakeCrochet <= 0){
@@ -486,13 +519,11 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 						if(isPixelNote) {
 							y += 8 + (6 - originalHeightForCalcs) * PlayState.daPixelZoom;
 						} else {
-							if (ClientPrefs.vsliceHUD) {
-								y += height / 2 + 1;//WHAT THE FUCK IS OFFSET 1 PX????
-							}
+							y += height / 2 + 1;
 						}
 					}
-					y += (swagWidth / 2) - (60.5 * (songSpeed - 1));
-					y += 27.5 * ((bpm / 100) - 1) * (songSpeed - 1);
+
+					y += calculateSustainOffset(songSpeed, bpm);
 				}
 		}
 	}
@@ -500,14 +531,18 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 	public function clipToStrumNote(myStrum:StrumNote)
 	{
 		if (!myStrum.sustainReduce) return;
+
 		var centerY:Float = myStrum.y + offsetY + Note.swagWidth / 2;
+
+		if (ClientPrefs.vsliceHUD && myStrum.player == 1) {
+			centerY = myStrum.y + (myStrum.height / 2);
+		}
+
 		if(isSustainNote && (pressAble || !ignoreNote || globalRunClip) &&
 			(!pressAble || (wasGoodHit || (prevNote.wasGoodHit && !canBeHit))))
 		{
 			var swagRect:FlxRect = clipRect;
 			if(swagRect == null) swagRect = new FlxRect(0, 0, frameWidth, frameHeight);
-
-			var shouldClip:Bool = false;
 
 			if (myStrum.downScroll)
 			{
@@ -516,10 +551,6 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 					swagRect.width = frameWidth;
 					swagRect.height = (centerY - y) / scale.y;
 					swagRect.y = frameHeight - swagRect.height;
-
-					// 确保裁剪区域有效
-					if (swagRect.height > 0 && swagRect.height <= frameHeight)
-						shouldClip = true;
 				}
 			}
 			else if (y + offset.y * scale.y <= centerY)
@@ -527,16 +558,8 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 				swagRect.y = (centerY - y) / scale.y;
 				swagRect.width = width / scale.x;
 				swagRect.height = (height / scale.y) - swagRect.y;
-
-				// 确保裁剪区域有效
-				if (swagRect.height > 0 && swagRect.height <= frameHeight)
-					shouldClip = true;
 			}
-
-			if (shouldClip)
-				clipRect = swagRect;
-			else
-				clipRect = null;
+			clipRect = swagRect;
 		}
 	}
 }
