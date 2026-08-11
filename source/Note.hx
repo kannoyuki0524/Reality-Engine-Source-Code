@@ -115,22 +115,8 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 	public var hitsoundDisabled:Bool = false;
 	public static var NOTE_AMOUNT:Int = 4;
 
-	/* Playfield scale multiplier relative to the default 0.7 note/strum scale.
-	   vsliceHUD enlarges the strums in StrumNote.postAddedToGroup(), but the note
-	   travel rate in followStrumNote() is a flat px/ms figure, so notes end up
-	   visually cramped (reads as a faster scroll speed than songSpeed implies).
-	   Everything that lives in playfield pixels multiplies by this so the visual
-	   density stays consistent. Returns 1.0 when vsliceHUD is off. */
 	public static var DEFAULT_SCALE:Float = 0.7;
-	public static var playfieldScale(get, never):Float;
-	static function get_playfieldScale():Float
-	{
-		if (!ClientPrefs.vsliceHUD) return 1.0;
 
-		final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
-		final scaleAlter:Float = ((FlxG.height / FlxG.width) * 1.95) * amplification;
-		return scaleAlter / DEFAULT_SCALE;
-	}
 	private function set_multSpeed(value:Float):Float {
 		resizeByRatio(value / multSpeed);
 		multSpeed = value;
@@ -461,7 +447,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 		var speedDiff:Float = songSpeed - 1;
 		var bpmRatio:Float = (bpm / 100) - 1;
 
-		var baseOffset:Float = 0;  // 移除 swagWidth / 2 的基础偏移
+		var baseOffset:Float = 0;
 		var speedCorrection:Float = 60.5 * speedDiff;
 		var bpmCorrection:Float = 27.5 * bpmRatio * speedDiff;
 
@@ -492,11 +478,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 		var strumDirection:Float = myStrum.direction;
 		var strumAlpha:Float = myStrum.alpha;
 
-		var speedMultiplier:Float = 1.0;
-		if (ClientPrefs.vsliceHUD) {
-			speedMultiplier = 1.0 / playfieldScale;
-		}
-		distance = (0.45 * (Conductor.songPosition - strumTime) * songSpeed * multSpeed * speedMultiplier);
+		distance = (0.45 * (Conductor.songPosition - strumTime) * songSpeed * multSpeed);
 		if (!myStrum.downScroll) distance *= -1;
 
 		var angleDir = strumDirection * Math.PI / 180;
@@ -533,10 +515,6 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 		if (!myStrum.sustainReduce) return;
 
 		var centerY:Float = myStrum.y + offsetY + Note.swagWidth / 2;
-
-		if (ClientPrefs.vsliceHUD && myStrum.player == 1) {
-			centerY = myStrum.y + (myStrum.height / 2);
-		}
 
 		if(isSustainNote && (pressAble || !ignoreNote || globalRunClip) &&
 			(!pressAble || (wasGoodHit || (prevNote.wasGoodHit && !canBeHit))))
