@@ -461,7 +461,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 		var speedDiff:Float = songSpeed - 1;
 		var bpmRatio:Float = (bpm / 100) - 1;
 
-		var baseOffset:Float = swagWidth / 2;
+		var baseOffset:Float = 0;  // 移除 swagWidth / 2 的基础偏移
 		var speedCorrection:Float = 60.5 * speedDiff;
 		var bpmCorrection:Float = 27.5 * bpmRatio * speedDiff;
 
