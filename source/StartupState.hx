@@ -139,12 +139,13 @@ class StartupState extends MusicBeatState
 				if (Paths.exists(folder) && Paths.isDirectory(folder)){
 					for (file in FileSystem.readDirectory(folder)) {
 						if (StringTools.endsWith(file,'.png')){
+     var key = file.substr(0, file.length - 4);
       if (!menuImages.contains(key)){
-							menuImages.push(file.substr(0, file.length - 4));
+							menuImages.push(key);
 							Paths.excludeAsset(folder + file);
-							Paths.image('loadingscreen/' + file.substr(0, file.length - 4));
+							Paths.image('loadingscreen/' + key);
 							if (file.startsWith('S_'))
-						playStateExcludes.push(file.substr(0, file.length - 4));
+						playStateExcludes.push(key);
       }
 						}
 					}
