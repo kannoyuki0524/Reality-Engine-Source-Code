@@ -265,7 +265,7 @@ class LoadingState extends MusicBeatState
 		}
  menuImage = menuIma[menuID];
 }
-		var funkay = new FlxSprite(0, 0).loadGraphic(Paths.image(menuImage);
+		var funkay = new FlxSprite(0, 0).loadGraphic(Paths.image(menuImage));
 		var baseW = funkay.frameWidth;
 		var baseH = funkay.frameHeight;
 		var scale = Math.max(FlxG.camera.width / baseW, FlxG.camera.height / baseH);
