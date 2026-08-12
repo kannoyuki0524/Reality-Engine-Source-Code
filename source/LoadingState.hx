@@ -142,7 +142,7 @@ class LoadingState extends MusicBeatState
 			}
   if (Reflect.hasField(stageData, 'menuImage'))
 				menuImage = Reflect.field(stageData, 'menuImage');
-			else if (Reflect.hasField(stageData, menuID'))
+			else if (Reflect.hasField(stageData, 'menuID'))
 				menuID = Reflect.field(stageData, 'menuID');
 		}
 
@@ -154,7 +154,7 @@ class LoadingState extends MusicBeatState
 			}
 			if (Reflect.hasField(stageData, 'menuImage'))
 				menuImage = Reflect.field(stageData, 'menuImage');
-			else if (Reflect.hasField(stageData, menuID'))
+			else if (Reflect.hasField(stageData, 'menuID'))
 				menuID = Reflect.field(stageData, 'menuID');
 		}
 
