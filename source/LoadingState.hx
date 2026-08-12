@@ -47,6 +47,7 @@ typedef PrecacheMeta = {
 class LoadingState extends MusicBeatState
 {
 	var images:Array<Null<String>> = [];
+ var menuImage = '';
 	var characters:Array<Null<String>> = [];
 	var sounds:Array<Null<String>> = [];
 	var songs:Array<Null<{id:String, name:String}>> = [];
@@ -139,7 +140,9 @@ class LoadingState extends MusicBeatState
 			for (assets in precacheList){
 				catchAssets(assets);
 			}
-			if (Reflect.hasField(stageData, 'menuID'))
+  if (Reflect.hasField(stageData, menuImage'))
+				menuImage = Reflect.field(stageData, 'menuImage');
+			else if (Reflect.hasField(stageData, menuID'))
 				menuID = Reflect.field(stageData, 'menuID');
 		}
 
@@ -149,8 +152,10 @@ class LoadingState extends MusicBeatState
 			for (assets in precacheList){
 				catchAssets(assets);
 			}
-			if (Reflect.hasField(list, 'menuID'))
-				menuID = Reflect.field(list, 'menuID');
+			if (Reflect.hasField(stageData, menuImage'))
+				menuImage = Reflect.field(stageData, 'menuImage');
+			else if (Reflect.hasField(stageData, menuID'))
+				menuID = Reflect.field(stageData, 'menuID');
 		}
 
 
@@ -241,7 +246,9 @@ class LoadingState extends MusicBeatState
 			var bro = cast cl;
 			stateName = bro.scriptName;
 		}
+ 
 		var menuIma = StartupState.menuImages.copy();
+ if (menuImage == null || menuImage == ''){
 		if (menuIma.length > 0){
 			if (stateName != 'PlayState'){
 				for (image in StartupState.playStateExcludes){
@@ -256,7 +263,9 @@ class LoadingState extends MusicBeatState
 			menuIma = ['funkay'];
 			menuID = 0;
 		}
-		var funkay = new FlxSprite(0, 0).loadGraphic(Paths.image(menuIma[menuID]));
+ menuImage = menuIma[menuID];
+}
+		var funkay = new FlxSprite(0, 0).loadGraphic(Paths.image(menuImage);
 		var baseW = funkay.frameWidth;
 		var baseH = funkay.frameHeight;
 		var scale = Math.max(FlxG.camera.width / baseW, FlxG.camera.height / baseH);
