@@ -495,18 +495,43 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 		if(copyY)
 		{
 			y = strumY + offsetY + correctionOffset + Math.sin(angleDir) * distance;
-			if(myStrum.downScroll && isSustainNote)
+
+			if(isSustainNote)
+			{
+				var playfieldScale:Float = 1.0;
+				if (ClientPrefs.vsliceHUD && targetStrum != null && targetStrum.player == 1) {
+					final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
+					playfieldScale = ((FlxG.height / FlxG.width) * 1.95) * amplification;
+				}
+				var sustainOffset:Float = calculateSustainOffset(songSpeed, bpm) * playfieldScale;
+
+				if(myStrum.downScroll)
 				{
 					if (animation.curAnim.name.endsWith('end')) {
 						if(isPixelNote) {
 							y += 8 + (6 - originalHeightForCalcs) * PlayState.daPixelZoom;
+							y += sustainOffset;
 						} else {
 							y += height / 2 + 1;
+							y += sustainOffset;
 						}
+					} else {
+						y += sustainOffset;
 					}
-
-					y += calculateSustainOffset(songSpeed, bpm);
 				}
+				else
+				{
+					if (animation.curAnim.name.endsWith('end')) {
+						if(isPixelNote) {
+							y -= 8 + (6 - originalHeightForCalcs) * PlayState.daPixelZoom;
+						} else {
+							y -= sustainOffset;
+						}
+					} else {
+						y -= sustainOffset;
+					}
+				}
+			}
 		}
 	}
 	public var globalRunClip:Bool = false;
