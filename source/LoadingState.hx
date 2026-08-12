@@ -140,7 +140,7 @@ class LoadingState extends MusicBeatState
 			for (assets in precacheList){
 				catchAssets(assets);
 			}
-  if (Reflect.hasField(stageData, menuImage'))
+  if (Reflect.hasField(stageData, 'menuImage'))
 				menuImage = Reflect.field(stageData, 'menuImage');
 			else if (Reflect.hasField(stageData, menuID'))
 				menuID = Reflect.field(stageData, 'menuID');
@@ -152,7 +152,7 @@ class LoadingState extends MusicBeatState
 			for (assets in precacheList){
 				catchAssets(assets);
 			}
-			if (Reflect.hasField(stageData, menuImage'))
+			if (Reflect.hasField(stageData, 'menuImage'))
 				menuImage = Reflect.field(stageData, 'menuImage');
 			else if (Reflect.hasField(stageData, menuID'))
 				menuID = Reflect.field(stageData, 'menuID');
