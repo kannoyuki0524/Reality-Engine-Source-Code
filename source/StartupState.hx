@@ -125,24 +125,27 @@ class StartupState extends MusicBeatState
 				{
 					var file = Path.withoutDirectory(asset);
 					var key = file.substr(0, file.length - 4);
-					menuImages.push('loadingscreen/' + key);
+     if (!menuImages.contains(key)){
+					menuImages.push(key);
 					Paths.excludeAsset(asset);
 					Paths.image('loadingscreen/' + key);
 					if (file.startsWith('S_'))
-						playStateExcludes.push('loadingscreen/' + key);
+						playStateExcludes.push(key);
 				} 
-				
+				}
             }
 			//softloaded images
 			for (folder in Paths.getFolders('images/loadingscreen')){
 				if (Paths.exists(folder) && Paths.isDirectory(folder)){
 					for (file in FileSystem.readDirectory(folder)) {
 						if (StringTools.endsWith(file,'.png')){
-							menuImages.push('loadingscreen/' + file.substr(0, file.length - 4));
+      if (!menuImages.contains(key)){
+							menuImages.push(file.substr(0, file.length - 4));
 							Paths.excludeAsset(folder + file);
 							Paths.image('loadingscreen/' + file.substr(0, file.length - 4));
 							if (file.startsWith('S_'))
-								playStateExcludes.push('loadingscreen/' + file.substr(0, file.length - 4));
+						playStateExcludes.push(file.substr(0, file.length - 4));
+      }
 						}
 					}
 				}
