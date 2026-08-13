@@ -525,10 +525,11 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 						if(isPixelNote) {
 							y -= 8 + (6 - originalHeightForCalcs) * PlayState.daPixelZoom;
 						} else {
-							y += sustainOffset;
+      y -= height / 2 + 1;
+							y -= sustainOffset;
 						}
 					} else {
-						y += sustainOffset;
+						y -= sustainOffset;
 					}
 				}
 			}
