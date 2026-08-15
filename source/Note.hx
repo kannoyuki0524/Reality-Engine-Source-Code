@@ -336,13 +336,15 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 			loadNoteAnims();
 			antialiasing = ClientPrefs.globalAntialiasing;
 		}
+
+		if(animName != null)
+			animation.play(animName, true);
+
 		if(isSustainNote) {
 			scale.y = lastScaleY;
 		}
 		updateHitbox();
 
-		if(animName != null)
-			animation.play(animName, true);
 
 		if(inEditor) {
 			setGraphicSize(ChartingState.GRID_SIZE, ChartingState.GRID_SIZE);
@@ -525,7 +527,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 						if(isPixelNote) {
 							y -= 8 + (6 - originalHeightForCalcs) * PlayState.daPixelZoom;
 						} else {
-      y -= height / 2 + 1;
+      						y -= height / 2 + 1;
 							y -= sustainOffset;
 						}
 					} else {

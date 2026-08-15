@@ -59,14 +59,14 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 		var skin:String = 'NOTE_assets';
 		if(PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1) skin = PlayState.SONG.arrowSkin;
 		texture = skin; //Load texture and anims
-  reloadNote(false, PlayState.isPixelStage);
+		reloadNote(false, PlayState.isPixelStage);
 		scrollFactor.set();
 	}
 
 	public function reloadNote(?keepScale:Bool = true,?isPixel:Bool = false)
 	{
-  var lastScaleX:Float = this.scale.x;
-  var lastScaleY:Float = this.scale.y;
+		var lastScaleX:Float = this.scale.x;
+		var lastScaleY:Float = this.scale.y;
   
 		var lastAnim:String = null;
 		if(animation.curAnim != null) lastAnim = animation.curAnim.name;
@@ -136,8 +136,8 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 					animation.addByPrefix('confirm', 'right confirm', 24, false);
 			}
 		}
-  if (keepScale)
-  scale.set(lastScaleX,lastScaleY);
+		if (keepScale)
+		scale.set(lastScaleX,lastScaleY);
 		updateHitbox();
 
 		if(lastAnim != null)
@@ -179,19 +179,19 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 			scale.set(scaleAlter, scaleAlter);
 			updateHitbox();
 			x = getXPos((noteData % 4), (player == 1), spacingAlter, scaleAlter) + playerStrumlineX;
-  if (downScroll)
-			y = (FlxG.height - height) * 0.95;
-  else
-   y = 50;
+		if (downScroll)
+		y = (FlxG.height - height) * 0.95;
+		else
+		y = 50;
 			
 		}else{
 			scale.set(0.4, 0.4);
 			updateHitbox();
 			x = getXPos((noteData % 4), false, 1.4, 0.4);
-   if (downScroll)
+			if (downScroll)
 			y = 50;
-   else
-   y = (FlxG.height - height) * 0.95;
+			else
+			y = (FlxG.height - height) * 0.95;
 		}
 		x += 50 + -0.275 * (Note.swagWidth);
 		}else{
