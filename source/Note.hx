@@ -224,8 +224,8 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 
 		if (isSustainNote && prevNote != null)
 		{
-			alpha = 0.6;
-			multAlpha = 0.6;
+			//alpha = 0.6;
+			//multAlpha = 0.6;
 			hitsoundDisabled = true;
 			if(downscroll) flipY = true;
 
@@ -515,7 +515,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 							y += sustainOffset;
 						} else {
 							y += height / 2 + 1;
-							y += sustainOffset;
+							y += sustainOffset * 0.51;
 						}
 					} else {
 						y += sustainOffset;
@@ -527,7 +527,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 						if(isPixelNote) {
 							y -= 8 + (6 - originalHeightForCalcs) * PlayState.daPixelZoom;
 						} else {
-      						y -= height / 2 + 1;
+							y -= height / 2 + 1;
 							y -= sustainOffset;
 						}
 					} else {
@@ -543,7 +543,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 		if (!myStrum.sustainReduce) return;
 
 		var centerY:Float = myStrum.y + offsetY + Note.swagWidth / 2;
-
+		if (ClientPrefs.vsliceHUD) centerY += 30;
 		if(isSustainNote && (pressAble || !ignoreNote || globalRunClip) &&
 			(!pressAble || (wasGoodHit || (prevNote.wasGoodHit && !canBeHit))))
 		{

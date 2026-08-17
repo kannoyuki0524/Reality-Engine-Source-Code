@@ -2883,6 +2883,10 @@ class PlayState extends MusicBeatState
 		var songData = loadedSongs.get(Paths.formatToSongPath(songName));
 		if (songData == null) return;
 		PlayState.SONG = songData.data;
+		addCharacterToList(songData.player1, 0);
+		addCharacterToList(songData.player2, 1);
+		addCharacterToList(songData.gfVersion, 2);
+		songSpeed = songData.speed;
 		var tempedVocals = songData.vocals;
 		var tempedInst = songData.inst;
 		unspawnNotes = songData.notes;
@@ -2893,13 +2897,10 @@ class PlayState extends MusicBeatState
 		FlxG.sound.list.add(FlxG.sound.music);
 		FlxG.sound.music.onComplete = null;
 		}
+		
 		FlxG.sound.music = inst;
 		FlxG.sound.list.add(vocals);
-		
-		addCharacterToList(songData.player1, 0);
-		addCharacterToList(songData.player2, 1);
-		addCharacterToList(songData.gfVersion, 2);
-		songSpeed = songData.speed;
+
 		Conductor.mapBPMChanges(songData.data);
 		Conductor.changeBPM(songData.data.bpm);
 		
