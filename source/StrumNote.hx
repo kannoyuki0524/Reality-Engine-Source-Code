@@ -4,11 +4,11 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 
+import funkin.shaders.NoteColorSwap;
 using StringTools;
 
-class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
+class StrumNote extends FlxSprite
 {
-	public var colorSwap:ColorSwap;
 	public var resetAnim:Float = 0;
 	private var noteData:Int = 0;
 	public var direction:Float = 90;//plan on doing scroll directions soon -bb
@@ -20,6 +20,9 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 	public var posX(default, set):Float = 0;
 	public var defX(default, set):Float = 0;
 
+	public var z:Float = 0;
+
+	public var field:PlayField;
 	public var applyColor:Bool = false;
 	public var applyOffset:Bool = false;
 	public var modchartOffsetX:Float = 0;
@@ -48,14 +51,15 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 		return value;
 	}
 
-	public function new(x:Float, y:Float, leData:Int, player:Int) {
-		colorSwap = new ColorSwap();
+	public function new(x:Float, y:Float, leData:Int, player:Int, ?playField:PlayField) {
+		colorSwap = new NoteColorSwap();
 		shader = colorSwap.shader;
 		noteData = leData;
 		this.player = player;
 		this.noteData = leData;
-		super(x, y);
-		
+		super(STRUM);
+		field = playField;
+		setPosition(x, y);
 		var skin:String = 'NOTE_assets';
 		if(PlayState.SONG.arrowSkin != null && PlayState.SONG.arrowSkin.length > 1) skin = PlayState.SONG.arrowSkin;
 		texture = skin; //Load texture and anims
@@ -147,6 +151,12 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
   
 	}
  
+	public function postAddedToGroup()
+	{
+		playAnim('static');
+		ID = noteData;
+	}
+	/*
 	public function postAddedToGroup() {
 		playAnim('static');
 		ID = noteData;
@@ -198,7 +208,7 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 		x = defX + StrumNote.getPositionXFromPercent(posX, noteData);
 		}
 
-	}
+	}*/
 	//https://github.com/CodenameCrew/CodenameEngine/blob/main/source/funkin/game/StrumLine.hx#L368
 	//credits since i don't wanna get killed from codename devs buddy
 	public static function getPositionXFromPercent(percent:Float = 0.25, column:Float = 0, ?spacing:Float = 1, ?scale:Float = 1):Float{
@@ -207,6 +217,7 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
     	xX += Note.swagWidth * column * spacing * scale;
 		return xX;
 	}
+
 	override function update(elapsed:Float) {
 		if(resetAnim > 0) {
 			resetAnim -= elapsed;
@@ -229,15 +240,11 @@ class StrumNote extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #en
 		centerOffsets();
 		centerOrigin();
 		if(animation.curAnim == null || animation.curAnim.name == 'static') {
-			colorSwap.hue = 0;
-			colorSwap.saturation = 0;
-			colorSwap.brightness = 0;
+			colorSwap.setHSB();
 		} else {
 			if (noteData > -1 && noteData < ClientPrefs.arrowHSV.length)
 			{
-				colorSwap.hue = ClientPrefs.arrowHSV[noteData][0] / 360;
-				colorSwap.saturation = ClientPrefs.arrowHSV[noteData][1] / 100;
-				colorSwap.brightness = ClientPrefs.arrowHSV[noteData][2] / 100;
+				colorSwap.setHSBIntArray(ClientPrefs.arrowHSV[noteData % 4]);
 			}
 
 			if(animation.curAnim.name == 'confirm' && !PlayState.isPixelStage) {

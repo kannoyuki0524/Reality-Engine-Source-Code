@@ -88,7 +88,6 @@ import mobile.MobileControls;
 #end
 
 using StringTools;
-typedef StrumLine = FlxTypedGroup<StrumNote>;
 class PlayState extends MusicBeatState
 {
 	public static var STRUM_X = 42;
@@ -138,6 +137,7 @@ class PlayState extends MusicBeatState
 	public var loadedSongs:Map<String, Song> = new Map();
 	#end
 
+	public static var keyCount:Int = 4;
 	public var modchartItems:Array<Array<ModchartSprite>> = [];
 	public var BF_X:Float = 770;
 	public var BF_Y:Float = 100;
@@ -186,10 +186,10 @@ class PlayState extends MusicBeatState
 	private static var prevCamFollow:FlxPoint;
 	private static var prevCamFollowPos:FlxObject;
 
-	public var strumLineNotes:StrumLine;
-	public var opponentStrums:StrumLine;
-	public var playerStrums:StrumLine;
-	public var strumTargets:Array<StrumLine> = [];
+	public var strumLineNotes:PlayField;
+	public var opponentStrums:PlayField;
+	public var playerStrums:PlayField;
+	public var strumTargets:Array<PlayField> = [];
 	public var grpNoteSplashes:FlxTypedGroup<NoteSplash>;
 
 	public var camZooming(default, set):Bool = false;
@@ -1162,7 +1162,7 @@ class PlayState extends MusicBeatState
 		add(timeTxt);
 		timeBarBG.sprTracker = timeBar;
 
-		strumLineNotes = new StrumLine();
+		strumLineNotes = new PlayField();
 
 
 		if(ClientPrefs.timeBarType == 'Song Name')
@@ -1175,8 +1175,8 @@ class PlayState extends MusicBeatState
 		grpNoteSplashes.add(splash);
 		splash.alpha = 0.0;
 
-		opponentStrums = new StrumLine();
-		playerStrums = new StrumLine();
+		opponentStrums = new PlayField();
+		playerStrums = new PlayField();
 
 		// startCountdown();
 		add(strumLineNotes);
@@ -1188,14 +1188,14 @@ class PlayState extends MusicBeatState
 
 		generateSong(SONG);
 		
-
+		/*
 		#if MC_TOOLS_ALLOWED
 		if (modchartMode){
 		playfieldRenderer = new PlayfieldRenderer(strumLineNotes, notes, this);
 		playfieldRenderer.cameras = [camHUD];
 		add(playfieldRenderer);
 		}
-		#end
+		#end*/
 		add(grpNoteSplashes);
 
 		// After all characters being loaded, it makes then invisible 0.01s later so that the player won't freeze when you change characters
@@ -3067,7 +3067,7 @@ class PlayState extends MusicBeatState
 	public var skipArrowStartTween:Bool = false; //for lua
 	private function generateStaticArrows(player:Int):Void
 	{
-		var strumTarget = new StrumLine();
+		var strumTarget = new PlayField();
 		if (player == 0) strumTarget = opponentStrums;
 		else if (player == 1) strumTarget = playerStrums;
 		for (i in 0...4)
@@ -3541,6 +3541,8 @@ class PlayState extends MusicBeatState
 				notes.insert(0, dunceNote);
 				dunceNote.spawned=true;
 				var leData:Int = Math.round(Math.abs(dunceNote.noteData));
+				dunceNote.field = strumTargets[dunceNote.fieldIndex];
+				/*
 				dunceNote.targetStrum = strumTargets[dunceNote.fieldIndex].members[leData];
 				
 				if (ClientPrefs.vsliceHUD){
@@ -3553,7 +3555,7 @@ class PlayState extends MusicBeatState
 							}
 						}
 					}
-				}
+				}*/
 				callOnScripts('onSpawnNote', [notes.members.indexOf(dunceNote), dunceNote.noteData, dunceNote.noteType, dunceNote.isSustainNote]);
 
 				var index:Int = unspawnNotes.indexOf(dunceNote);
@@ -3590,7 +3592,7 @@ class PlayState extends MusicBeatState
 								daNote.hitCallback(daNote);
 							}
 						}/*
-					var strumGroup:StrumLine = playerStrums;
+					var strumGroup:PlayField = playerStrums;
 					if(!daNote.mustPress) strumGroup = opponentStrums;
 
 					var strumX:Float = strumGroup.members[daNote.noteData].x;
@@ -4665,7 +4667,7 @@ class PlayState extends MusicBeatState
 
 		//tryna do MS based judgment due to popular demand
 		var daRating:Rating = Conductor.judgeNote(note, noteDiff / playbackRate);
-
+		if (daRating == null) return;//BRO
 		totalNotesHit += daRating.ratingMod;
 		note.ratingMod = daRating.ratingMod;
 		if(!note.ratingDisabled) daRating.increase();

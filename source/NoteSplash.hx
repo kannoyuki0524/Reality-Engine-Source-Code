@@ -4,9 +4,9 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 
-class NoteSplash extends FlxSprite
+import funkin.shaders.NoteColorSwap;
+class NoteSplash extends NoteObject
 {
-	public var colorSwap:ColorSwap = null;
 	private var idleAnim:String;
 	private var textureLoaded:String = null;
 
@@ -14,21 +14,21 @@ class NoteSplash extends FlxSprite
 	public var modchartOffsetY:Float = 0;
 	public var applyColor:Bool = false;
 	public function new(x:Float = 0, y:Float = 0, ?note:Int = 0) {
-		super(x, y);
+		super(SPLASH);
 
 		var skin:String = 'noteSplashes';
 		if(PlayState.SONG.splashSkin != null && PlayState.SONG.splashSkin.length > 0) skin = PlayState.SONG.splashSkin;
 
 		loadAnims(skin);
 
-		colorSwap = new ColorSwap();
+		colorSwap = new NoteColorSwap();
 		shader = colorSwap.shader;
 
 		setupNoteSplash(x, y, note);
 		antialiasing = ClientPrefs.globalAntialiasing;
 	}
 
-	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0) {
+	public function setupNoteSplash(x:Float, y:Float, note:Int = 0, texture:String = null, hueColor:Float = 0, satColor:Float = 0, brtColor:Float = 0, ?note:Note = null) {
 		setPosition(x - Note.swagWidth * 0.95, y - Note.swagWidth);
 		alpha = 0.6;
 

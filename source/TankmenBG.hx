@@ -18,7 +18,7 @@ class TankmenBG extends FlxSprite
 		goingRight = false;
 		strumTime = 0;
 		goingRight = facingRight;
-		super(x, y);
+		super();
 
 		frames = Paths.getSparrowAtlas('tankmanKilled1');
 		animation.addByPrefix('run', 'tankman running', 24, true);

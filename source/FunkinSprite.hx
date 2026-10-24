@@ -23,6 +23,8 @@ import flixel.graphics.frames.FlxFrame;
 import animate.internal.SymbolItem;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import animate.internal.elements.Element;
+import funkin.shaders.NoteColorSwap;
+
 import animate.internal.elements.AtlasInstance;
 import animate.internal.elements.SymbolInstance;
 import flixel.util.FlxColor;
@@ -35,6 +37,10 @@ using StringTools;
 @:access(animate.FlxAnimateController)
 class FunkinSprite extends FlxAnimate
 {
+	public var extraData:Map<String, Dynamic> = [];
+	
+	public var colorSwap:NoteColorSwap;
+
 	/**
    * The filters array to be applied to the sprite.
    */
@@ -643,7 +649,7 @@ class FunkinSprite extends FlxAnimate
 				_renderTexture.init(bounds[0], bounds[1]);
 				_renderTexture.drawToCamera((camera, mat) ->
 				{
-				camera.drawPixels(frame, framePixels, mat, null, null, antialiasing, null);
+				camera.drawPixels(frame, framePixels, mat, null, null, antialiasing, null, colorSwap);
 				});
 
 				_renderTexture.render();
@@ -655,16 +661,16 @@ class FunkinSprite extends FlxAnimate
 			if (filtered)
 			{
 				matrix.translate(filterOffsets[0], filterOffsets[1]);
-				camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader);
+				camera.drawPixels(filterRenderer.graphic?.imageFrame.frame, null, matrix, colorTransform, blend, antialiasing, shader, colorSwap);
 			}
 			else
 			{
-				camera.drawPixels(_renderTexture.graphic.imageFrame.frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
+				camera.drawPixels(_renderTexture.graphic.imageFrame.frame, framePixels, matrix, colorTransform, blend, antialiasing, shader, colorSwap);
 			}
 		}
 		else
 		{
-		camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader);
+		camera.drawPixels(frame, framePixels, matrix, colorTransform, blend, antialiasing, shader, colorSwap);
 		}
 	}
 

@@ -9,6 +9,7 @@ import flixel.util.FlxColor;
 import flash.display.BitmapData;
 import editors.ChartingState;
 import flixel.math.FlxRect;
+import funkin.shaders.NoteColorSwap;
 import flixel.util.FlxStringUtil;
 
 using StringTools;
@@ -20,18 +21,57 @@ typedef EventNote = {
 	value2:String
 }
 
-typedef NoteCallback = (Note) -> Void;
+enum abstract SustainPart(Int) from Int to Int {
+	var TAP = -1; // Not a sustain
+	var HEAD = 0; // TapNote at the start of a sustain
+	var PART = 1;
+	var END = 2;
+}
 
-class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
-{
-	#if MC_TOOLS_ALLOWED
-	public var mesh:modcharting.SustainStrip = null;
-	public var z:Float = 0;
-	#end
+typedef NoteCallback = (Note, PlayField) -> Void;
+
+class Note extends NoteObject
+{	
+	public static var spriteScale:Float = 0.7;
+	public static var swagWidth(default, set):Float = 160 * spriteScale;
+	public static var halfWidth(default, null):Float = swagWidth * 0.5;
+	
+	@:noCompletion private static function set_swagWidth(val:Float) {
+		halfWidth = val * 0.5;
+		return swagWidth = val;
+	}
+
+	/**
+		If you need to tap the note to hit it, or just have the direction be held when it can be judged to hit.  
+		An example is Stepmania mines
+	**/
+	public var requiresTap:Bool = true;
+
+	/** The maximum amount of time you can release a hold before it counts as a miss **/
+	public var maxReleaseTime:Float = 0.25;
+
+	public var hitResult:Rating = null;
+	
 	public var hitCallback:NoteCallback = function (note:Note){
 		trace('default Note Stuffer');
 	};
 	
+	// mod manager
+	public var garbage:Bool = false; // if this is true, the note will be removed in the next update cycle
+	public var baseAlpha:Float = 1;
+	public var alphaMod:Float = 1;
+	public var alphaMod2:Float = 1; // TODO: unhardcode this shit lmao
+	// What is this even used for anymore??
+
+	public var typeOffsetX:Float = 0; // used to offset notes, mainly for note types. use in place of offset.x and offset.y when offsetting notetypes
+	public var typeOffsetY:Float = 0;
+	public var typeOffsetAngle:Float = 0;
+	public var multSpeed:Float = 1.0;
+
+	/** Whether holds should "glow" / increase in alpha when held */
+	public var holdGlow:Bool = true;
+
+    public var hitDiff:Rating.HitResult = {judgment:null, hitDiff:0};
 	public var modchartOffsetX:Float = 0;
 	public var modchartOffsetY:Float = 0;
 	public var applyOffset:Bool = false;
@@ -39,11 +79,30 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 	public var extraData:Map<String,Dynamic> = []; 
 	public var characters:Array<Character> = [];
 	public var isPixelNote:Bool = PlayState.isPixelStage;
+	
+	// basic stuff
+	public var beat:Float = 0;
 	public var strumTime:Float = 0;
+
+	
+	public var visualTime:Float = 0;
+	
+	// hold shit
+	public var holdType:SustainPart = TAP;
+	public var sustainLength:Float = 0;
+	public var isRoll:Bool = false;
+
+	public var isSustainNote:Bool = false;
+	public var isSustainEnd:Bool = false;
+
 	public var mustPress:Bool = false;//outdated buddy
 	public var pressAble:Bool = false;
-	public var noteData:Int = 0;
-	public var canBeHit:Bool = false;
+	//public var noteData:Int = 0;
+	public var canBeHit(get, never):Bool = false;
+
+	@:noCompletion function get_canBeHit()
+		return PlayState.instance.judgeManager.judgeNote(this, Conductor.songPosition) != null;
+
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var ignoreNote:Bool = false;
@@ -52,14 +111,19 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 	public var prevNote:Note;
 	public var nextNote:Note;
 	public var fieldIndex:Int = 0;
+	public var field:PlayField; // same as fieldIndex but lets you set the field directly incase you wanna do that i  guess
 	public var spawned:Bool = false;
 
 	public var tail:Array<Note> = []; // for sustains
+	public var unhitTail:Array<Note> = [];
+
 	public var parent:Note;
 	public var blockHit:Bool = false; // only works for player
 
-	public var sustainLength:Float = 0;
-	public var isSustainNote:Bool = false;
+	public var isHeld:Bool = false;
+	public var holdingTime:Float = 0;
+	public var tripProgress:Float = 1;
+	
 	public var noteType(default, set):String = null;
 
 	public var eventName:String = '';
@@ -67,7 +131,6 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 	public var eventVal1:String = '';
 	public var eventVal2:String = '';
 	public var autoFollow:Bool = (FlxG.state is PlayState && FlxG.state == PlayState.instance);
-	public var colorSwap:ColorSwap;
 	public var inEditor:Bool = false;
 
 	public var animSuffix:String = '';
@@ -76,7 +139,6 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 	public var lateHitMult:Float = 1;
 	public var lowPriority:Bool = false;
 
-	public static var swagWidth:Float = 160 * 0.7;
 	
 	private var colArray:Array<String> = ['purple', 'blue', 'green', 'red'];
 	private var pixelInt:Array<Int> = [0, 1, 2, 3];
@@ -93,12 +155,12 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 	public var offsetAngle:Float = 0;
 	public var multAlpha:Float = 1;
 	public var multSpeed(default, set):Float = 1;
-
+	/*
 	public var copyX:Bool = true;
 	public var copyY:Bool = true;
 	public var copyAngle:Bool = true;
 	public var copyAlpha:Bool = true;
-
+	*/
 	public var hitHealth:Float = 0.023;
 	public var missHealth:Float = 0.0475;
 	public var rating:String = 'unknown';
@@ -111,7 +173,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 	public var noMissAnimation:Bool = false;
 	public var hitCausesMiss:Bool = false;
 	public var distance:Float = 2000; //plan on doing scroll directions soon -bb
-	public var targetStrum:StrumNote = null;
+	public var targetStrum:StrumNote = null;//kinda deperated?
 	public var hitsoundDisabled:Bool = false;
 	public static var NOTE_AMOUNT:Int = 4;
 
@@ -183,7 +245,17 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 		return value;
 	}
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, ?isPixel:Null<Bool> = null)
+	public function getSusPart():SustainPart{
+		if (isSustainNote){
+			if (isSustainEnd){
+				return END;
+			}else return PART;
+		}else if (tails.length > 0){
+			return HEAD;
+		}
+		return TAP;
+	}
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?inEditor:Bool = false, ?isPixel:Null<Bool> = null, ?fieldIndex:Int = -1)
 	{
 		super();
 
@@ -191,7 +263,10 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 			prevNote = this;
 
 		this.prevNote = prevNote;
-		isSustainNote = sustainNote;
+		this.fieldIndex = fieldIndex;
+		this.isSustainNote = sustainNote;
+		this.isSustainEnd = (isSustainNote && prevNote != null && prevNote.isSustainNote);
+		this.holdType = getSusPart();
 		this.inEditor = inEditor;
 		var downscroll = ClientPrefs.downScroll;
 		x += (ClientPrefs.middleScroll ? PlayState.STRUM_X_MIDDLESCROLL : PlayState.STRUM_X) + 50;
@@ -206,7 +281,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 		}
 		if(noteData > -1) {
 			texture = '';
-			colorSwap = new ColorSwap();
+			colorSwap = new NoteColorSwap();
 			shader = colorSwap.shader;
 
 			x += swagWidth * (noteData);
@@ -378,7 +453,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
+		/*
 		if (pressAble)
 		{
 			// ok river
@@ -401,19 +476,19 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 					wasGoodHit = true;
 			}
 		}
-
+		*/
 		if (tooLate && !inEditor)
 		{
 			if (alpha > 0.3)
 				alpha = 0.3;
 		}
-
+		/*
 		if (autoFollow){
 			if (targetStrum != null){
 				followStrumNote(targetStrum);
 				clipToStrumNote(targetStrum);
 			}
-		}
+		}*/
 	}
 	override public function toString():String
 	{
@@ -536,6 +611,16 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 				}
 			}
 		}
+	}
+	override function draw() {
+		colorSwap.daAlpha = alphaMod * alphaMod2;
+
+		if (tooLate && !inEditor) {
+			if (alpha > 0.3)
+				alpha = 0.3;
+		}
+
+		super.draw();
 	}
 	public var globalRunClip:Bool = false;
 	public function clipToStrumNote(myStrum:StrumNote)

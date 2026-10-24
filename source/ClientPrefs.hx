@@ -20,7 +20,9 @@ class ClientPrefs {
 	public static var shaders:Bool = true;
 	public static var framerate:Int = 60;
 	public static var cursing:Bool = true;
+	public static var drawDistanceModifier:Int = 1;
 	public static var violence:Bool = true;
+	public static var holdSubdivs:Int = 6;
 	public static var cacheOnGPU:Bool = #if mobile false #else true #end;
 	public static var discordClient:Bool = true;
 	public static var autoCopy:Bool = true;
@@ -188,6 +190,7 @@ class ClientPrefs {
 		FlxG.save.data.globalAntialiasing = globalAntialiasing;
 		FlxG.save.data.noteSplashes = noteSplashes;
 		FlxG.save.data.lowQuality = lowQuality;
+		FlxG.save.data.holdSubdivs = holdSubdivs;
 		FlxG.save.data.shaders = shaders;
 		FlxG.save.data.framerate = framerate;
 		FlxG.save.data.cacheOnGPU = cacheOnGPU;
@@ -249,6 +252,12 @@ class ClientPrefs {
 		}
 		if(FlxG.save.data.autoCopy != null) {
 			autoCopy = FlxG.save.data.autoCopy;
+		}
+		if(FlxG.save.data.holdSubdivs != null) {
+			holdSubdivs = FlxG.save.data.holdSubdivs;
+		}
+		if(FlxG.save.data.drawDistanceModifier != null) {
+			drawDistanceModifier = FlxG.save.data.drawDistanceModifier;
 		}
 		if(FlxG.save.data.extraParams != null) {
 			var savedMap:Map<String, Dynamic> = FlxG.save.data.extraParams;
