@@ -80,7 +80,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 	
 	private var colArray:Array<String> = ['purple', 'blue', 'green', 'red'];
 	private var pixelInt:Array<Int> = [0, 1, 2, 3];
-
+	public var autoHit = false;
 	// Lua shit
 	public var noteSplashDisabled:Bool = false;
 	public var noteSplashTexture:String = null;

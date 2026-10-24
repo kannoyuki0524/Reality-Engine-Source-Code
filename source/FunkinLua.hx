@@ -103,6 +103,7 @@ class FunkinLua extends FunkinScript {
 			}
 		} catch(e:Dynamic) {
 			trace(e);
+			closed = true;
 			return;
 		}
 		scriptName = script;
@@ -1651,6 +1652,7 @@ class FunkinLua extends FunkinScript {
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			PlayState.changedDifficulty = false;
 			PlayState.chartingMode = false;
+			PlayState.seenCutscene = false;
 			PlayState.instance.transitioning = true;
 			WeekData.loadTheFirstEnabledMod();
 			return true;

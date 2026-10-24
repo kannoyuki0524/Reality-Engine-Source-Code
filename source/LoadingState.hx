@@ -47,7 +47,7 @@ typedef PrecacheMeta = {
 class LoadingState extends MusicBeatState
 {
 	var images:Array<Null<String>> = [];
- var menuImage = '';
+ 	var menuImage = '';
 	var characters:Array<Null<String>> = [];
 	var sounds:Array<Null<String>> = [];
 	var songs:Array<Null<{id:String, name:String}>> = [];
@@ -127,6 +127,8 @@ class LoadingState extends MusicBeatState
 		songs.push({id:SONG.song, name:'Inst'});
 		if (SONG.needsVoices)
 		songs.push({id:SONG.song, name:'Voices'});
+		if (SONG.needsSfxs)
+		songs.push({id:SONG.song, name:'Sf////xs'});
 		if (SONG.player1 != null && SONG.player1.length >= 1)
 		characters.push(SONG.player1);
 		if (SONG.player2 != null && SONG.player2.length >= 1)
@@ -140,7 +142,7 @@ class LoadingState extends MusicBeatState
 			for (assets in precacheList){
 				catchAssets(assets);
 			}
-  if (Reflect.hasField(stageData, 'menuImage'))
+  			if (Reflect.hasField(stageData, 'menuImage'))
 				menuImage = Reflect.field(stageData, 'menuImage');
 			else if (Reflect.hasField(stageData, 'menuID'))
 				menuID = Reflect.field(stageData, 'menuID');
@@ -152,10 +154,10 @@ class LoadingState extends MusicBeatState
 			for (assets in precacheList){
 				catchAssets(assets);
 			}
-			if (Reflect.hasField(stageData, 'menuImage'))
-				menuImage = Reflect.field(stageData, 'menuImage');
-			else if (Reflect.hasField(stageData, 'menuID'))
-				menuID = Reflect.field(stageData, 'menuID');
+			if (Reflect.hasField(list, 'menuImage'))
+				menuImage = Reflect.field(list, 'menuImage');
+			else if (Reflect.hasField(list, 'menuID'))
+				menuID = Reflect.field(list, 'menuID');
 		}
 
 
@@ -248,24 +250,27 @@ class LoadingState extends MusicBeatState
 		}
  
 		var menuIma = StartupState.menuImages.copy();
- if (menuImage == null || menuImage == ''){
-		if (menuIma.length > 0){
-			if (stateName != 'PlayState'){
-				for (image in StartupState.playStateExcludes){
-					if (menuIma.contains(image))
-					menuIma.remove(image);
+		if (menuImage == null || menuImage == ''){
+				if (menuIma.length > 0){
+					if (stateName != 'PlayState'){
+						for (image in StartupState.playStateExcludes){
+							if (menuIma.contains(image))
+							menuIma.remove(image);
+						}
+					}
+					if (menuID < 0){
+						menuID = FlxG.random.int(0, menuIma.length - 1);
+					}
+					for (ima in menuIma){
+						ima = 'loadingscreen/' + ima;
+					}
+				}else{
+					menuIma = ['funkay'];
+					menuID = 0;
 				}
-			}
-			if (menuID < 0){
-				menuID = FlxG.random.int(0, menuIma.length - 1);
-			}
-		}else{
-			menuIma = ['funkay'];
-			menuID = 0;
+		menuImage = menuIma[menuID];
 		}
- menuImage = menuIma[menuID];
-}
-		var funkay = new FlxSprite(0, 0).loadGraphic(Paths.image('loadingscreen/' + menuImage));
+		var funkay = new FlxSprite(0, 0).loadGraphic(Paths.image(menuImage));
 		var baseW = funkay.frameWidth;
 		var baseH = funkay.frameHeight;
 		var scale = Math.max(FlxG.camera.width / baseW, FlxG.camera.height / baseH);
@@ -397,7 +402,7 @@ class LoadingState extends MusicBeatState
 					threadPool.run(() -> {
 					mutex.acquire();
 					Paths.track(song.id, song.name);
-    trace('SONG FILE PRECACHED:' + Std.string(song));
+    				trace('SONG FILE PRECACHED:' + Std.string(song));
 					mutex.release();
 					currentProgress += 1;
 				});
@@ -509,7 +514,6 @@ class LoadingState extends MusicBeatState
 					precacheImage(file);
 				}
 			}
-			#if flxanimate
 			else
 			{
 				for (i in 0...10)
@@ -525,7 +529,6 @@ class LoadingState extends MusicBeatState
 					}
 				}
 			}
-			#end
 	
 			var name:String = 'icons/' + character.healthIcon;
 			if(!Paths.fileExists('images/' + name + '.png', IMAGE)) name = 'icons/icon-' + character.healthIcon;

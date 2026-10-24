@@ -19,6 +19,7 @@ typedef SwagSong =
 	var notes:Array<SwagSection>;
 	var events:Array<Dynamic>;
 	var bpm:Float;
+	@:optional var needsSfxs:Bool;
 	var needsVoices:Bool;
 	var speed:Float;
 
@@ -47,6 +48,7 @@ class Song
 	public var events:Array<EventNote> = []; //SONION
 	public var bpm:Float;
 	public var needsVoices:Bool = true;
+	public var needsSfxs:Bool = false;
 	public var arrowSkin:String;
 	public var splashSkin:String;
 	public var speed:Float = 1;
@@ -55,6 +57,7 @@ class Song
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
 	public var vocals:FlxSound;
+	public var sfxs:FlxSound;
 	public var inst:FlxSound;
 	public var gfVersion:String = 'gf';
 	public var legacyStrumMode:Bool = false;
@@ -75,24 +78,24 @@ class Song
 		if(songJson.events == null)
 		{
 			songJson.events = [];
-			for (secNum in 0...songJson.notes.length)
-			{
-				var sec:SwagSection = songJson.notes[secNum];
+		}
+		for (secNum in 0...songJson.notes.length)
+		{
+			var sec:SwagSection = songJson.notes[secNum];
 
-				var i:Int = 0;
-				var notes:Array<Dynamic> = sec.sectionNotes;
-				var len:Int = notes.length;
-				while(i < len)
+			var i:Int = 0;
+			var notes:Array<Dynamic> = sec.sectionNotes;
+			var len:Int = notes.length;
+			while(i < len)
+			{
+				var note:Array<Dynamic> = notes[i];
+				if(note[1] < 0)
 				{
-					var note:Array<Dynamic> = notes[i];
-					if(note[1] < 0)
-					{
-						songJson.events.push([note[0], [[note[2], note[3], note[4]]]]);
-						notes.remove(note);
-						len = notes.length;
-					}
-					else i++;
+					songJson.events.push([note[0], [[note[2], note[3], note[4]]]]);
+					notes.remove(note);
+					len = notes.length;
 				}
+				else i++;
 			}
 		}
 	}
@@ -129,7 +132,8 @@ class Song
 				validScore: false,
 				igorAutoFix:true,
 				extraPlayers:[],
-				strumAmount:2
+				strumAmount:2,
+				needsSfxs:false
 			};
 	}
 

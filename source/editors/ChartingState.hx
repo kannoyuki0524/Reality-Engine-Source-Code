@@ -151,6 +151,7 @@ class ChartingState extends MusicBeatState
 	var playbackSpeed:Float = 1;
 
 	var vocals:FlxSound = null;
+	var sfxs:FlxSound = null;
 
 	var leftIcon(get,set):HealthIcon;
 	function get_leftIcon():HealthIcon
@@ -414,6 +415,14 @@ class ChartingState extends MusicBeatState
 		{
 			songData.needsVoices = check_voices.checked;
 			//trace('CHECKED!');
+		};	
+
+		var check_sfxs = new FlxUICheckBox(10, 45, null, null, "Has sfxs track", 100);
+		check_sfxs.checked = songData.needsSfxs;
+		check_sfxs.callback = function()
+		{
+			songData.needsSfxs = check_sfxs.checked;
+			//trace('CHECKED!');
 		};
 
 		var saveButton:FlxButton = new FlxButton(110, 8, "Save", function()
@@ -483,7 +492,7 @@ class ChartingState extends MusicBeatState
 		clear_notes.color = FlxColor.RED;
 		clear_notes.label.color = FlxColor.WHITE;
 
-		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 70, 1, 1, 1, 400, 3);
+		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 90, 1, 1, 1, 400, 3);
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 		blockPressWhileTypingOnStepper.push(stepperBPM);
@@ -630,6 +639,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(UIsongDataTitle);
 
 		tab_group_song.add(check_voices);
+		tab_group_song.add(check_sfxs);
 		tab_group_song.add(clear_events);
 		tab_group_song.add(clear_notes);
 		tab_group_song.add(check_autoFix);
@@ -1395,17 +1405,23 @@ class ChartingState extends MusicBeatState
 			// vocals.stop();
 		}
 
-		var file:Dynamic = Paths.voices(currentSongName);
-		vocals = new FlxSound();
-		if (file != null && Std.isOfType(file, Sound) || OpenFlAssets.exists(file)) {
-			try{
-			vocals.loadEmbedded(file);
-			}catch (e){
-				trace(Std.string(e));
-				vocals = new FlxSound();
+		function fileCheck(uhhName, fucker){
+			var snd = new FlxSound();
+			var file:Dynamic = Paths.track(uhhName, fucker);
+				if (file != null && Std.isOfType(file, Sound) || OpenFlAssets.exists(file)) {
+				try{
+				snd.loadEmbedded(file);
+				}catch (e){
+					trace(Std.string(e));
+					snd = new FlxSound();
+				}
+				FlxG.sound.list.add(snd);
 			}
-			FlxG.sound.list.add(vocals);
+			return snd;
 		}
+		vocals = fileCheck(currentSongName, 'Voices');
+		
+		sfxs = fileCheck(currentSongName, 'Sfxs');
 		generateSong();
 		FlxG.sound.music.pause();
 		Conductor.songPosition = sectionStartTime();
@@ -1425,12 +1441,18 @@ class ChartingState extends MusicBeatState
 				vocals.pause();
 				vocals.time = 0;
 			}
+			if(sfxs != null) {
+				sfxs.pause();
+				sfxs.time = 0;
+			}
 			changeSection();
 			curSec = 0;
 			updateGrid();
 			updateSectionUI();
 			if(vocals != null)
 			vocals.play();
+			if(sfxs != null)
+			sfxs.play();
 		};
 	}
 
@@ -1522,6 +1544,9 @@ class ChartingState extends MusicBeatState
 			else if (wname == 'inst_volume')
 			{
 				FlxG.sound.music.volume = nums.value;
+				if(sfxs != null) {
+					sfxs.volume = nums.value;
+				}
 			}
 			else if (wname == 'voices_volume')
 			{
@@ -1754,6 +1779,7 @@ class ChartingState extends MusicBeatState
 				autosaveSong();
 				FlxG.sound.music.pause();
 				if(vocals != null) vocals.pause();
+				if(sfxs != null) sfxs.pause();
 				
 				openSubState(new editors.EditorPlayState(sectionStartTime()));
 			}
@@ -1764,6 +1790,7 @@ class ChartingState extends MusicBeatState
 				PlayState.SONG = songData;
 				FlxG.sound.music.stop();
 				if(vocals != null) vocals.stop();
+				if(sfxs != null) sfxs.stop();
 
 				//if(songData.stage == null) songData.stage = stageDropDown.selectedLabel;
 				StageData.loadDirectory(songData);
@@ -1831,6 +1858,7 @@ class ChartingState extends MusicBeatState
 				{
 					FlxG.sound.music.pause();
 					if(vocals != null) vocals.pause();
+					if(sfxs != null) sfxs.pause();
 				}
 				else
 				{
@@ -1839,6 +1867,12 @@ class ChartingState extends MusicBeatState
 						vocals.pause();
 						vocals.time = FlxG.sound.music.time;
 						vocals.play();
+					}
+					if(sfxs != null) {
+						sfxs.play();
+						sfxs.pause();
+						sfxs.time = FlxG.sound.music.time;
+						sfxs.play();
 					}
 					FlxG.sound.music.play();
 				}
@@ -1876,6 +1910,10 @@ class ChartingState extends MusicBeatState
 					vocals.pause();
 					vocals.time = FlxG.sound.music.time;
 				}
+				if(sfxs != null) {
+					sfxs.pause();
+					sfxs.time = FlxG.sound.music.time;
+				}
 			}
 
 			//ARROW VORTEX SHIT NO DEADASS
@@ -1902,6 +1940,10 @@ class ChartingState extends MusicBeatState
 				if(vocals != null) {
 					vocals.pause();
 					vocals.time = FlxG.sound.music.time;
+				}
+				if(sfxs != null) {
+					sfxs.pause();
+					sfxs.time = FlxG.sound.music.time;
 				}
 			}
 
@@ -1994,6 +2036,10 @@ class ChartingState extends MusicBeatState
 						vocals.time = FlxG.sound.music.time;
 					}
 
+					if(sfxs != null) {
+						sfxs.pause();
+						sfxs.time = FlxG.sound.music.time;
+					}
 					var dastrum = 0;
 
 					if (curSelectedNote != null){
@@ -2087,6 +2133,8 @@ class ChartingState extends MusicBeatState
 		FlxG.sound.music.pitch = playbackSpeed;
 		if (vocals != null)
 		vocals.pitch = playbackSpeed;
+		if (sfxs != null)
+		sfxs.pitch = playbackSpeed;
 
 		bpmTxt.text =
 		Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2)) + " / " + Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2)) +
@@ -2327,6 +2375,31 @@ class ChartingState extends MusicBeatState
 					wavData,
 					Std.int(gridBG.height)
 				);
+			}
+			[[[0], [0]], [[0], [0]]];
+			if (sfxs != null){
+				var sound:FlxSound = sfxs;
+				if (sound._sound != null && sound._sound.__buffer != null) {
+					var bytes:Bytes = sound._sound.__buffer.data.toBytes();
+
+					var sfxsData = waveformData(
+						sound._sound.__buffer,
+						bytes,
+						st,
+						et,
+						1,
+						wavData,
+						Std.int(gridBG.height)
+					);
+
+					for (i1 in 0...sfxsData.length){
+						for (i2 in 0...sfxsData[i1].length){
+							for (i3 in 0...sfxsData[i1][i2].length){
+								wavData[i1][i2][i3] += sfxsData[i1][i2][i3];
+							}
+						}	
+					}
+				}
 			}
 		}
 
