@@ -224,8 +224,8 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 
 		if (isSustainNote && prevNote != null)
 		{
-			//alpha = 0.6;
-			//multAlpha = 0.6;
+			alpha = 0.6;
+			multAlpha = 0.6;
 			hitsoundDisabled = true;
 			if(downscroll) flipY = true;
 
@@ -245,22 +245,15 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 			{
 				prevNote.animation.play(colArray[prevNote.noteData % NOTE_AMOUNT] + 'hold');
 
-				var bpmChange = Conductor.getBPMFromSeconds(prevNote.strumTime / 1000);
-				var baseSustainScale:Float = bpmChange.stepCrochet / 100;
-				var songSpeed:Float = 1.0;
-
+				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.05;
 				if(PlayState.instance != null)
 				{
-					songSpeed = PlayState.instance.songSpeed;
+					prevNote.scale.y *= PlayState.instance.songSpeed;
 				}
-
-				var gapCorrection:Float = calculateGapCorrection(songSpeed, isPixelNote);
-
-				prevNote.scale.y *= baseSustainScale * gapCorrection * songSpeed;
 
 				if(isPixelNote) {
 					prevNote.scale.y *= 1.19;
-					prevNote.scale.y *= (6 / height);
+					prevNote.scale.y *= (6 / height); //Auto adjust note size
 				}
 				prevNote.updateHitbox();
 
@@ -345,7 +338,7 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 		}
 		updateHitbox();
 
-
+		
 		if(inEditor) {
 			setGraphicSize(ChartingState.GRID_SIZE, ChartingState.GRID_SIZE);
 			updateHitbox();
@@ -497,44 +490,24 @@ class Note extends #if MC_TOOLS_ALLOWED FlxSkewedSprite #else FlxSprite #end
 		if(copyY)
 		{
 			y = strumY + offsetY + correctionOffset + Math.sin(angleDir) * distance;
-
-			if(isSustainNote)
-			{
-				var playfieldScale:Float = 1.0;
-				if (ClientPrefs.vsliceHUD && targetStrum != null && targetStrum.player == 1) {
-					final amplification:Float = (FlxG.width / FlxG.height) / (FlxG.initialWidth / FlxG.initialHeight);
-					playfieldScale = ((FlxG.height / FlxG.width) * 1.95) * amplification;
-				}
-				var sustainOffset:Float = calculateSustainOffset(songSpeed, bpm) * playfieldScale;
-
+			if (isSustainNote){
+				if (ClientPrefs.vsliceHUD) y += 30;
+				
 				if(myStrum.downScroll)
-				{
-					if (animation.curAnim.name.endsWith('end')) {
-						if(isPixelNote) {
-							y += 8 + (6 - originalHeightForCalcs) * PlayState.daPixelZoom;
-							y += sustainOffset;
-						} else {
-							y += height / 2 + 1;
-							y += sustainOffset * 0.51;
+					{
+						if (animation.curAnim.name.endsWith('end')) {
+							y += 10.5 * (fakeCrochet / 400) * 1.5 * songSpeed + (46 * (songSpeed - 1));
+							y -= 46 * (1 - (fakeCrochet / 600)) * songSpeed;
+							if(isPixelNote) {
+								y += 8 + (6 - originalHeightForCalcs) * PlayState.daPixelZoom;
+							} else {
+								y -= 19;
+							}
 						}
-					} else {
-						y += sustainOffset;
+						y += (swagWidth / 2) - (60.5 * (songSpeed - 1));
+						y += 27.5 * ((bpm / 100) - 1) * (songSpeed - 1);
 					}
 				}
-				else
-				{
-					if (animation.curAnim.name.endsWith('end')) {
-						if(isPixelNote) {
-							y -= 8 + (6 - originalHeightForCalcs) * PlayState.daPixelZoom;
-						} else {
-							y -= height / 2 + 1;
-							y -= sustainOffset;
-						}
-					} else {
-						y -= sustainOffset;
-					}
-				}
-			}
 		}
 	}
 	public var globalRunClip:Bool = false;

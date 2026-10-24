@@ -3552,6 +3552,14 @@ class PlayState extends MusicBeatState
 									dunceNote.tail[i].visible = false;
 							}
 						}
+					}else{
+						if (!dunceNote.isSustainNote)
+						dunceNote.scale.set(dunceNote.targetStrum.scale.x,dunceNote.targetStrum.scale.y);
+						else{
+						dunceNote.scale.set(dunceNote.targetStrum.scale.x,dunceNote.scale.y);
+						dunceNote.offsetX += 25;
+						}
+						dunceNote.updateHitbox();
 					}
 				}
 				callOnScripts('onSpawnNote', [notes.members.indexOf(dunceNote), dunceNote.noteData, dunceNote.noteType, dunceNote.isSustainNote]);
