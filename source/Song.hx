@@ -75,27 +75,28 @@ class Song
 
 		if (songJson.strumAmount == null)
 			songJson.strumAmount = 2;
+
 		if(songJson.events == null)
 		{
 			songJson.events = [];
-		}
-		for (secNum in 0...songJson.notes.length)
-		{
-			var sec:SwagSection = songJson.notes[secNum];
-
-			var i:Int = 0;
-			var notes:Array<Dynamic> = sec.sectionNotes;
-			var len:Int = notes.length;
-			while(i < len)
+			for (secNum in 0...songJson.notes.length)
 			{
-				var note:Array<Dynamic> = notes[i];
-				if(note[1] < 0)
+				var sec:SwagSection = songJson.notes[secNum];
+
+				var i:Int = 0;
+				var notes:Array<Dynamic> = sec.sectionNotes;
+				var len:Int = notes.length;
+				while(i < len)
 				{
-					songJson.events.push([note[0], [[note[2], note[3], note[4]]]]);
-					notes.remove(note);
-					len = notes.length;
+					var note:Array<Dynamic> = notes[i];
+					if(note[1] < 0)
+					{
+						songJson.events.push([note[0], [[note[2], note[3], note[4]]]]);
+						notes.remove(note);
+						len = notes.length;
+					}
+					else i++;
 				}
-				else i++;
 			}
 		}
 	}
